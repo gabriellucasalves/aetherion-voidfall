@@ -5,6 +5,24 @@ using UnityEngine.UI;
 
 public static class UiKit
 {
+    static Sprite _white;
+
+    public static Sprite WhiteSprite()
+    {
+        if (_white != null)
+            return _white;
+
+        var texture = new Texture2D(8, 8, TextureFormat.RGBA32, false);
+        var pixels = new Color32[64];
+        for (int i = 0; i < pixels.Length; i++)
+            pixels[i] = new Color32(255, 255, 255, 255);
+        texture.SetPixels32(pixels);
+        texture.Apply();
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        _white = Sprite.Create(texture, new Rect(0f, 0f, 8f, 8f), new Vector2(0.5f, 0.5f), 8f, 0, SpriteMeshType.FullRect);
+        return _white;
+    }
     public static Canvas CreateCanvas(Transform parent, string name)
     {
         var go = new GameObject(name);
@@ -46,6 +64,7 @@ public static class UiKit
         go.transform.SetParent(parent, false);
 
         var image = go.AddComponent<Image>();
+        image.sprite = WhiteSprite();
         image.color = MenuTheme.Button;
 
         var button = go.AddComponent<Button>();
@@ -67,7 +86,9 @@ public static class UiKit
         var go = new GameObject(name);
         go.transform.SetParent(parent, false);
         var image = go.AddComponent<Image>();
+        image.sprite = WhiteSprite();
         image.color = color;
+        image.raycastTarget = true;
         var rect = go.GetComponent<RectTransform>();
         rect.sizeDelta = size;
         rect.anchoredPosition = position;

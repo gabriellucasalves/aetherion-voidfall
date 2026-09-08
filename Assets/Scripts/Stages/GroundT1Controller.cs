@@ -239,7 +239,7 @@ public class GroundT1Controller : MonoBehaviour
 
         RefreshHud();
         UiKit.Label(canvas.transform, HintFor(hero), 16, new Vector2(0f, -480f), new Color(1f, 1f, 1f, 0.55f), new Vector2(1600f, 30f));
-        MobileControls.Attach(canvas.transform);
+        MobileControls.Attach(transform);
 
         _waveBanner = UiKit.Label(canvas.transform, "", 32, new Vector2(0f, 290f), MenuTheme.CelestialGold, new Vector2(1000f, 48f));
         _waveBanner.gameObject.SetActive(false);
@@ -344,8 +344,8 @@ public class GroundT1Controller : MonoBehaviour
 
     static string HintFor(CharacterData hero)
     {
-        if (MobileControls.ShouldShow())
-            return "Toque: analógico anda  ·  PULAR  ·  ATACAR  ·  ESCUDO  ·  DASH";
+        if (MobileControls.ShouldShow() || MobileControls.IsVisible)
+            return "Joystick anda  ·  seta pula  ·  espada ataca  ·  escudo defende";
         if (hero != null && hero.Id == "mago")
             return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   ESC pausa";
         if (hero != null && hero.Id == "anjo")

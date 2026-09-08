@@ -289,14 +289,14 @@ public class PlayerCombat : MonoBehaviour
 
     static bool WantsAttack()
     {
-        if (MobileControls.ShouldShow())
+        if (MobileControls.IsVisible)
             return MobileControls.AttackHeld;
         return Input.GetMouseButton(0) || Input.GetKey(KeyCode.J);
     }
 
     static bool WantsBlock()
     {
-        if (MobileControls.ShouldShow())
+        if (MobileControls.IsVisible)
             return MobileControls.BlockHeld;
         return Input.GetMouseButton(1)
             || Input.GetKey(KeyCode.K)
@@ -306,7 +306,6 @@ public class PlayerCombat : MonoBehaviour
     static bool WantsDash()
     {
         return Input.GetKeyDown(KeyCode.LeftShift)
-            || Input.GetKeyDown(KeyCode.RightShift)
-            || MobileControls.ConsumeDashDown();
+            || Input.GetKeyDown(KeyCode.RightShift);
     }
 }

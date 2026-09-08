@@ -37,3 +37,4 @@ CrashReports/
 *.VC.db
 .DS_Store
 .vscode/
+.vercel
