@@ -1,7 +1,9 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.UI;
 
-// Recua o canvas da barra do iOS / recorte da tela (safe area + Safari).
+// Recua o conteúdo da barra do iOS / Safari sem mexer em âncoras do Canvas
+// (alterar âncora no mesmo objeto do CanvasScaler estoura a pilha no WebGL mobile).
 public class SafeAreaFit : MonoBehaviour
 {
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -10,16 +12,22 @@ public class SafeAreaFit : MonoBehaviour
 #endif
 
     RectTransform _rect;
+    Canvas _canvas;
+    int _lastW;
+    int _lastH;
+    float _lastBottom = -1f;
 
-    void Awake()
+    void Start()
     {
         _rect = GetComponent<RectTransform>();
+        _canvas = GetComponent<Canvas>();
         Apply();
     }
 
-    void OnRectTransformDimensionsChange()
+    void LateUpdate()
     {
-        Apply();
+        if (Screen.width != _lastW || Screen.height != _lastH)
+            Apply();
     }
 
     void Apply()
@@ -29,7 +37,9 @@ public class SafeAreaFit : MonoBehaviour
         if (_rect == null)
             return;
 
-        var safe = Screen.safeArea;
+        _lastW = Screen.width;
+        _lastH = Screen.height;
+
         float extraBottom = 0f;
 #if UNITY_WEBGL && !UNITY_EDITOR
         try
@@ -44,18 +54,15 @@ public class SafeAreaFit : MonoBehaviour
         if (MobileControls.ShouldShow() && extraBottom < Screen.height * 0.06f)
             extraBottom = Screen.height * 0.06f;
 
-        safe.y += extraBottom;
-        safe.height = Mathf.Max(8f, safe.height - extraBottom);
+        float scale = _canvas != null && _canvas.scaleFactor > 0.01f ? _canvas.scaleFactor : 1f;
+        float bottom = extraBottom / scale;
+        if (Mathf.Abs(bottom - _lastBottom) < 0.5f)
+            return;
 
-        var min = safe.position;
-        var max = min + safe.size;
-        min.x /= Mathf.Max(1, Screen.width);
-        min.y /= Mathf.Max(1, Screen.height);
-        max.x /= Mathf.Max(1, Screen.width);
-        max.y /= Mathf.Max(1, Screen.height);
-        _rect.anchorMin = min;
-        _rect.anchorMax = max;
-        _rect.offsetMin = Vector2.zero;
+        _lastBottom = bottom;
+        _rect.anchorMin = Vector2.zero;
+        _rect.anchorMax = Vector2.one;
+        _rect.offsetMin = new Vector2(0f, bottom);
         _rect.offsetMax = Vector2.zero;
     }
 }
