@@ -2,7 +2,9 @@
 
 Protótipo acadêmico de action platformer 16-bit dark fantasy.
 
-Jogar no navegador (PC e celular): o link do Vercel entra no README assim que o deploy terminar.
+Jogar agora (PC e celular): **https://aetherion-voidfall.vercel.app**
+
+Repositório: **https://github.com/gabriellucasalves/aetherion-voidfall**
 
 ## Fluxo
 
