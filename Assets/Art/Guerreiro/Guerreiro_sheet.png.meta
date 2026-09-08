@@ -1,0 +1,4030 @@
+fileFormatVersion: 2
+guid: 52945a21300d64e288ac1d539fc9ffd7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7702304348316543199
+    second: Guerreiro_sheet_0
+  - first:
+      213: -1801248675061342854
+    second: Guerreiro_sheet_1
+  - first:
+      213: -603485841489061360
+    second: Guerreiro_sheet_2
+  - first:
+      213: -4098759726392374272
+    second: Guerreiro_sheet_3
+  - first:
+      213: 2709964895934980870
+    second: Guerreiro_sheet_4
+  - first:
+      213: -5024270105836130485
+    second: Guerreiro_sheet_5
+  - first:
+      213: 3902976660969408251
+    second: Guerreiro_sheet_6
+  - first:
+      213: -6374208685799119839
+    second: Guerreiro_sheet_7
+  - first:
+      213: 2128890549591282834
+    second: Guerreiro_sheet_8
+  - first:
+      213: -5765310760159065917
+    second: Guerreiro_sheet_9
+  - first:
+      213: 4204501405274106580
+    second: Guerreiro_sheet_10
+  - first:
+      213: 5354945505483808356
+    second: Guerreiro_sheet_11
+  - first:
+      213: 8862442063039400434
+    second: Guerreiro_sheet_12
+  - first:
+      213: 5386008289245942060
+    second: Guerreiro_sheet_13
+  - first:
+      213: -830351846318194444
+    second: Guerreiro_sheet_14
+  - first:
+      213: 6072461023096178158
+    second: Guerreiro_sheet_15
+  - first:
+      213: 1078350561638479147
+    second: Guerreiro_sheet_16
+  - first:
+      213: -3179278539878133763
+    second: Guerreiro_sheet_17
+  - first:
+      213: 6618646091135228520
+    second: Guerreiro_sheet_18
+  - first:
+      213: -1363262518911543794
+    second: Guerreiro_sheet_19
+  - first:
+      213: -2774610440830551191
+    second: Guerreiro_sheet_20
+  - first:
+      213: -6149507695256529504
+    second: Guerreiro_sheet_21
+  - first:
+      213: 176961031796424888
+    second: Guerreiro_sheet_22
+  - first:
+      213: 849677814555037673
+    second: Guerreiro_sheet_23
+  - first:
+      213: -3391689457051888632
+    second: Guerreiro_sheet_24
+  - first:
+      213: -7943678968516689760
+    second: Guerreiro_sheet_25
+  - first:
+      213: 8354799786762034215
+    second: Guerreiro_sheet_26
+  - first:
+      213: -3947657313771994337
+    second: Guerreiro_sheet_27
+  - first:
+      213: -3097351962195060397
+    second: Guerreiro_sheet_28
+  - first:
+      213: -4873431170049979427
+    second: Guerreiro_sheet_29
+  - first:
+      213: 2839486829369236005
+    second: Guerreiro_sheet_30
+  - first:
+      213: -7483028285357135202
+    second: Guerreiro_sheet_31
+  - first:
+      213: 7109455163494964273
+    second: Guerreiro_sheet_32
+  - first:
+      213: -4477912093333603940
+    second: Guerreiro_sheet_33
+  - first:
+      213: 4273399771977440374
+    second: Guerreiro_sheet_34
+  - first:
+      213: -3854365875571461118
+    second: Guerreiro_sheet_35
+  - first:
+      213: -556938570701591799
+    second: Guerreiro_sheet_36
+  - first:
+      213: 2710448666306462901
+    second: Guerreiro_sheet_37
+  - first:
+      213: -3766396267377768840
+    second: Guerreiro_sheet_38
+  - first:
+      213: -3586743623688756348
+    second: Guerreiro_sheet_39
+  - first:
+      213: -5260564974318743134
+    second: Guerreiro_sheet_40
+  - first:
+      213: -6974429768859347301
+    second: Guerreiro_sheet_41
+  - first:
+      213: -5171815691524654408
+    second: Guerreiro_sheet_42
+  - first:
+      213: 5047037402148133339
+    second: Guerreiro_sheet_43
+  - first:
+      213: 1826477185792743546
+    second: Guerreiro_sheet_44
+  - first:
+      213: -1997474737642874578
+    second: Guerreiro_sheet_45
+  - first:
+      213: 2883663860924820544
+    second: Guerreiro_sheet_46
+  - first:
+      213: 63400621539409618
+    second: Guerreiro_sheet_47
+  - first:
+      213: -1256649122309775541
+    second: Guerreiro_sheet_48
+  - first:
+      213: -7386183114125449145
+    second: Guerreiro_sheet_49
+  - first:
+      213: -6297032438235316971
+    second: Guerreiro_sheet_50
+  - first:
+      213: 3781505261484158913
+    second: Guerreiro_sheet_51
+  - first:
+      213: 5780624287955359393
+    second: Guerreiro_sheet_52
+  - first:
+      213: 4674684747396484677
+    second: Guerreiro_sheet_53
+  - first:
+      213: -7547840725412258989
+    second: Guerreiro_sheet_54
+  - first:
+      213: -4839625944096753687
+    second: Guerreiro_sheet_55
+  - first:
+      213: 5394583868061912371
+    second: Guerreiro_sheet_56
+  - first:
+      213: 6611523381597471990
+    second: Guerreiro_sheet_57
+  - first:
+      213: 5173893600264945297
+    second: Guerreiro_sheet_58
+  - first:
+      213: -7546965829050627694
+    second: Guerreiro_sheet_59
+  - first:
+      213: 536971886267613836
+    second: Guerreiro_sheet_60
+  - first:
+      213: 5065515738355359539
+    second: Guerreiro_sheet_61
+  - first:
+      213: 8768413457210127924
+    second: Guerreiro_sheet_62
+  - first:
+      213: 3852651234580817710
+    second: Guerreiro_sheet_63
+  - first:
+      213: 8436532163338066667
+    second: Guerreiro_sheet_64
+  - first:
+      213: 3597406343403177361
+    second: Guerreiro_sheet_65
+  - first:
+      213: -7729426555921739153
+    second: Guerreiro_sheet_66
+  - first:
+      213: 9066325266034191695
+    second: Guerreiro_sheet_67
+  - first:
+      213: -6456800342730630178
+    second: Guerreiro_sheet_68
+  - first:
+      213: 3235533660475560500
+    second: Guerreiro_sheet_69
+  - first:
+      213: 6031619226872691435
+    second: Guerreiro_sheet_70
+  - first:
+      213: 4010690472663516749
+    second: Guerreiro_sheet_71
+  - first:
+      213: -3525544093116324808
+    second: Guerreiro_sheet_72
+  - first:
+      213: 9062767351649985024
+    second: Guerreiro_sheet_73
+  - first:
+      213: 8086473968687883171
+    second: Guerreiro_sheet_74
+  - first:
+      213: 3171896772052855218
+    second: Guerreiro_sheet_75
+  - first:
+      213: -8020390642132780003
+    second: Guerreiro_sheet_76
+  - first:
+      213: 6279049303765912273
+    second: Guerreiro_sheet_77
+  - first:
+      213: 2870768680581931637
+    second: Guerreiro_sheet_78
+  - first:
+      213: -2426063722709482991
+    second: Guerreiro_sheet_79
+  - first:
+      213: 6877929779654821843
+    second: Guerreiro_sheet_80
+  - first:
+      213: 1406668958931356135
+    second: Guerreiro_sheet_81
+  - first:
+      213: -867467076310364013
+    second: Guerreiro_sheet_82
+  - first:
+      213: -5846365134682994962
+    second: Guerreiro_sheet_83
+  - first:
+      213: 7910381588255821135
+    second: Guerreiro_sheet_84
+  - first:
+      213: 3750557429351878946
+    second: Guerreiro_sheet_85
+  - first:
+      213: -1865779531794697945
+    second: Guerreiro_sheet_86
+  - first:
+      213: -2778198981177383298
+    second: Guerreiro_sheet_87
+  - first:
+      213: -5701843746621951378
+    second: Guerreiro_sheet_88
+  - first:
+      213: -5292559322118630730
+    second: Guerreiro_sheet_89
+  - first:
+      213: 1254877431978828610
+    second: Guerreiro_sheet_90
+  - first:
+      213: -6489281275042946388
+    second: Guerreiro_sheet_91
+  - first:
+      213: -8540731207607449458
+    second: Guerreiro_sheet_92
+  - first:
+      213: -6744154650771011483
+    second: Guerreiro_sheet_93
+  - first:
+      213: -6109715671438064158
+    second: Guerreiro_sheet_94
+  - first:
+      213: 2990143208881190832
+    second: Guerreiro_sheet_95
+  - first:
+      213: -9176804018962543757
+    second: Guerreiro_sheet_96
+  - first:
+      213: -8899564751230831944
+    second: Guerreiro_sheet_97
+  - first:
+      213: 7767188692931299728
+    second: Guerreiro_sheet_98
+  - first:
+      213: 3481200208271639904
+    second: Guerreiro_sheet_99
+  - first:
+      213: -8091693695041926938
+    second: Guerreiro_sheet_100
+  - first:
+      213: 2401696649581454984
+    second: Guerreiro_sheet_101
+  - first:
+      213: -2189291070455898529
+    second: Guerreiro_sheet_102
+  - first:
+      213: 7920308033871764267
+    second: Guerreiro_sheet_103
+  - first:
+      213: -3133098330428494027
+    second: Guerreiro_sheet_104
+  - first:
+      213: 7477610868524212115
+    second: Guerreiro_sheet_105
+  - first:
+      213: -7473345134542421843
+    second: Guerreiro_sheet_106
+  - first:
+      213: 2592236385158944256
+    second: Guerreiro_sheet_107
+  - first:
+      213: -4580265225126171174
+    second: Guerreiro_sheet_108
+  - first:
+      213: 5808161034519213923
+    second: Guerreiro_sheet_109
+  - first:
+      213: -1518308609394220985
+    second: Guerreiro_sheet_110
+  - first:
+      213: 2734955635097298255
+    second: Guerreiro_sheet_111
+  - first:
+      213: -5152649877006107202
+    second: Guerreiro_sheet_112
+  - first:
+      213: -1990888189084608586
+    second: Guerreiro_sheet_113
+  - first:
+      213: -385006919022446280
+    second: Guerreiro_sheet_114
+  - first:
+      213: 4992144564696707131
+    second: Guerreiro_sheet_115
+  - first:
+      213: 759735490141004554
+    second: Guerreiro_sheet_116
+  - first:
+      213: -246072387336582015
+    second: Guerreiro_sheet_117
+  - first:
+      213: 2321183629666767504
+    second: Guerreiro_sheet_118
+  - first:
+      213: 1550080647565748931
+    second: Guerreiro_sheet_119
+  - first:
+      213: -6512044895975592219
+    second: Guerreiro_sheet_120
+  - first:
+      213: 6020539194007332167
+    second: Guerreiro_sheet_121
+  - first:
+      213: 5186082087704860992
+    second: Guerreiro_sheet_122
+  - first:
+      213: 5777904752432825212
+    second: Guerreiro_sheet_123
+  - first:
+      213: 3153131398994978546
+    second: Guerreiro_sheet_124
+  - first:
+      213: -3050923123589448021
+    second: Guerreiro_sheet_125
+  - first:
+      213: 4170952897660433996
+    second: Guerreiro_sheet_126
+  - first:
+      213: -8117059637205575972
+    second: Guerreiro_sheet_127
+  - first:
+      213: -2175911977740991941
+    second: Guerreiro_sheet_128
+  - first:
+      213: 6678374939101555472
+    second: Guerreiro_sheet_129
+  - first:
+      213: -3402224989158190642
+    second: Guerreiro_sheet_130
+  - first:
+      213: 6910901613241314086
+    second: Guerreiro_sheet_131
+  - first:
+      213: -3217603400243585929
+    second: Guerreiro_sheet_132
+  - first:
+      213: 9052362969723177749
+    second: Guerreiro_sheet_133
+  - first:
+      213: 762177143834081025
+    second: Guerreiro_sheet_134
+  - first:
+      213: -4107139619803021218
+    second: Guerreiro_sheet_135
+  - first:
+      213: 1858263830122901925
+    second: Guerreiro_sheet_136
+  - first:
+      213: -4438427871202776286
+    second: Guerreiro_sheet_137
+  - first:
+      213: -6360257600893716562
+    second: Guerreiro_sheet_138
+  - first:
+      213: 1292087794381989591
+    second: Guerreiro_sheet_139
+  - first:
+      213: -2714125177866441288
+    second: Guerreiro_sheet_140
+  - first:
+      213: 390269290818605353
+    second: Guerreiro_sheet_141
+  - first:
+      213: 5877793757573897458
+    second: Guerreiro_sheet_142
+  - first:
+      213: 1499385486578756253
+    second: Guerreiro_sheet_143
+  - first:
+      213: -8716939615780140003
+    second: Guerreiro_sheet_144
+  - first:
+      213: 24074209323949467
+    second: Guerreiro_sheet_145
+  - first:
+      213: -4425343745523496041
+    second: Guerreiro_sheet_146
+  - first:
+      213: 4211990397970314803
+    second: Guerreiro_sheet_147
+  - first:
+      213: -8019867954978162851
+    second: Guerreiro_sheet_148
+  - first:
+      213: 6660914786998245991
+    second: Guerreiro_sheet_149
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Guerreiro_sheet_0
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 173
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12755a6f00beb1590800000000000000
+      internalID: -7702304348316543199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_1
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 154
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7d53da9fdda007e0800000000000000
+      internalID: -1801248675061342854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_2
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 176
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01a111713dcff97f0800000000000000
+      internalID: -603485841489061360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_3
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 173
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00c84b8beb74e17c0800000000000000
+      internalID: -4098759726392374272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_4
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 154
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 603abfff6babb9520800000000000000
+      internalID: 2709964895934980870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_5
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 176
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4fe50e55f4364ab0800000000000000
+      internalID: -5024270105836130485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_6
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 174
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf6c8b328982a2630800000000000000
+      internalID: 3902976660969408251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_7
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 155
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 124ebb6e8f24a87a0800000000000000
+      internalID: -6374208685799119839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_8
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 177
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 294131eeca65b8d10800000000000000
+      internalID: 2128890549591282834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_9
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 174
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c84bf8d8608dffa0800000000000000
+      internalID: -5765310760159065917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 155
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4da6efe60c3695a30800000000000000
+      internalID: 4204501405274106580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 177
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46edfe5c096905a40800000000000000
+      internalID: 5354945505483808356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 173
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f981f1e918bdfa70800000000000000
+      internalID: 8862442063039400434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 154
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2150d5b002feba40800000000000000
+      internalID: 5386008289245942060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 176
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f04d99256ff974f0800000000000000
+      internalID: -830351846318194444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 174
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee58d029027b54450800000000000000
+      internalID: 6072461023096178158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 155
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b25fdc95f1217fe00800000000000000
+      internalID: 1078350561638479147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 177
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dff8a84330fe0e3d0800000000000000
+      internalID: -3179278539878133763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 173
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86a94248d872adb50800000000000000
+      internalID: 6618646091135228520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 154
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e065ca046f7b41de0800000000000000
+      internalID: -1363262518911543794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 176
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96b743c218a9e79d0800000000000000
+      internalID: -2774610440830551191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 153
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a514b8255f88aaa0800000000000000
+      internalID: -6149507695256529504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 160
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b0005fee11b47200800000000000000
+      internalID: 176961031796424888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 156
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ef45167879aacb00800000000000000
+      internalID: 849677814555037673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_24
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 153
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8041cf3a86c4ee0d0800000000000000
+      internalID: -3391689457051888632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_25
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 160
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a042d7c01262c190800000000000000
+      internalID: -7943678968516689760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_26
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 156
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72cd573f32632f370800000000000000
+      internalID: 8354799786762034215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_27
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 154
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f13c5a5b69a1739c0800000000000000
+      internalID: -3947657313771994337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_28
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 161
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35911050dcef305d0800000000000000
+      internalID: -3097351962195060397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_29
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 157
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddbcadfdb281e5cb0800000000000000
+      internalID: -4873431170049979427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_30
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 154
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52a14f02a32e76720800000000000000
+      internalID: 2839486829369236005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_31
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 161
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9a6617db61f62890800000000000000
+      internalID: -7483028285357135202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_32
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 157
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13c1faebdcbd9a260800000000000000
+      internalID: 7109455163494964273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_33
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 153
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c99bc651da24bd1c0800000000000000
+      internalID: -4477912093333603940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_34
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 160
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67c53ff737a2e4b30800000000000000
+      internalID: 4273399771977440374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_35
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 156
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 204fc2058aa828ac0800000000000000
+      internalID: -3854365875571461118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_36
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 154
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90b2e9b125b5548f0800000000000000
+      internalID: -556938570701591799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_37
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 161
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b4c02193b27d9520800000000000000
+      internalID: 2710448666306462901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_38
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 157
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 876479fcc821bbbc0800000000000000
+      internalID: -3766396267377768840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_39
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 153
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48362a97da3593ec0800000000000000
+      internalID: -3586743623688756348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_40
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 160
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a19edb0708bef6b0800000000000000
+      internalID: -5260564974318743134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_41
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 156
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b969a3cc319d53f90800000000000000
+      internalID: -6974429768859347301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_42
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 141
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bab1eea7050a38b0800000000000000
+      internalID: -5171815691524654408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_43
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 141
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd95623e6cdaa0640800000000000000
+      internalID: 5047037402148133339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_44
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 142
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a781889c253f85910800000000000000
+      internalID: 1826477185792743546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_45
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 142
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e29daf62f4b8744e0800000000000000
+      internalID: -1997474737642874578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_46
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 141
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04c2e02d005d40820800000000000000
+      internalID: 2883663860924820544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_47
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 141
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2de3565878e31e000800000000000000
+      internalID: 63400621539409618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_48
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 142
+        width: 21
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4f5b61084c7f8ee0800000000000000
+      internalID: -1256649122309775541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_49
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 141
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 748609467910f7990800000000000000
+      internalID: -7386183114125449145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_50
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 110
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51d3fdb4c527c98a0800000000000000
+      internalID: -6297032438235316971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_51
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 91
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cfa803000b9a7430800000000000000
+      internalID: 3781505261484158913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_52
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 113
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a6139fa927e83050800000000000000
+      internalID: 5780624287955359393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_53
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 109
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54e018d9201dfd040800000000000000
+      internalID: 4674684747396484677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_54
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 90
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35b5394b9dea04790800000000000000
+      internalID: -7547840725412258989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_55
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 112
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e7395468d136dcb0800000000000000
+      internalID: -4839625944096753687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_56
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 110
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33d02ee32796dda40800000000000000
+      internalID: 5394583868061912371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_57
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 91
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f48e487c79d0cb50800000000000000
+      internalID: 6611523381597471990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_58
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 113
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19e757521dc5dc740800000000000000
+      internalID: 5173893600264945297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_59
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 89
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2990d63609ac34790800000000000000
+      internalID: -7546965829050627694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_60
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 108
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c824a57e515b37700800000000000000
+      internalID: 536971886267613836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_61
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 115
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33f52dcc9b35c4640800000000000000
+      internalID: 5065515738355359539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_62
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 96
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 436b3c01599afa970800000000000000
+      internalID: 8768413457210127924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_63
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 115
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e27e8a8b2ed577530800000000000000
+      internalID: 3852651234580817710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_64
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 111
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bea5cebcd45941570800000000000000
+      internalID: 8436532163338066667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_65
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 92
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 195884b620e8ce130800000000000000
+      internalID: 3597406343403177361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_66
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 114
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6250d8ef7f8bb490800000000000000
+      internalID: -7729426555921739153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_67
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 90
+        width: 24
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4ded144bce02dd70800000000000000
+      internalID: 9066325266034191695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_68
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 112
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edb9be14c46d466a0800000000000000
+      internalID: -6456800342730630178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_69
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 97
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 432177bb8bce6ec20800000000000000
+      internalID: 3235533660475560500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_70
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 96
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: beab92edabd94b350800000000000000
+      internalID: 6031619226872691435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_71
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 97
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d46072f3cb5d8a730800000000000000
+      internalID: 4010690472663516749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_72
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 108
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83423d19350c21fc0800000000000000
+      internalID: -3525544093116324808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_73
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 95
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 002ea15c3ea65cd70800000000000000
+      internalID: 9062767351649985024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_74
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 104
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a3a5150b3de83070800000000000000
+      internalID: 8086473968687883171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_75
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 98
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b92b6a0f47d40c20800000000000000
+      internalID: 3171896772052855218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_76
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 90
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1cfecf6439d1b090800000000000000
+      internalID: -8020390642132780003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_77
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 93
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1da812ee21aa32750800000000000000
+      internalID: 6279049303765912273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_78
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 89
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 572276ea7e407d720800000000000000
+      internalID: 2870768680581931637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_79
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 92
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1128075e5e3e45ed0800000000000000
+      internalID: -2426063722709482991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_80
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 90
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d7086a91b0537f50800000000000000
+      internalID: 6877929779654821843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_81
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 93
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e90cad17fd758310800000000000000
+      internalID: 1406668958931356135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_82
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 88
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3909c264a4326f3f0800000000000000
+      internalID: -867467076310364013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_83
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 97
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee6cdf7a2e98ddea0800000000000000
+      internalID: -5846365134682994962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_84
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 91
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4d47cdb42257cd60800000000000000
+      internalID: 7910381588255821135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_85
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 98
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22198365c18ac0430800000000000000
+      internalID: 3750557429351878946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_86
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 91
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 721be22b66b6b16e0800000000000000
+      internalID: -1865779531794697945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_87
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 94
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e76e1930fbad179d0800000000000000
+      internalID: -2778198981177383298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_88
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 89
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e62f0d5725bfed0b0800000000000000
+      internalID: -5701843746621951378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_89
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 98
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b2df64765d0d86b0800000000000000
+      internalID: -5292559322118630730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_90
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 92
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 243a0c130683a6110800000000000000
+      internalID: 1254877431978828610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_91
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 78
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca2a871ef0171f5a0800000000000000
+      internalID: -6489281275042946388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_92
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 77
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e880778a73a397980800000000000000
+      internalID: -8540731207607449458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_93
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 77
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 568ce72c313f762a0800000000000000
+      internalID: -6744154650771011483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_94
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 78
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e50c4da7fde53ba0800000000000000
+      internalID: -6109715671438064158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_95
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 78
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b7f8e0f76f1f7920800000000000000
+      internalID: 2990143208881190832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_96
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 76
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37b4c549d5175a080800000000000000
+      internalID: -9176804018962543757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_97
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 83
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b27c4bb2056e7480800000000000000
+      internalID: -8899564751230831944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_98
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 83
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 099c991c6f89acb60800000000000000
+      internalID: 7767188692931299728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_99
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 79
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0650c0e2525bf4030800000000000000
+      internalID: 3481200208271639904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_100
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 79
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e802cbb47784bf80800000000000000
+      internalID: -8091693695041926938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_101
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 77
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8866c88c06a845120800000000000000
+      internalID: 2401696649581454984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_102
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 45
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5e9a8bee531e91e0800000000000000
+      internalID: -2189291070455898529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_103
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 26
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2b599671369aed60800000000000000
+      internalID: 7920308033871764267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_104
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 48
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53fa0781baff484d0800000000000000
+      internalID: -3133098330428494027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_105
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 45
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39f5cf2877fc5c760800000000000000
+      internalID: 7477610868524212115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_106
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 26
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da084b31238594890800000000000000
+      internalID: -7473345134542421843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_107
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 48
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 006dd3f024979f320800000000000000
+      internalID: 2592236385158944256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_108
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 45
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adda7478b01af60c0800000000000000
+      internalID: -4580265225126171174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_109
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 26
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36778cc10bbba9050800000000000000
+      internalID: 5808161034519213923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_110
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 48
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 740e3a53d52edeae0800000000000000
+      internalID: -1518308609394220985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_111
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 26
+        width: 24
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f456d62e8a384f520800000000000000
+      internalID: 2734955635097298255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_112
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 48
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebd371d9c3c1e78b0800000000000000
+      internalID: -5152649877006107202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_113
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 26
+        width: 24
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b7571e7db1fe54e0800000000000000
+      internalID: -1990888189084608586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_114
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 48
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 839799b3f3e28aaf0800000000000000
+      internalID: -385006919022446280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_115
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 45
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b30f4263809a74540800000000000000
+      internalID: 4992144564696707131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_116
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 26
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a03ac1d276f1b8a00800000000000000
+      internalID: 759735490141004554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_117
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 48
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18c45cba776c59cf0800000000000000
+      internalID: -246072387336582015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_118
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 45
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0925db88630863020800000000000000
+      internalID: 2321183629666767504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_119
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 26
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ca2d53e22ef28510800000000000000
+      internalID: 1550080647565748931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_120
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 48
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5eeaafd5ba190a5a0800000000000000
+      internalID: -6512044895975592219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_121
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 25
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 745af1faf704d8350800000000000000
+      internalID: 6020539194007332167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_122
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 34
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0491aa58e2aa8f740800000000000000
+      internalID: 5186082087704860992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_123
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 25
+        width: 20
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c73ccca72cd3f2050800000000000000
+      internalID: 5777904752432825212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_124
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 25
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f6e9372d4c22cb20800000000000000
+      internalID: 3153131398994978546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_125
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 34
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: baefc656591f8a5d0800000000000000
+      internalID: -3050923123589448021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_126
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 25
+        width: 20
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c46bfefcf8332e930800000000000000
+      internalID: 4170952897660433996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_127
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 25
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd653b714496a5f80800000000000000
+      internalID: -8117059637205575972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_128
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 34
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b320b30b59b9dc1e0800000000000000
+      internalID: -2175911977740991941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_129
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 28
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01be402af9a5eac50800000000000000
+      internalID: 6678374939101555472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_130
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 34
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec1d44be56ed8c0d0800000000000000
+      internalID: -3402224989158190642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_131
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 34
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62b2ce6d66478ef50800000000000000
+      internalID: 6910901613241314086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_132
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 28
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77c546c41c6c853d0800000000000000
+      internalID: -3217603400243585929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_133
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 34
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51b0044d82470ad70800000000000000
+      internalID: 9052362969723177749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_134
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 34
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 107f62af21cc39a00800000000000000
+      internalID: 762177143834081025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_135
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 28
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5045beb6428007c0800000000000000
+      internalID: -4107139619803021218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_136
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 25
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a1be65ab11e9c910800000000000000
+      internalID: 1858263830122901925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_137
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 32
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22be3cfed598762c0800000000000000
+      internalID: -4438427871202776286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_138
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 28
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea770caf863dbb7a0800000000000000
+      internalID: -6360257600893716562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_139
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 25
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d6a1c2d00b6ee110800000000000000
+      internalID: 1292087794381989591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_140
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 32
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bda351e78d755ad0800000000000000
+      internalID: -2714125177866441288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_141
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 28
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9219cfd2ad38a6500800000000000000
+      internalID: 390269290818605353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_142
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 13
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fc5337d74e129150800000000000000
+      internalID: 5877793757573897458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_143
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 13
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9a27ece723eec410800000000000000
+      internalID: 1499385486578756253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_144
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 13
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1c05e09a95370780800000000000000
+      internalID: -8716939615780140003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_145
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 19
+        width: 19
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9d9007ad57855000800000000000000
+      internalID: 24074209323949467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_146
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 13
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79b43175f450692c0800000000000000
+      internalID: -4425343745523496041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_147
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 13
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 336706c63fef37a30800000000000000
+      internalID: 4211990397970314803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_148
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 13
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d57fcf50694b3b090800000000000000
+      internalID: -8019867954978162851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreiro_sheet_149
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 13
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76a5d2e25b2507c50800000000000000
+      internalID: 6660914786998245991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Guerreiro_sheet_0: -7702304348316543199
+      Guerreiro_sheet_1: -1801248675061342854
+      Guerreiro_sheet_10: 4204501405274106580
+      Guerreiro_sheet_100: -8091693695041926938
+      Guerreiro_sheet_101: 2401696649581454984
+      Guerreiro_sheet_102: -2189291070455898529
+      Guerreiro_sheet_103: 7920308033871764267
+      Guerreiro_sheet_104: -3133098330428494027
+      Guerreiro_sheet_105: 7477610868524212115
+      Guerreiro_sheet_106: -7473345134542421843
+      Guerreiro_sheet_107: 2592236385158944256
+      Guerreiro_sheet_108: -4580265225126171174
+      Guerreiro_sheet_109: 5808161034519213923
+      Guerreiro_sheet_11: 5354945505483808356
+      Guerreiro_sheet_110: -1518308609394220985
+      Guerreiro_sheet_111: 2734955635097298255
+      Guerreiro_sheet_112: -5152649877006107202
+      Guerreiro_sheet_113: -1990888189084608586
+      Guerreiro_sheet_114: -385006919022446280
+      Guerreiro_sheet_115: 4992144564696707131
+      Guerreiro_sheet_116: 759735490141004554
+      Guerreiro_sheet_117: -246072387336582015
+      Guerreiro_sheet_118: 2321183629666767504
+      Guerreiro_sheet_119: 1550080647565748931
+      Guerreiro_sheet_12: 8862442063039400434
+      Guerreiro_sheet_120: -6512044895975592219
+      Guerreiro_sheet_121: 6020539194007332167
+      Guerreiro_sheet_122: 5186082087704860992
+      Guerreiro_sheet_123: 5777904752432825212
+      Guerreiro_sheet_124: 3153131398994978546
+      Guerreiro_sheet_125: -3050923123589448021
+      Guerreiro_sheet_126: 4170952897660433996
+      Guerreiro_sheet_127: -8117059637205575972
+      Guerreiro_sheet_128: -2175911977740991941
+      Guerreiro_sheet_129: 6678374939101555472
+      Guerreiro_sheet_13: 5386008289245942060
+      Guerreiro_sheet_130: -3402224989158190642
+      Guerreiro_sheet_131: 6910901613241314086
+      Guerreiro_sheet_132: -3217603400243585929
+      Guerreiro_sheet_133: 9052362969723177749
+      Guerreiro_sheet_134: 762177143834081025
+      Guerreiro_sheet_135: -4107139619803021218
+      Guerreiro_sheet_136: 1858263830122901925
+      Guerreiro_sheet_137: -4438427871202776286
+      Guerreiro_sheet_138: -6360257600893716562
+      Guerreiro_sheet_139: 1292087794381989591
+      Guerreiro_sheet_14: -830351846318194444
+      Guerreiro_sheet_140: -2714125177866441288
+      Guerreiro_sheet_141: 390269290818605353
+      Guerreiro_sheet_142: 5877793757573897458
+      Guerreiro_sheet_143: 1499385486578756253
+      Guerreiro_sheet_144: -8716939615780140003
+      Guerreiro_sheet_145: 24074209323949467
+      Guerreiro_sheet_146: -4425343745523496041
+      Guerreiro_sheet_147: 4211990397970314803
+      Guerreiro_sheet_148: -8019867954978162851
+      Guerreiro_sheet_149: 6660914786998245991
+      Guerreiro_sheet_15: 6072461023096178158
+      Guerreiro_sheet_16: 1078350561638479147
+      Guerreiro_sheet_17: -3179278539878133763
+      Guerreiro_sheet_18: 6618646091135228520
+      Guerreiro_sheet_19: -1363262518911543794
+      Guerreiro_sheet_2: -603485841489061360
+      Guerreiro_sheet_20: -2774610440830551191
+      Guerreiro_sheet_21: -6149507695256529504
+      Guerreiro_sheet_22: 176961031796424888
+      Guerreiro_sheet_23: 849677814555037673
+      Guerreiro_sheet_24: -3391689457051888632
+      Guerreiro_sheet_25: -7943678968516689760
+      Guerreiro_sheet_26: 8354799786762034215
+      Guerreiro_sheet_27: -3947657313771994337
+      Guerreiro_sheet_28: -3097351962195060397
+      Guerreiro_sheet_29: -4873431170049979427
+      Guerreiro_sheet_3: -4098759726392374272
+      Guerreiro_sheet_30: 2839486829369236005
+      Guerreiro_sheet_31: -7483028285357135202
+      Guerreiro_sheet_32: 7109455163494964273
+      Guerreiro_sheet_33: -4477912093333603940
+      Guerreiro_sheet_34: 4273399771977440374
+      Guerreiro_sheet_35: -3854365875571461118
+      Guerreiro_sheet_36: -556938570701591799
+      Guerreiro_sheet_37: 2710448666306462901
+      Guerreiro_sheet_38: -3766396267377768840
+      Guerreiro_sheet_39: -3586743623688756348
+      Guerreiro_sheet_4: 2709964895934980870
+      Guerreiro_sheet_40: -5260564974318743134
+      Guerreiro_sheet_41: -6974429768859347301
+      Guerreiro_sheet_42: -5171815691524654408
+      Guerreiro_sheet_43: 5047037402148133339
+      Guerreiro_sheet_44: 1826477185792743546
+      Guerreiro_sheet_45: -1997474737642874578
+      Guerreiro_sheet_46: 2883663860924820544
+      Guerreiro_sheet_47: 63400621539409618
+      Guerreiro_sheet_48: -1256649122309775541
+      Guerreiro_sheet_49: -7386183114125449145
+      Guerreiro_sheet_5: -5024270105836130485
+      Guerreiro_sheet_50: -6297032438235316971
+      Guerreiro_sheet_51: 3781505261484158913
+      Guerreiro_sheet_52: 5780624287955359393
+      Guerreiro_sheet_53: 4674684747396484677
+      Guerreiro_sheet_54: -7547840725412258989
+      Guerreiro_sheet_55: -4839625944096753687
+      Guerreiro_sheet_56: 5394583868061912371
+      Guerreiro_sheet_57: 6611523381597471990
+      Guerreiro_sheet_58: 5173893600264945297
+      Guerreiro_sheet_59: -7546965829050627694
+      Guerreiro_sheet_6: 3902976660969408251
+      Guerreiro_sheet_60: 536971886267613836
+      Guerreiro_sheet_61: 5065515738355359539
+      Guerreiro_sheet_62: 8768413457210127924
+      Guerreiro_sheet_63: 3852651234580817710
+      Guerreiro_sheet_64: 8436532163338066667
+      Guerreiro_sheet_65: 3597406343403177361
+      Guerreiro_sheet_66: -7729426555921739153
+      Guerreiro_sheet_67: 9066325266034191695
+      Guerreiro_sheet_68: -6456800342730630178
+      Guerreiro_sheet_69: 3235533660475560500
+      Guerreiro_sheet_7: -6374208685799119839
+      Guerreiro_sheet_70: 6031619226872691435
+      Guerreiro_sheet_71: 4010690472663516749
+      Guerreiro_sheet_72: -3525544093116324808
+      Guerreiro_sheet_73: 9062767351649985024
+      Guerreiro_sheet_74: 8086473968687883171
+      Guerreiro_sheet_75: 3171896772052855218
+      Guerreiro_sheet_76: -8020390642132780003
+      Guerreiro_sheet_77: 6279049303765912273
+      Guerreiro_sheet_78: 2870768680581931637
+      Guerreiro_sheet_79: -2426063722709482991
+      Guerreiro_sheet_8: 2128890549591282834
+      Guerreiro_sheet_80: 6877929779654821843
+      Guerreiro_sheet_81: 1406668958931356135
+      Guerreiro_sheet_82: -867467076310364013
+      Guerreiro_sheet_83: -5846365134682994962
+      Guerreiro_sheet_84: 7910381588255821135
+      Guerreiro_sheet_85: 3750557429351878946
+      Guerreiro_sheet_86: -1865779531794697945
+      Guerreiro_sheet_87: -2778198981177383298
+      Guerreiro_sheet_88: -5701843746621951378
+      Guerreiro_sheet_89: -5292559322118630730
+      Guerreiro_sheet_9: -5765310760159065917
+      Guerreiro_sheet_90: 1254877431978828610
+      Guerreiro_sheet_91: -6489281275042946388
+      Guerreiro_sheet_92: -8540731207607449458
+      Guerreiro_sheet_93: -6744154650771011483
+      Guerreiro_sheet_94: -6109715671438064158
+      Guerreiro_sheet_95: 2990143208881190832
+      Guerreiro_sheet_96: -9176804018962543757
+      Guerreiro_sheet_97: -8899564751230831944
+      Guerreiro_sheet_98: 7767188692931299728
+      Guerreiro_sheet_99: 3481200208271639904
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
