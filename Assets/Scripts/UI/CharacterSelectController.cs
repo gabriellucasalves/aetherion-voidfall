@@ -45,7 +45,7 @@ public class CharacterSelectController : MonoBehaviour
         if (SceneTransitionManager.Instance != null)
             SceneTransitionManager.Instance.ClearFade();
 
-        _heroes = CharacterCatalog.All();
+        _heroes = CharacterCatalog.Playable();
         BuildUi();
         if (_heroes.Length > 0)
             Select(_heroes[0]);
@@ -54,16 +54,11 @@ public class CharacterSelectController : MonoBehaviour
     void BuildUi()
     {
         var canvas = UiKit.CreateCanvas(transform, "SelectCanvas");
-        UiKit.Label(canvas.transform, "ESCOLHA SEU HERÓI", 42, new Vector2(0f, 430f), MenuTheme.CelestialGold, new Vector2(1200f, 70f));
+        UiKit.Label(canvas.transform, "O GUERREIRO", 42, new Vector2(0f, 430f), MenuTheme.CelestialGold, new Vector2(1200f, 70f));
 
         _cardBackgrounds = new Image[_heroes.Length];
-        float startX = -(_heroes.Length - 1) * 280f;
         for (int i = 0; i < _heroes.Length; i++)
-        {
-            var hero = _heroes[i];
-            float x = startX + i * 560f;
-            _cardBackgrounds[i] = BuildCard(canvas.transform, hero, new Vector2(x, 140f));
-        }
+            _cardBackgrounds[i] = BuildCard(canvas.transform, _heroes[i], new Vector2(0f, 140f));
 
         // painel de detalhes: descrição à esquerda, barras de atributos à direita
         var detail = UiKit.Panel(canvas.transform, "Detalhe", new Vector2(1240f, 280f), new Vector2(0f, -220f), MenuTheme.Panel);
@@ -106,13 +101,12 @@ public class CharacterSelectController : MonoBehaviour
 
     Image BuildCard(Transform parent, CharacterData hero, Vector2 position)
     {
-        var panel = UiKit.Panel(parent, hero.DisplayName, new Vector2(320f, 380f), position, MenuTheme.Panel);
+        var panel = UiKit.Panel(parent, hero.DisplayName, new Vector2(380f, 420f), position, MenuTheme.Panel);
 
-        // vitrine escura com filete na cor do herói
-        var frame = UiKit.Panel(panel.transform, "Vitrine", new Vector2(210f, 210f), new Vector2(0f, 60f), new Color(0.03f, 0.02f, 0.06f, 0.95f));
-        UiKit.Panel(frame.transform, "Filete", new Vector2(210f, 4f), new Vector2(0f, -103f), hero.Accent);
+        var frame = UiKit.Panel(panel.transform, "Vitrine", new Vector2(250f, 250f), new Vector2(0f, 60f), new Color(0.03f, 0.02f, 0.06f, 0.95f));
+        UiKit.Panel(frame.transform, "Filete", new Vector2(250f, 4f), new Vector2(0f, -123f), hero.Accent);
 
-        var portrait = HeroPortrait.Attach(frame.transform, hero.Id, new Vector2(0f, 4f), 195f);
+        var portrait = HeroPortrait.Attach(frame.transform, hero.Id, new Vector2(0f, 4f), 230f);
         if (portrait == null)
         {
             // herói ainda sem arte: silhueta misteriosa

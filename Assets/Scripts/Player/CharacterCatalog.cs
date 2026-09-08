@@ -2,6 +2,19 @@ using UnityEngine;
 
 public static class CharacterCatalog
 {
+    public static CharacterData[] Playable()
+    {
+        var all = All();
+        var playable = new System.Collections.Generic.List<CharacterData>();
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i] != null && all[i].Id == "guerreiro")
+                playable.Add(all[i]);
+        }
+
+        return playable.Count > 0 ? playable.ToArray() : all;
+    }
+
     public static CharacterData[] All()
     {
         var loaded = Resources.LoadAll<CharacterData>("Characters");

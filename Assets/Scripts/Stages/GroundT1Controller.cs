@@ -92,7 +92,7 @@ public class GroundT1Controller : MonoBehaviour
         if (GameManager.Instance != null && GameManager.Instance.SelectedHero != null)
             return GameManager.Instance.SelectedHero;
 
-        var all = CharacterCatalog.All();
+        var all = CharacterCatalog.Playable();
         var fallback = all.Length > 0 ? all[0] : null;
         if (GameManager.Instance != null)
             GameManager.Instance.SelectHero(fallback);
