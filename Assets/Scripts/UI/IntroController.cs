@@ -59,9 +59,9 @@ public class IntroController : MonoBehaviour
         _body = UiKit.Label(frame.transform, "", 34, Vector2.zero, MenuTheme.SoftIvory, new Vector2(960f, 260f));
 
         _dots = UiKit.Label(canvas.transform, "", 26, new Vector2(0f, -200f), new Color(1f, 1f, 1f, 0.8f), new Vector2(600f, 40f));
-        _hint = UiKit.Label(canvas.transform, "Espaço para continuar", 18, new Vector2(0f, -280f), new Color(1f, 1f, 1f, 0.55f), new Vector2(800f, 40f));
-        UiKit.Button(canvas.transform, "CONTINUAR", new Vector2(-140f, -380f), new Vector2(240f, 64f), Advance);
-        UiKit.Button(canvas.transform, "PULAR", new Vector2(140f, -380f), new Vector2(200f, 64f), GoToSelect);
+        _hint = UiKit.Label(canvas.transform, "Toque para continuar", 18, new Vector2(0f, -240f), new Color(1f, 1f, 1f, 0.55f), new Vector2(800f, 40f));
+        UiKit.Button(canvas.transform, "CONTINUAR", new Vector2(-140f, -300f), new Vector2(260f, 72f), Advance);
+        UiKit.Button(canvas.transform, "PULAR", new Vector2(140f, -300f), new Vector2(220f, 72f), GoToSelect);
 
         RefreshDots();
     }

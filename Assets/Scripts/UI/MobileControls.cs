@@ -3,25 +3,23 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// Pad mobile: joystick à esquerda (andar + pular para cima) e, à direita,
-// ícone de espada (atacar) e de escudo (defender). No WebGL o Unity não
-// marca o aparelho como "mobile", então a detecção vai pelo navegador.
+// Pad mobile:
+//  - metade esquerda invisível: qualquer toque vira joystick (andar / pular para cima)
+//  - direita: só a espada ataca e só o escudo defende
 public class MobileControls : MonoBehaviour
 {
     public static float Move { get; private set; }
     public static bool AttackHeld { get; private set; }
     public static bool BlockHeld { get; private set; }
     public static bool IsVisible { get; private set; }
-    public static bool JumpHeld => _jumpButton || _stickJump;
+    public static bool JumpHeld => _stickJump;
 
-    static bool _jumpButton;
     static bool _stickJump;
     static bool _jumpPressed;
     static bool _forcedOn;
     static Sprite _circle;
     static Sprite _sword;
     static Sprite _shield;
-    static Sprite _jumpArrow;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
@@ -68,6 +66,7 @@ public class MobileControls : MonoBehaviour
             return;
 
         UiKit.EnsureEventSystem();
+        Input.multiTouchEnabled = true;
 
         var canvasGo = new GameObject("MobileCanvas");
         canvasGo.transform.SetParent(owner, false);
@@ -77,22 +76,17 @@ public class MobileControls : MonoBehaviour
         var scaler = canvasGo.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 1f; // prioriza altura — botões ficam grandes no celular
+        scaler.matchWidthOrHeight = 1f;
         canvasGo.AddComponent<GraphicRaycaster>();
+        canvasGo.AddComponent<SafeAreaFit>();
 
         var pad = canvasGo.AddComponent<MobileControls>();
         pad.Build(canvasGo.transform);
         pad.ApplyVisibility(ShouldShow());
     }
 
-    void Start()
-    {
-        Input.multiTouchEnabled = true;
-    }
-
     void Update()
     {
-        // primeiro toque no WebGL liga o pad mesmo se o user-agent falhar
         if (!IsVisible && Input.touchCount > 0)
         {
             _forcedOn = true;
@@ -103,7 +97,6 @@ public class MobileControls : MonoBehaviour
     void OnDisable()
     {
         Move = 0f;
-        _jumpButton = false;
         _stickJump = false;
         AttackHeld = false;
         BlockHeld = false;
@@ -119,35 +112,41 @@ public class MobileControls : MonoBehaviour
 
     void Build(Transform parent)
     {
-        BuildStick(parent);
-        BuildJump(parent);
+        BuildLeftZone(parent);
 
-        var sword = IconButton(parent, "Espada", SwordSprite(), new Vector2(1f, 0f), new Vector2(-168f, 248f), 168f,
-            new Color(0.18f, 0.1f, 0.22f, 0.82f));
+        var sword = IconButton(parent, "Espada", SwordSprite(), new Vector2(1f, 0f), new Vector2(-210f, 430f), 250f,
+            new Color(0.18f, 0.1f, 0.22f, 0.88f));
         Hold(sword, () => AttackHeld = true, () => AttackHeld = false);
 
-        var shield = IconButton(parent, "Escudo", ShieldSprite(), new Vector2(1f, 0f), new Vector2(-168f, 78f), 148f,
-            new Color(0.08f, 0.14f, 0.28f, 0.82f));
+        var shield = IconButton(parent, "Escudo", ShieldSprite(), new Vector2(1f, 0f), new Vector2(-210f, 160f), 230f,
+            new Color(0.08f, 0.14f, 0.28f, 0.88f));
         Hold(shield, () => BlockHeld = true, () => BlockHeld = false);
     }
 
-    void BuildStick(Transform parent)
+    void BuildLeftZone(Transform parent)
     {
-        var baseImg = Circle(parent, "Joystick", new Vector2(0f, 0f), new Vector2(210f, 210f), 240f,
-            new Color(1f, 1f, 1f, 0.16f));
-        var knob = Circle(baseImg.transform, "Knob", new Vector2(0.5f, 0.5f), Vector2.zero, 108f,
-            new Color(0.93f, 0.78f, 0.38f, 0.95f));
-        var stick = baseImg.gameObject.AddComponent<VirtualStick>();
-        stick.Setup(knob.rectTransform, 92f);
-    }
+        var zone = new GameObject("ZonaEsquerda");
+        zone.transform.SetParent(parent, false);
+        var image = zone.AddComponent<Image>();
+        image.sprite = UiKit.WhiteSprite();
+        image.color = new Color(1f, 1f, 1f, 0f); // barreira invisível, só captura o toque
+        image.raycastTarget = true;
+        var rect = zone.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0f, 0f);
+        rect.anchorMax = new Vector2(0.5f, 0.86f);
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
 
-    void BuildJump(Transform parent)
-    {
-        var jump = IconButton(parent, "Pulo", JumpSprite(), new Vector2(0f, 0f), new Vector2(430f, 92f), 110f,
-            new Color(0.16f, 0.12f, 0.22f, 0.8f));
-        Hold(jump,
-            () => { _jumpButton = true; _jumpPressed = true; },
-            () => _jumpButton = false);
+        var visual = Circle(zone.transform, "Joystick", new Vector2(0.5f, 0.5f), Vector2.zero, 220f,
+            new Color(1f, 1f, 1f, 0.22f));
+        visual.raycastTarget = false;
+        visual.gameObject.SetActive(false);
+        var knob = Circle(visual.transform, "Knob", new Vector2(0.5f, 0.5f), Vector2.zero, 96f,
+            new Color(0.93f, 0.78f, 0.38f, 0.95f));
+        knob.raycastTarget = false;
+
+        var stick = zone.AddComponent<FloatingStick>();
+        stick.Setup(visual.rectTransform, knob.rectTransform);
     }
 
     static Image IconButton(Transform parent, string name, Sprite icon, Vector2 anchor, Vector2 position, float size, Color bg)
@@ -159,12 +158,10 @@ public class MobileControls : MonoBehaviour
         iconImage.sprite = icon;
         iconImage.raycastTarget = false;
         iconImage.preserveAspect = true;
-        var rect = iconGo.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(size * 0.62f, size * 0.62f);
-        rect.anchoredPosition = Vector2.zero;
+        var iconRect = iconGo.GetComponent<RectTransform>();
+        iconRect.anchorMin = iconRect.anchorMax = iconRect.pivot = new Vector2(0.5f, 0.5f);
+        iconRect.sizeDelta = new Vector2(size * 0.62f, size * 0.62f);
+        iconRect.anchoredPosition = Vector2.zero;
         return image;
     }
 
@@ -177,8 +174,7 @@ public class MobileControls : MonoBehaviour
         image.color = color;
         image.raycastTarget = true;
         var rect = go.GetComponent<RectTransform>();
-        rect.anchorMin = anchor;
-        rect.anchorMax = anchor;
+        rect.anchorMin = rect.anchorMax = anchor;
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.sizeDelta = new Vector2(diameter, diameter);
         rect.anchoredPosition = position;
@@ -284,29 +280,6 @@ public class MobileControls : MonoBehaviour
         return _shield;
     }
 
-    static Sprite JumpSprite()
-    {
-        if (_jumpArrow != null)
-            return _jumpArrow;
-        string[] art =
-        {
-            "......w.......",
-            ".....www......",
-            "....wwwww.....",
-            "...wwwwwww....",
-            "..www.w.www...",
-            "......w.......",
-            "......w.......",
-            "......w.......",
-            "......w.......",
-            "......w.......",
-        };
-        _jumpArrow = PixelSprite(art, ch => ch == 'w'
-            ? new Color32(245, 236, 210, 255)
-            : new Color32(0, 0, 0, 0));
-        return _jumpArrow;
-    }
-
     static Sprite PixelSprite(string[] art, System.Func<char, Color32> paint)
     {
         int height = art.Length;
@@ -353,41 +326,73 @@ public class MobileControls : MonoBehaviour
         }
     }
 
-    class VirtualStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+    class FloatingStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
     {
+        RectTransform _visual;
         RectTransform _knob;
-        float _range;
+        Vector2 _origin;
+        int _pointer = -1;
 
-        public void Setup(RectTransform knob, float range)
+        public void Setup(RectTransform visual, RectTransform knob)
         {
+            _visual = visual;
             _knob = knob;
-            _range = range;
         }
 
-        public void OnPointerDown(PointerEventData eventData) => OnDrag(eventData);
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            _pointer = eventData.pointerId;
+            _origin = eventData.position;
+            if (_visual != null)
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    transform as RectTransform, eventData.position, eventData.pressEventCamera, out var local);
+                _visual.anchoredPosition = local;
+                _visual.gameObject.SetActive(true);
+                if (_knob != null)
+                    _knob.anchoredPosition = Vector2.zero;
+            }
+
+            Apply(Vector2.zero);
+        }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (_knob == null)
+            if (_pointer != eventData.pointerId && _pointer != -1)
                 return;
 
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                transform as RectTransform, eventData.position, eventData.pressEventCamera, out var local);
-            local = Vector2.ClampMagnitude(local, _range);
-            _knob.anchoredPosition = local;
-            Move = Mathf.Abs(local.x) < 14f ? 0f : Mathf.Clamp(local.x / _range, -1f, 1f);
-            bool jump = local.y > _range * 0.48f;
-            if (jump && !_stickJump)
-                _jumpPressed = true;
-            _stickJump = jump;
+            float radius = Mathf.Min(Screen.width, Screen.height) * 0.16f;
+            Vector2 delta = eventData.position - _origin;
+            Vector2 clamped = Vector2.ClampMagnitude(delta, radius);
+            Apply(clamped / radius);
+
+            if (_knob != null)
+            {
+                float uiRange = 88f;
+                _knob.anchoredPosition = (clamped / radius) * uiRange;
+            }
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (_knob != null)
-                _knob.anchoredPosition = Vector2.zero;
+            if (_pointer != eventData.pointerId && _pointer != -1)
+                return;
+            _pointer = -1;
             Move = 0f;
             _stickJump = false;
+            if (_visual != null)
+                _visual.gameObject.SetActive(false);
+            if (_knob != null)
+                _knob.anchoredPosition = Vector2.zero;
+        }
+
+        static void Apply(Vector2 dir)
+        {
+            Move = Mathf.Abs(dir.x) < 0.12f ? 0f : Mathf.Clamp(dir.x, -1f, 1f);
+            bool jump = dir.y > 0.38f;
+            if (jump && !_stickJump)
+                _jumpPressed = true;
+            _stickJump = jump;
         }
     }
 }

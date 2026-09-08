@@ -345,7 +345,7 @@ public class GroundT1Controller : MonoBehaviour
     static string HintFor(CharacterData hero)
     {
         if (MobileControls.ShouldShow() || MobileControls.IsVisible)
-            return "Joystick anda  ·  seta pula  ·  espada ataca  ·  escudo defende";
+            return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: espada / escudo";
         if (hero != null && hero.Id == "mago")
             return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   ESC pausa";
         if (hero != null && hero.Id == "anjo")

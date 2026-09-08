@@ -80,6 +80,7 @@ public class MainMenuController : MonoBehaviour
         scaler.referenceResolution = new Vector2(1920f, 1080f);
         scaler.matchWidthOrHeight = 0.5f;
         canvasObject.AddComponent<GraphicRaycaster>();
+        canvasObject.AddComponent<SafeAreaFit>();
 
         // título com sombra dupla pra dar peso
         CreateLabel(canvasObject.transform, "AETHERION: VOIDFALL", 68, new Vector2(4f, 296f), new Color(0f, 0f, 0f, 0.7f));

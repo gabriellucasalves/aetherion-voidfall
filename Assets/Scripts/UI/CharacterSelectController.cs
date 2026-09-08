@@ -82,8 +82,8 @@ public class CharacterSelectController : MonoBehaviour
             _statValues[i] = UiKit.Label(detail.transform, "", 16, new Vector2(615f, y), new Color(1f, 1f, 1f, 0.7f), new Vector2(80f, 30f));
         }
 
-        UiKit.Button(canvas.transform, "ESCOLHER", new Vector2(0f, -420f), new Vector2(280f, 68f), OpenConfirm);
-        UiKit.Button(canvas.transform, "VOLTAR", new Vector2(-420f, -420f), new Vector2(200f, 68f), () =>
+        UiKit.Button(canvas.transform, "ESCOLHER", new Vector2(0f, -340f), new Vector2(300f, 76f), OpenConfirm);
+        UiKit.Button(canvas.transform, "VOLTAR", new Vector2(-420f, -340f), new Vector2(220f, 76f), () =>
         {
             SceneTransitionManager.Instance.Load(GameScenes.MainMenu);
         });
