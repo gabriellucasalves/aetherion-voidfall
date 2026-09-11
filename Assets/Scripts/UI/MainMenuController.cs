@@ -83,8 +83,8 @@ public class MainMenuController : MonoBehaviour
         canvasObject.AddComponent<SafeAreaFit>();
 
         // título com sombra dupla pra dar peso
-        CreateLabel(canvasObject.transform, "AETHERION: VOIDFALL", 68, new Vector2(4f, 296f), new Color(0f, 0f, 0f, 0.7f));
-        CreateLabel(canvasObject.transform, "AETHERION: VOIDFALL", 68, new Vector2(0f, 300f), MenuTheme.CelestialGold);
+        CreateLabel(canvasObject.transform, "AETHERION: APOCALIPSE", 58, new Vector2(4f, 296f), new Color(0f, 0f, 0f, 0.7f));
+        CreateLabel(canvasObject.transform, "AETHERION: APOCALIPSE", 58, new Vector2(0f, 300f), MenuTheme.CelestialGold);
         CreateLabel(canvasObject.transform, "O Véu caiu. O Vazio avança.", 24, new Vector2(0f, 218f), MenuTheme.SoftIvory);
 
         // guerreiro animado montando guarda ao lado do menu
@@ -107,7 +107,7 @@ public class MainMenuController : MonoBehaviour
             "Shift — dash      ESC — pausa\n\n" +
             "Volume e remapeamento virão nas próximas etapas.");
         _creditsPanel = CreateInfoPanel(canvasObject.transform, "CRÉDITOS",
-            "Aetherion: Voidfall\nProtótipo acadêmico de Desenvolvimento de Games.\n\n" +
+            "Aetherion: Apocalipse\nProtótipo acadêmico de Desenvolvimento de Games.\n\n" +
             "Pixel art autoral (Aseprite + geração procedural)\nAction platformer · Dark fantasy · Terra e espaço");
         _soonPanel = CreateInfoPanel(canvasObject.transform, "PRÓXIMA ETAPA", "Menu funcional.\nA escolha de herói será a Etapa 3.");
     }
@@ -221,7 +221,7 @@ public class MainMenuController : MonoBehaviour
     void DrawImguiMenu()
     {
         var box = new Rect(Screen.width * 0.5f - 220f, Screen.height * 0.5f - 180f, 440f, 360f);
-        GUI.Box(box, "AETHERION: VOIDFALL");
+        GUI.Box(box, "AETHERION: APOCALIPSE");
 
         if (GUI.Button(new Rect(box.x + 70f, box.y + 80f, 300f, 50f), "JOGAR"))
         {

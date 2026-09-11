@@ -50,7 +50,7 @@ public class IntroController : MonoBehaviour
             SceneTransitionManager.Instance.ClearFade();
 
         var canvas = UiKit.CreateCanvas(transform, "IntroCanvas");
-        UiKit.Label(canvas.transform, "AETHERION: VOIDFALL", 30, new Vector2(0f, 380f), MenuTheme.CelestialGold, new Vector2(1400f, 60f));
+        UiKit.Label(canvas.transform, "AETHERION: APOCALIPSE", 30, new Vector2(0f, 380f), MenuTheme.CelestialGold, new Vector2(1400f, 60f));
 
         // moldura do texto: painel escuro com filete dourado em cima e embaixo
         var frame = UiKit.Panel(canvas.transform, "Moldura", new Vector2(1080f, 300f), new Vector2(0f, 20f), MenuTheme.Panel);

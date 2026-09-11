@@ -8,6 +8,7 @@ public class GroundT1Controller : MonoBehaviour
     SimpleEnemySpawner _spawner;
     GameObject _pausePanel;
     GameObject _defeatPanel;
+    GameObject _demoCompletePanel;
     Text _hudName;
     Text _lifeText;
     Text _shieldText;
@@ -20,6 +21,7 @@ public class GroundT1Controller : MonoBehaviour
     const float BarWidth = 360f;
     bool _paused;
     bool _dead;
+    bool _demoDone;
     int _kills;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -69,7 +71,7 @@ public class GroundT1Controller : MonoBehaviour
                 _waveBanner.gameObject.SetActive(false);
         }
 
-        if (_dead)
+        if (_dead || _demoDone)
             return;
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -82,9 +84,32 @@ public class GroundT1Controller : MonoBehaviour
         if (_waveBanner == null)
             return;
 
-        _waveBanner.text = "ONDA " + wave + "   ·   " + enemyName.ToUpper();
+        int total = _spawner != null ? _spawner.TotalWaves : SimpleEnemySpawner.DemoWaveCount;
+        _waveBanner.text = "ONDA " + wave + "/" + total + "   ·   " + enemyName.ToUpper();
         _waveBanner.gameObject.SetActive(true);
         _waveBannerLeft = 2.4f;
+    }
+
+    public void OnDemoComplete()
+    {
+        if (_dead || _demoDone)
+            return;
+
+        _demoDone = true;
+        Time.timeScale = 0f;
+        if (_player != null)
+        {
+            _player.SetLocked(true);
+            var combat = _player.GetComponent<PlayerCombat>();
+            if (combat != null)
+                combat.SetLocked(true);
+        }
+        if (_spawner != null)
+            _spawner.SetLocked(true);
+        if (_pausePanel != null)
+            _pausePanel.SetActive(false);
+        if (_demoCompletePanel != null)
+            _demoCompletePanel.SetActive(true);
     }
 
     CharacterData ResolveHero()
@@ -256,6 +281,19 @@ public class GroundT1Controller : MonoBehaviour
         UiKit.Label(_defeatPanel.transform, "VOCÊ CAIU", 36, new Vector2(0f, 50f), MenuTheme.CelestialGold, new Vector2(500f, 50f));
         UiKit.Button(_defeatPanel.transform, "MENU", new Vector2(0f, -60f), new Vector2(240f, 58f), BackToMenu);
         _defeatPanel.SetActive(false);
+
+        _demoCompletePanel = UiKit.Panel(canvas.transform, "DemoFim", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.78f)).gameObject;
+        UiKit.Panel(_demoCompletePanel.transform, "Caixa", new Vector2(720f, 360f), Vector2.zero, MenuTheme.Panel);
+        UiKit.Label(_demoCompletePanel.transform, "PARABÉNS!", 40, new Vector2(0f, 110f), MenuTheme.CelestialGold, new Vector2(640f, 52f));
+        UiKit.Label(
+            _demoCompletePanel.transform,
+            "Você concluiu a demo de Aetherion: Voidfall.\nObrigado por jogar — novas fases e ajustes vêm a caminho.",
+            20,
+            new Vector2(0f, 20f),
+            MenuTheme.SoftIvory,
+            new Vector2(640f, 90f));
+        UiKit.Button(_demoCompletePanel.transform, "MENU", new Vector2(0f, -100f), new Vector2(240f, 58f), BackToMenu);
+        _demoCompletePanel.SetActive(false);
     }
 
     public void RegisterKill()
@@ -276,7 +314,9 @@ public class GroundT1Controller : MonoBehaviour
         string kit = hero != null ? hero.AbilityName.ToUpper() : "";
         if (_hudName != null)
         {
-            string wave = _spawner != null && _spawner.Wave > 0 ? "   ·   ONDA " + _spawner.Wave : "";
+            string wave = "";
+            if (_spawner != null && _spawner.Wave > 0)
+                wave = "   ·   ONDA " + _spawner.Wave + "/" + _spawner.TotalWaves;
             _hudName.text = name + "   ·   " + kit + "   ·   ☠ " + _kills + wave;
         }
 
@@ -314,12 +354,17 @@ public class GroundT1Controller : MonoBehaviour
 
     public void RequestPause()
     {
+        if (_dead || _demoDone)
+            return;
         if (!_paused)
             TogglePause();
     }
 
     void TogglePause()
     {
+        if (_dead || _demoDone)
+            return;
+
         _paused = !_paused;
         Time.timeScale = _paused ? 0f : 1f;
         if (_player != null)

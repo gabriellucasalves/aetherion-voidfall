@@ -4,6 +4,8 @@ public class SimpleEnemySpawner : MonoBehaviour
 {
     public const int MaxAlive = 12;
     public const float Interval = 1.25f;
+    public const int DemoWaveCount = 3;
+    public const int EnemiesPerWave = 15;
 
     Transform _player;
     Collider2D _playerCollider;
@@ -13,13 +15,16 @@ public class SimpleEnemySpawner : MonoBehaviour
     EnemyData _zombie;
     float _timer;
     bool _locked;
+    bool _finished;
     int _wave;
     int _toSpawn;
     float _waveDelay;
     EnemyData _waveType;
 
     public int Wave => _wave;
+    public int TotalWaves => DemoWaveCount;
     public string WaveName => _waveType != null ? _waveType.DisplayName : "";
+    public bool Finished => _finished;
 
     public void Setup(Transform player, StageData stage)
     {
@@ -39,7 +44,7 @@ public class SimpleEnemySpawner : MonoBehaviour
 
     void Update()
     {
-        if (_locked || _player == null)
+        if (_locked || _finished || _player == null)
             return;
 
         // intervalo entre ondas
@@ -51,11 +56,16 @@ public class SimpleEnemySpawner : MonoBehaviour
             return;
         }
 
-        // onda esgotada: espera limpar pra chamar a próxima
+        // onda esgotada: limpa o campo e avança (ou encerra a demo)
         if (_toSpawn <= 0)
         {
             if (CountAlive() == 0)
-                _waveDelay = 2.4f;
+            {
+                if (_wave >= DemoWaveCount)
+                    FinishDemo();
+                else
+                    _waveDelay = 2.4f;
+            }
             return;
         }
 
@@ -71,31 +81,41 @@ public class SimpleEnemySpawner : MonoBehaviour
         _toSpawn--;
     }
 
-    // ondas em ordem de classe: esqueletos -> ghouls -> zumbis -> repete mais forte
+    // demo: 3 ondas fixas — esqueletos → ghouls → zumbis (15 cada)
     void StartWave()
     {
+        if (_wave >= DemoWaveCount)
+        {
+            FinishDemo();
+            return;
+        }
+
         _wave++;
         int cycle = (_wave - 1) % 3;
-        int bonus = (_wave - 1) / 3;
         if (cycle == 0)
-        {
             _waveType = _skeleton;
-            _toSpawn = 5 + bonus * 2;
-        }
         else if (cycle == 1)
-        {
             _waveType = _ghoul;
-            _toSpawn = 6 + bonus * 2;
-        }
         else
-        {
             _waveType = _zombie;
-            _toSpawn = 4 + bonus;
-        }
+
+        _toSpawn = EnemiesPerWave;
 
         var stage = FindFirstObjectByType<GroundT1Controller>();
         if (stage != null)
             stage.AnnounceWave(_wave, _waveType.DisplayName);
+    }
+
+    void FinishDemo()
+    {
+        if (_finished)
+            return;
+
+        _finished = true;
+        _locked = true;
+        var stage = FindFirstObjectByType<GroundT1Controller>();
+        if (stage != null)
+            stage.OnDemoComplete();
     }
 
     int CountAlive()
