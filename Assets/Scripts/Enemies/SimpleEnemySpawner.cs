@@ -5,7 +5,7 @@ public class SimpleEnemySpawner : MonoBehaviour
     public const int MaxAlive = 12;
     public const float Interval = 1.25f;
     public const int DemoWaveCount = 3;
-    public const int EnemiesPerWave = 15;
+    public const int EnemiesPerWave = 7;
 
     Transform _player;
     Collider2D _playerCollider;
