@@ -159,17 +159,16 @@ public class PlayerCombat : MonoBehaviour
 
     void FireArcher()
     {
-        // Fase 1: mesma pipeline de projéteis do antigo "anjo"; Fase 2 refinará a flecha.
+        // Fase 2: 1 flecha reta na facing (leque fica para o especial da Fase 3).
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
-        FireArrow(Rotate(facing, 11f), new Vector3(0f, 0.22f, 0f));
         FireArrow(facing, Vector3.zero);
-        FireArrow(Rotate(facing, -11f), new Vector3(0f, -0.2f, 0f));
-        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.55f, _ability.Color, 4);
+        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.55f, _ability.Color, 3);
         ArmCooldown();
     }
 
     void Dash()
     {
+        // Esquiva do arqueiro: impulso curto na facing com i-frames breves (PlayerController).
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         float agility = Mathf.Max(40, _hero.Agility);
         float speed = 18f + agility * 0.06f;
@@ -177,9 +176,7 @@ public class PlayerCombat : MonoBehaviour
         float iFrames = 0.24f;
         _player.StartDash(facing, speed, duration, iFrames);
         _dashCooldown = 0.82f * (70f / agility);
-        PixelBurst.Spawn(transform.position, new Color(1f, 0.9f, 0.45f), 6);
-        if (_health != null)
-            _health.IsInvulnerable = true;
+        PixelBurst.Spawn(transform.position, new Color(0.95f, 0.72f, 0.28f), 5);
     }
 
     void SpawnOrb(Vector2 direction, Transform target)

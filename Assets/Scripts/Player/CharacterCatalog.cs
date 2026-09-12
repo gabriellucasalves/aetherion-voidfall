@@ -4,11 +4,15 @@ public static class CharacterCatalog
 {
     public static CharacterData[] Playable()
     {
+        // Demo WebGL: Guerreiro permanece; Arqueiro entra só para testar kit em T1.
+        // Mago fica de fora até a demo permitir os 3 (sem retrato/sheet nova).
         var all = All();
         var playable = new System.Collections.Generic.List<CharacterData>();
         for (int i = 0; i < all.Length; i++)
         {
-            if (all[i] != null && all[i].Id == "guerreiro")
+            if (all[i] == null)
+                continue;
+            if (all[i].Id == "guerreiro" || all[i].Id == "arqueiro")
                 playable.Add(all[i]);
         }
 
@@ -36,7 +40,7 @@ public static class CharacterCatalog
             Make("arqueiro", "Arqueiro", "Mobilidade / equilíbrio",
                 "Arco leve e aljava. Esquiva, avança e dispara flechas à distância.",
                 100, 50, 65, 45, 100, 80,
-                "Flecha", "Leque curto de flechas na frente. Shift dá um dash curto.",
+                "Flecha", "Uma flecha reta na direção do olhar. Shift dá um dash curto com i-frames.",
                 new Color(0.93f, 0.82f, 0.42f))
         };
     }
