@@ -43,11 +43,11 @@ public class AbilityData : ScriptableObject
         return data;
     }
 
-    public static AbilityData CreatePena()
+    public static AbilityData CreateFlecha()
     {
         var data = CreateInstance<AbilityData>();
-        data.Id = "pena";
-        data.DisplayName = "Pena Celestial";
+        data.Id = "flecha";
+        data.DisplayName = "Flecha";
         data.Range = 7.1f;
         data.Cooldown = 0.4f;
         data.ProjectileSpeed = 17.5f;
@@ -62,8 +62,8 @@ public class AbilityData : ScriptableObject
     {
         if (hero != null && hero.Id == "mago")
             return CreateOrbe();
-        if (hero != null && hero.Id == "anjo")
-            return CreatePena();
+        if (hero != null && hero.Id == "arqueiro")
+            return CreateFlecha();
         return CreateCorte();
     }
 }

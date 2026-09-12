@@ -33,10 +33,10 @@ public static class CharacterCatalog
                 80, 20, 100, 20, 50, 60,
                 "Orbe Arcano", "Dispara energia automaticamente contra inimigos próximos.",
                 new Color(0.45f, 0.55f, 0.95f)),
-            Make("anjo", "Anjo", "Mobilidade / equilíbrio",
-                "Asas e armadura leve. Esquiva, avança e corta com penas celestiais.",
+            Make("arqueiro", "Arqueiro", "Mobilidade / equilíbrio",
+                "Arco leve e aljava. Esquiva, avança e dispara flechas à distância.",
                 100, 50, 65, 45, 100, 80,
-                "Pena Celestial", "Leque de penas na frente. Shift dá um dash curto.",
+                "Flecha", "Leque curto de flechas na frente. Shift dá um dash curto.",
                 new Color(0.93f, 0.82f, 0.42f))
         };
     }
