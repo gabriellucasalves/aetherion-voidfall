@@ -11,16 +11,24 @@ public class PlayerCombat : MonoBehaviour
     Vector3 _shieldRest;
     float _cooldownLeft;
     float _dashCooldown;
+    float _specialCooldown;
+    float _specialAnimLeft;
     float _attackLeft;
     bool _locked;
     bool _blocking;
+
+    public const float SpecialCooldown = 6.5f;
+    public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldown);
+    public float SpecialCooldownMax => SpecialCooldown;
+    public bool SpecialReady => IsArcher && _specialCooldown <= 0f;
+    public bool IsSpecialAttacking => _specialAnimLeft > 0f;
 
     public bool IsBlocking => CanBlock && _blocking && !_locked;
     public bool IsAttacking => _attackLeft > 0f;
     public ShieldSystem Shield => _shield;
     public bool IsWarrior => _hero != null && _hero.Id == "guerreiro";
     public bool IsMage => _hero != null && _hero.Id == "mago";
-    public bool IsAngel => _hero != null && _hero.Id == "anjo";
+    public bool IsArcher => _hero != null && _hero.Id == "arqueiro";
     public bool CanBlock => IsWarrior;
     public AbilityData Ability => _ability;
 
@@ -33,7 +41,7 @@ public class PlayerCombat : MonoBehaviour
             float range = _ability.Range;
             if (IsMage)
                 range += _hero.Power * 0.028f;
-            if (IsAngel)
+            if (IsArcher)
                 range += _hero.Agility * 0.012f;
             return range;
         }
@@ -89,10 +97,21 @@ public class PlayerCombat : MonoBehaviour
     void Update()
     {
         if (_locked || _ability == null || _hero == null)
+        {
+            // Descarta toques mobile de especial/dash enquanto travado (pausa/morte).
+            if (MobileControls.IsVisible)
+            {
+                MobileControls.ConsumeSpecialPressed();
+                MobileControls.ConsumeDashPressed();
+            }
             return;
+        }
 
         _cooldownLeft -= Time.deltaTime;
         _dashCooldown -= Time.deltaTime;
+        _specialCooldown -= Time.deltaTime;
+        if (_specialAnimLeft > 0f)
+            _specialAnimLeft -= Time.deltaTime;
         if (_attackLeft > 0f)
             _attackLeft -= Time.deltaTime;
 
@@ -112,8 +131,11 @@ public class PlayerCombat : MonoBehaviour
 
         _blocking = false;
 
-        if (IsAngel && WantsDash() && _dashCooldown <= 0f && _player != null)
+        if (IsArcher && WantsDash() && _dashCooldown <= 0f && _player != null)
             Dash();
+
+        if (IsArcher && WantsSpecial() && _specialCooldown <= 0f)
+            FireArcherSpecial();
 
         if (IsMage)
         {
@@ -124,8 +146,8 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        if (IsAngel && WantsAttack() && _cooldownLeft <= 0f)
-            FireAngel();
+        if (IsArcher && WantsAttack() && _cooldownLeft <= 0f)
+            FireArcher();
     }
 
     void FireWarrior()
@@ -157,18 +179,34 @@ public class PlayerCombat : MonoBehaviour
         ArmCooldown();
     }
 
-    void FireAngel()
+    void FireArcher()
     {
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
-        FireFeather(Rotate(facing, 11f), new Vector3(0f, 0.22f, 0f));
-        FireFeather(facing, Vector3.zero);
-        FireFeather(Rotate(facing, -11f), new Vector3(0f, -0.2f, 0f));
-        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.55f, _ability.Color, 4);
+        FireArrow(facing, Vector3.zero, DamageForShot(), _ability.Color);
+        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.55f, _ability.Color, 3);
+        _attackLeft = 0.28f;
         ArmCooldown();
+    }
+
+    void FireArcherSpecial()
+    {
+        // Rajada em leque curto (5 flechas) — único especial da Fase 3.
+        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        Color tint = new Color(0.55f, 0.95f, 0.62f); // verde-celeste (não pena)
+        float damage = DamageForShot() * 0.5f;
+        float[] angles = { -20f, -10f, 0f, 10f, 20f };
+        float[] yOff = { 0.28f, 0.14f, 0f, -0.14f, -0.28f };
+        for (int i = 0; i < angles.Length; i++)
+            FireArrow(Rotate(facing, angles[i]), new Vector3(0f, yOff[i], 0f), damage, tint);
+        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.6f, tint, 8);
+        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.35f, new Color(0.95f, 0.85f, 0.35f), 4);
+        _specialAnimLeft = 0.42f;
+        _specialCooldown = SpecialCooldown;
     }
 
     void Dash()
     {
+        // Esquiva do arqueiro: impulso curto na facing com i-frames breves (PlayerController).
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         float agility = Mathf.Max(40, _hero.Agility);
         float speed = 18f + agility * 0.06f;
@@ -176,9 +214,7 @@ public class PlayerCombat : MonoBehaviour
         float iFrames = 0.24f;
         _player.StartDash(facing, speed, duration, iFrames);
         _dashCooldown = 0.82f * (70f / agility);
-        PixelBurst.Spawn(transform.position, new Color(1f, 0.9f, 0.45f), 6);
-        if (_health != null)
-            _health.IsInvulnerable = true;
+        PixelBurst.Spawn(transform.position, new Color(0.95f, 0.72f, 0.28f), 5);
     }
 
     void SpawnOrb(Vector2 direction, Transform target)
@@ -187,11 +223,11 @@ public class PlayerCombat : MonoBehaviour
         go.AddComponent<HomingOrb>().Launch(direction, _ability, DamageForShot(), target);
     }
 
-    void FireFeather(Vector2 direction, Vector3 localOffset)
+    void FireArrow(Vector2 direction, Vector3 localOffset, float damage, Color color)
     {
-        var go = MakeShot("Pena", _ability.ProjectileSize, _ability.Color);
+        var go = MakeShot("Flecha", _ability.ProjectileSize, color);
         go.transform.position += localOffset;
-        go.AddComponent<Projectile>().Launch(direction, _ability, DamageForShot());
+        go.AddComponent<Projectile>().Launch(direction, _ability, damage);
     }
 
     GameObject MakeShot(string name, Vector2 size, Color color)
@@ -223,7 +259,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (IsMage)
             return _hero.Power * _ability.DamageScale;
-        if (IsAngel)
+        if (IsArcher)
             return (_hero.Strength * 0.55f + _hero.Power * 0.45f) * _ability.DamageScale;
         return _hero.Strength * _ability.DamageScale;
     }
@@ -232,7 +268,7 @@ public class PlayerCombat : MonoBehaviour
     {
         float attackSpeed = Mathf.Max(20, _hero.AttackSpeed);
         float cooldown = _ability.Cooldown * (40f / attackSpeed);
-        if (IsAngel)
+        if (IsArcher)
             cooldown *= 80f / Mathf.Max(40, _hero.Agility);
         _cooldownLeft = cooldown;
     }
@@ -305,7 +341,16 @@ public class PlayerCombat : MonoBehaviour
 
     static bool WantsDash()
     {
+        if (MobileControls.IsVisible && MobileControls.ConsumeDashPressed())
+            return true;
         return Input.GetKeyDown(KeyCode.LeftShift)
             || Input.GetKeyDown(KeyCode.RightShift);
+    }
+
+    static bool WantsSpecial()
+    {
+        if (MobileControls.IsVisible && MobileControls.ConsumeSpecialPressed())
+            return true;
+        return Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Q);
     }
 }

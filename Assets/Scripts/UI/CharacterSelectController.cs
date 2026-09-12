@@ -54,11 +54,14 @@ public class CharacterSelectController : MonoBehaviour
     void BuildUi()
     {
         var canvas = UiKit.CreateCanvas(transform, "SelectCanvas");
-        UiKit.Label(canvas.transform, "O GUERREIRO", 42, new Vector2(0f, 430f), MenuTheme.CelestialGold, new Vector2(1200f, 70f));
+        UiKit.Label(canvas.transform, "ESCOLHA SEU HERÓI", 42, new Vector2(0f, 430f), MenuTheme.CelestialGold, new Vector2(1200f, 70f));
 
         _cardBackgrounds = new Image[_heroes.Length];
+        // 3 cards cabem com 360px de passo; 2 cards usam o mesmo layout centrado.
+        float spacing = _heroes.Length >= 3 ? 400f : 420f;
+        float startX = -(_heroes.Length - 1) * spacing * 0.5f;
         for (int i = 0; i < _heroes.Length; i++)
-            _cardBackgrounds[i] = BuildCard(canvas.transform, _heroes[i], new Vector2(0f, 140f));
+            _cardBackgrounds[i] = BuildCard(canvas.transform, _heroes[i], new Vector2(startX + i * spacing, 140f));
 
         // painel de detalhes: descrição à esquerda, barras de atributos à direita
         var detail = UiKit.Panel(canvas.transform, "Detalhe", new Vector2(1240f, 280f), new Vector2(0f, -220f), MenuTheme.Panel);
@@ -101,12 +104,15 @@ public class CharacterSelectController : MonoBehaviour
 
     Image BuildCard(Transform parent, CharacterData hero, Vector2 position)
     {
-        var panel = UiKit.Panel(parent, hero.DisplayName, new Vector2(380f, 420f), position, MenuTheme.Panel);
+        // Com 3 heróis o card fica um pouco mais estreito para caber na tela.
+        float cardW = _heroes.Length >= 3 ? 360f : 380f;
+        float frameSize = _heroes.Length >= 3 ? 230f : 250f;
+        var panel = UiKit.Panel(parent, hero.DisplayName, new Vector2(cardW, 420f), position, MenuTheme.Panel);
 
-        var frame = UiKit.Panel(panel.transform, "Vitrine", new Vector2(250f, 250f), new Vector2(0f, 60f), new Color(0.03f, 0.02f, 0.06f, 0.95f));
-        UiKit.Panel(frame.transform, "Filete", new Vector2(250f, 4f), new Vector2(0f, -123f), hero.Accent);
+        var frame = UiKit.Panel(panel.transform, "Vitrine", new Vector2(frameSize, frameSize), new Vector2(0f, 60f), new Color(0.03f, 0.02f, 0.06f, 0.95f));
+        UiKit.Panel(frame.transform, "Filete", new Vector2(frameSize, 4f), new Vector2(0f, -(frameSize * 0.5f - 2f)), hero.Accent);
 
-        var portrait = HeroPortrait.Attach(frame.transform, hero.Id, new Vector2(0f, 4f), 230f);
+        var portrait = HeroPortrait.Attach(frame.transform, hero.Id, new Vector2(0f, 4f), frameSize - 20f);
         if (portrait == null)
         {
             // herói ainda sem arte: silhueta misteriosa

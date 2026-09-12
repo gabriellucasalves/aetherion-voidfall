@@ -43,18 +43,19 @@ public class AbilityData : ScriptableObject
         return data;
     }
 
-    public static AbilityData CreatePena()
+    public static AbilityData CreateFlecha()
     {
+        // Média distância: projétil rápido; dano híbrido Str/Power é aplicado em PlayerCombat.
         var data = CreateInstance<AbilityData>();
-        data.Id = "pena";
-        data.DisplayName = "Pena Celestial";
-        data.Range = 7.1f;
-        data.Cooldown = 0.4f;
-        data.ProjectileSpeed = 17.5f;
-        data.Lifetime = 0.52f;
-        data.ProjectileSize = new Vector2(0.72f, 0.16f);
-        data.DamageScale = 0.18f;
-        data.Color = new Color(1f, 0.88f, 0.42f);
+        data.Id = "flecha";
+        data.DisplayName = "Flecha";
+        data.Range = 7.4f;
+        data.Cooldown = 0.38f;
+        data.ProjectileSpeed = 19f;
+        data.Lifetime = 0.48f;
+        data.ProjectileSize = new Vector2(0.78f, 0.14f);
+        data.DamageScale = 0.36f;
+        data.Color = new Color(1f, 0.82f, 0.35f);
         return data;
     }
 
@@ -62,8 +63,8 @@ public class AbilityData : ScriptableObject
     {
         if (hero != null && hero.Id == "mago")
             return CreateOrbe();
-        if (hero != null && hero.Id == "anjo")
-            return CreatePena();
+        if (hero != null && hero.Id == "arqueiro")
+            return CreateFlecha();
         return CreateCorte();
     }
 }
