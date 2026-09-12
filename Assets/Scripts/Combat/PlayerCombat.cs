@@ -36,6 +36,7 @@ public class PlayerCombat : MonoBehaviour
         IsArcher ? ArcherSpecialCooldown : (IsMage ? MageSpecialCooldown : WarriorSpecialCooldown);
     public bool SpecialReady => _specialCooldownLeft <= 0f;
     public bool IsCastingSpecial => _specialAnimLeft > 0f;
+    public bool IsSpecialAttacking => _specialAnimLeft > 0f;
     public ShieldSystem Shield => _shield;
     public bool IsWarrior => _hero != null && _hero.Id == "guerreiro";
     public bool IsMage => _hero != null && _hero.Id == "mago";
@@ -120,7 +121,11 @@ public class PlayerCombat : MonoBehaviour
 
         _cooldownLeft -= Time.deltaTime;
         _dashCooldown -= Time.deltaTime;
+<<<<<<< HEAD
         _specialCooldownLeft -= Time.deltaTime;
+=======
+        _specialCooldown -= Time.deltaTime;
+>>>>>>> b28ba96 (Fase 4: sheet pixel-art e ArqueiroVisual na pipeline do Guerreiro.)
         if (_specialAnimLeft > 0f)
             _specialAnimLeft -= Time.deltaTime;
         if (_attackLeft > 0f)
@@ -257,6 +262,7 @@ public class PlayerCombat : MonoBehaviour
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         FireArrow(facing, Vector3.zero, DamageForShot(), _ability.Color);
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.55f, _ability.Color, 3);
+        _attackLeft = 0.28f;
         ArmCooldown();
     }
 
@@ -272,9 +278,14 @@ public class PlayerCombat : MonoBehaviour
             FireArrow(Rotate(facing, angles[i]), new Vector3(0f, yOff[i], 0f), damage, tint);
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.6f, tint, 8);
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.35f, new Color(0.95f, 0.85f, 0.35f), 4);
+<<<<<<< HEAD
         _attackLeft = 0.35f;
         _specialAnimLeft = 0.45f;
         _specialCooldownLeft = ArcherSpecialCooldown;
+=======
+        _specialAnimLeft = 0.42f;
+        _specialCooldown = SpecialCooldown;
+>>>>>>> b28ba96 (Fase 4: sheet pixel-art e ArqueiroVisual na pipeline do Guerreiro.)
     }
 
     void Dash()
