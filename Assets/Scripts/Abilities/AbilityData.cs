@@ -33,12 +33,13 @@ public class AbilityData : ScriptableObject
         var data = CreateInstance<AbilityData>();
         data.Id = "orbe";
         data.DisplayName = "Orbe Arcano";
-        data.Range = 8.6f;
-        data.Cooldown = 0.64f;
-        data.ProjectileSpeed = 9.5f;
-        data.Lifetime = 1.35f;
-        data.ProjectileSize = new Vector2(0.42f, 0.42f);
-        data.DamageScale = 0.3f;
+        // Kit mago: alcance longo, Power alto. CD real ≈ Cooldown * (40 / AttackSpeed).
+        data.Range = 9.2f;
+        data.Cooldown = 0.55f;
+        data.ProjectileSpeed = 11f;
+        data.Lifetime = 1.7f;
+        data.ProjectileSize = new Vector2(0.5f, 0.5f);
+        data.DamageScale = 0.36f; // dano = Power * DamageScale (100 → 36); Guerreiro melee ainda bate mais forte
         data.Color = new Color(0.45f, 0.72f, 1f);
         return data;
     }

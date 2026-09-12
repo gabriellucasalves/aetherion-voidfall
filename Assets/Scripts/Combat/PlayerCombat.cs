@@ -139,12 +139,16 @@ public class PlayerCombat : MonoBehaviour
 
     void FireMage()
     {
+        // Auto: só com inimigo em AttackRange. Clique/J: força tiro mesmo sem alvo.
         var target = FindNearest(transform, transform.position, AttackRange);
-        Vector2 direction = _player != null ? _player.Facing : Vector2.right;
+        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        Vector2 direction = facing;
         Transform lockOn = null;
         if (target != null)
         {
-            direction = target.transform.position - transform.position;
+            direction = (Vector2)(target.transform.position - transform.position);
+            if (direction.sqrMagnitude < 0.01f)
+                direction = facing;
             lockOn = target.transform;
         }
         else if (!WantsAttack())
@@ -152,9 +156,13 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
+        if (direction.sqrMagnitude < 0.01f)
+            direction = Vector2.right;
+        direction.Normalize();
+
         SpawnOrb(direction, lockOn);
-        PixelBurst.Spawn(transform.position + (Vector3)direction.normalized * 0.5f, _ability.Color, 3);
-        _attackLeft = 0.36f; // alimenta MagoVisual cast
+        PixelBurst.Spawn(transform.position + (Vector3)direction * 0.5f, _ability.Color, 3);
+        _attackLeft = 0.4f; // MagoVisual cast (4 frames @ ~12 fps)
         ArmCooldown();
     }
 
@@ -184,22 +192,26 @@ public class PlayerCombat : MonoBehaviour
 
     void SpawnOrb(Vector2 direction, Transform target)
     {
-        var go = MakeShot("Orbe", _ability.ProjectileSize, _ability.Color);
+        var go = MakeShot("Orbe", _ability.ProjectileSize, _ability.Color, direction);
+        // Dano = Power * DamageScale (CreateOrbe). HomingOrb trava / re-adquire o alvo.
         go.AddComponent<HomingOrb>().Launch(direction, _ability, DamageForShot(), target);
     }
 
     void FireFeather(Vector2 direction, Vector3 localOffset)
     {
-        var go = MakeShot("Pena", _ability.ProjectileSize, _ability.Color);
+        var go = MakeShot("Pena", _ability.ProjectileSize, _ability.Color, direction);
         go.transform.position += localOffset;
         go.AddComponent<Projectile>().Launch(direction, _ability, DamageForShot());
     }
 
-    GameObject MakeShot(string name, Vector2 size, Color color)
+    GameObject MakeShot(string name, Vector2 size, Color color, Vector2 muzzleDir)
     {
-        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        if (muzzleDir.sqrMagnitude < 0.01f)
+            muzzleDir = _player != null ? _player.Facing : Vector2.right;
+        muzzleDir.Normalize();
+
         var go = new GameObject(name);
-        go.transform.position = transform.position + (Vector3)facing.normalized * 0.55f;
+        go.transform.position = transform.position + (Vector3)muzzleDir * 0.55f;
         var renderer = go.AddComponent<SpriteRenderer>();
         var texture = Texture2D.whiteTexture;
         renderer.sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), texture.width);
@@ -210,6 +222,7 @@ public class PlayerCombat : MonoBehaviour
         var body = go.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
         body.gravityScale = 0f;
+        body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         var collider = go.AddComponent<BoxCollider2D>();
         collider.isTrigger = true;
         collider.size = Vector2.one;
@@ -222,6 +235,7 @@ public class PlayerCombat : MonoBehaviour
 
     float DamageForShot()
     {
+        // Mago: Power * DamageScale (kit de dano à distância). Guerreiro continua em Strength.
         if (IsMage)
             return _hero.Power * _ability.DamageScale;
         if (IsAngel)
