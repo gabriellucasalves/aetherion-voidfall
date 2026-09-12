@@ -132,8 +132,10 @@ public class PlayerCombat : MonoBehaviour
     {
         var go = new GameObject("Corte");
         go.AddComponent<MeleeSlash>().Swing(transform, _ability, DamageForShot());
-        PixelBurst.Spawn(transform.position + (Vector3)_player.Facing * 0.8f, _ability.Color, 3);
-        _attackLeft = 0.42f;
+        Vector3 swingFx = transform.position + (Vector3)_player.Facing * 1.0f + Vector3.up * 0.35f;
+        PixelBurst.Spawn(swingFx, _ability.Color, 6);
+        // 4 frames de ataque a ~12 fps (~0.33s) + hold curto no último frame
+        _attackLeft = 0.40f;
         ArmCooldown();
     }
 
