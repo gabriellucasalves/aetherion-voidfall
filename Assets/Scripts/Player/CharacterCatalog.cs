@@ -4,19 +4,9 @@ public static class CharacterCatalog
 {
     public static CharacterData[] Playable()
     {
-        // Demo WebGL: Guerreiro permanece; Arqueiro entra só para testar kit em T1.
-        // Mago fica de fora até a demo permitir os 3 (sem retrato/sheet nova).
-        var all = All();
-        var playable = new System.Collections.Generic.List<CharacterData>();
-        for (int i = 0; i < all.Length; i++)
-        {
-            if (all[i] == null)
-                continue;
-            if (all[i].Id == "guerreiro" || all[i].Id == "arqueiro")
-                playable.Add(all[i]);
-        }
-
-        return playable.Count > 0 ? playable.ToArray() : all;
+        // Demo WebGL: os 3 heróis jogáveis. Guerreiro e Arqueiro têm sheet;
+        // Mago permanece selecionável com kit intacto (retrato "EM BREVE").
+        return All();
     }
 
     public static CharacterData[] All()
