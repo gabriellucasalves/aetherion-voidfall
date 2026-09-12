@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 public class GroundT1Controller : MonoBehaviour
 {
+    // FASE 1 playtest: ligue true para spawnar o Mago em T1 sem passar pela seleção.
+    // A UI continua só com Guerreiro enquanto UnlockMagoInSelection for false.
+    public const bool ForceMagoForTesting = false;
+
     StageData _stage;
     PlayerController _player;
     SimpleEnemySpawner _spawner;
@@ -114,6 +118,17 @@ public class GroundT1Controller : MonoBehaviour
 
     CharacterData ResolveHero()
     {
+        if (ForceMagoForTesting)
+        {
+            var mago = CharacterCatalog.ById("mago");
+            if (mago != null)
+            {
+                if (GameManager.Instance != null)
+                    GameManager.Instance.SelectHero(mago);
+                return mago;
+            }
+        }
+
         if (GameManager.Instance != null && GameManager.Instance.SelectedHero != null)
             return GameManager.Instance.SelectedHero;
 

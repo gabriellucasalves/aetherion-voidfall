@@ -154,6 +154,7 @@ public class PlayerCombat : MonoBehaviour
 
         SpawnOrb(direction, lockOn);
         PixelBurst.Spawn(transform.position + (Vector3)direction.normalized * 0.5f, _ability.Color, 3);
+        _attackLeft = 0.36f; // alimenta MagoVisual cast
         ArmCooldown();
     }
 

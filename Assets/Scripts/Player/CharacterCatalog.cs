@@ -2,13 +2,45 @@ using UnityEngine;
 
 public static class CharacterCatalog
 {
+    // FASE 5: ligar para liberar o Mago na tela de seleção.
+    // FASE 1 mantém só o Guerreiro jogável na UI (demo T1 intacta).
+    public const bool UnlockMagoInSelection = false;
+
+    /// <summary>
+    /// Force-test do Mago em T1 (seleção ainda trava no Guerreiro):
+    /// <code>
+    /// GameManager.EnsureExists().SelectHero(CharacterCatalog.ById("mago"));
+    /// SceneTransitionManager.Instance.Load(GameScenes.GroundT1);
+    /// </code>
+    /// Ou ligue <c>GroundT1Controller.ForceMagoForTesting</c>.
+    /// </summary>
+    public static CharacterData ById(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+            return null;
+
+        var all = All();
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i] != null && all[i].Id == id)
+                return all[i];
+        }
+
+        return null;
+    }
+
     public static CharacterData[] Playable()
     {
         var all = All();
         var playable = new System.Collections.Generic.List<CharacterData>();
         for (int i = 0; i < all.Length; i++)
         {
-            if (all[i] != null && all[i].Id == "guerreiro")
+            if (all[i] == null)
+                continue;
+            if (all[i].Id == "guerreiro")
+                playable.Add(all[i]);
+            // FASE 5 — desbloquear mago na seleção:
+            else if (UnlockMagoInSelection && all[i].Id == "mago")
                 playable.Add(all[i]);
         }
 
@@ -28,10 +60,11 @@ public static class CharacterCatalog
                 150, 90, 20, 80, 30, 40,
                 "Corte de Energia", "Golpe de espada curto. Segura o escudo para bloquear.",
                 new Color(0.72f, 0.74f, 0.82f)),
+            // Kit: vida baixa, Power alto, alcance longo (range vem de AbilityData.CreateOrbe).
             Make("mago", "Mago", "Dano mágico / área",
                 "Manto e cajado. Queima o Vazio à distância com orbes arcanos.",
                 80, 20, 100, 20, 50, 60,
-                "Orbe Arcano", "Dispara energia automaticamente contra inimigos próximos.",
+                "Orbe Arcano", "Busca o inimigo mais perto sozinho; clique / J força o tiro.",
                 new Color(0.45f, 0.55f, 0.95f)),
             Make("anjo", "Anjo", "Mobilidade / equilíbrio",
                 "Asas e armadura leve. Esquiva, avança e corta com penas celestiais.",
