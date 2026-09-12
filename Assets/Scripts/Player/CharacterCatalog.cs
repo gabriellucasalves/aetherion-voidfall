@@ -40,7 +40,7 @@ public static class CharacterCatalog
             Make("arqueiro", "Arqueiro", "Mobilidade / equilíbrio",
                 "Arco leve e aljava. Esquiva, avança e dispara flechas à distância.",
                 100, 50, 65, 45, 100, 80,
-                "Flecha", "Uma flecha reta na direção do olhar. Shift dá um dash curto com i-frames.",
+                "Flecha", "Flecha reta (clique/J). Shift: dash. L/Q: rajada em leque (CD ~6.5s).",
                 new Color(0.93f, 0.82f, 0.42f))
         };
     }

@@ -11,9 +11,15 @@ public class PlayerCombat : MonoBehaviour
     Vector3 _shieldRest;
     float _cooldownLeft;
     float _dashCooldown;
+    float _specialCooldown;
     float _attackLeft;
     bool _locked;
     bool _blocking;
+
+    public const float SpecialCooldown = 6.5f;
+    public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldown);
+    public float SpecialCooldownMax => SpecialCooldown;
+    public bool SpecialReady => IsArcher && _specialCooldown <= 0f;
 
     public bool IsBlocking => CanBlock && _blocking && !_locked;
     public bool IsAttacking => _attackLeft > 0f;
@@ -89,10 +95,19 @@ public class PlayerCombat : MonoBehaviour
     void Update()
     {
         if (_locked || _ability == null || _hero == null)
+        {
+            // Descarta toques mobile de especial/dash enquanto travado (pausa/morte).
+            if (MobileControls.IsVisible)
+            {
+                MobileControls.ConsumeSpecialPressed();
+                MobileControls.ConsumeDashPressed();
+            }
             return;
+        }
 
         _cooldownLeft -= Time.deltaTime;
         _dashCooldown -= Time.deltaTime;
+        _specialCooldown -= Time.deltaTime;
         if (_attackLeft > 0f)
             _attackLeft -= Time.deltaTime;
 
@@ -114,6 +129,9 @@ public class PlayerCombat : MonoBehaviour
 
         if (IsArcher && WantsDash() && _dashCooldown <= 0f && _player != null)
             Dash();
+
+        if (IsArcher && WantsSpecial() && _specialCooldown <= 0f)
+            FireArcherSpecial();
 
         if (IsMage)
         {
@@ -159,11 +177,25 @@ public class PlayerCombat : MonoBehaviour
 
     void FireArcher()
     {
-        // Fase 2: 1 flecha reta na facing (leque fica para o especial da Fase 3).
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
-        FireArrow(facing, Vector3.zero);
+        FireArrow(facing, Vector3.zero, DamageForShot(), _ability.Color);
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.55f, _ability.Color, 3);
         ArmCooldown();
+    }
+
+    void FireArcherSpecial()
+    {
+        // Rajada em leque curto (5 flechas) — único especial da Fase 3.
+        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        Color tint = new Color(0.55f, 0.95f, 0.62f); // verde-celeste (não pena)
+        float damage = DamageForShot() * 0.5f;
+        float[] angles = { -20f, -10f, 0f, 10f, 20f };
+        float[] yOff = { 0.28f, 0.14f, 0f, -0.14f, -0.28f };
+        for (int i = 0; i < angles.Length; i++)
+            FireArrow(Rotate(facing, angles[i]), new Vector3(0f, yOff[i], 0f), damage, tint);
+        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.6f, tint, 8);
+        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.35f, new Color(0.95f, 0.85f, 0.35f), 4);
+        _specialCooldown = SpecialCooldown;
     }
 
     void Dash()
@@ -185,11 +217,11 @@ public class PlayerCombat : MonoBehaviour
         go.AddComponent<HomingOrb>().Launch(direction, _ability, DamageForShot(), target);
     }
 
-    void FireArrow(Vector2 direction, Vector3 localOffset)
+    void FireArrow(Vector2 direction, Vector3 localOffset, float damage, Color color)
     {
-        var go = MakeShot("Flecha", _ability.ProjectileSize, _ability.Color);
+        var go = MakeShot("Flecha", _ability.ProjectileSize, color);
         go.transform.position += localOffset;
-        go.AddComponent<Projectile>().Launch(direction, _ability, DamageForShot());
+        go.AddComponent<Projectile>().Launch(direction, _ability, damage);
     }
 
     GameObject MakeShot(string name, Vector2 size, Color color)
@@ -303,7 +335,16 @@ public class PlayerCombat : MonoBehaviour
 
     static bool WantsDash()
     {
+        if (MobileControls.IsVisible && MobileControls.ConsumeDashPressed())
+            return true;
         return Input.GetKeyDown(KeyCode.LeftShift)
             || Input.GetKeyDown(KeyCode.RightShift);
+    }
+
+    static bool WantsSpecial()
+    {
+        if (MobileControls.IsVisible && MobileControls.ConsumeSpecialPressed())
+            return true;
+        return Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Q);
     }
 }

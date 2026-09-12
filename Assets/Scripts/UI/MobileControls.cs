@@ -16,10 +16,14 @@ public class MobileControls : MonoBehaviour
 
     static bool _stickJump;
     static bool _jumpPressed;
+    static bool _specialPressed;
+    static bool _dashPressed;
     static bool _forcedOn;
     static Sprite _circle;
     static Sprite _sword;
     static Sprite _shield;
+    static Sprite _special;
+    static Sprite _dash;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
@@ -31,6 +35,22 @@ public class MobileControls : MonoBehaviour
         if (!_jumpPressed)
             return false;
         _jumpPressed = false;
+        return true;
+    }
+
+    public static bool ConsumeSpecialPressed()
+    {
+        if (!_specialPressed)
+            return false;
+        _specialPressed = false;
+        return true;
+    }
+
+    public static bool ConsumeDashPressed()
+    {
+        if (!_dashPressed)
+            return false;
+        _dashPressed = false;
         return true;
     }
 
@@ -100,6 +120,8 @@ public class MobileControls : MonoBehaviour
         _stickJump = false;
         AttackHeld = false;
         BlockHeld = false;
+        _specialPressed = false;
+        _dashPressed = false;
         IsVisible = false;
     }
 
@@ -121,6 +143,15 @@ public class MobileControls : MonoBehaviour
         var shield = IconButton(parent, "Escudo", ShieldSprite(), new Vector2(1f, 0f), new Vector2(-210f, 160f), 230f,
             new Color(0.08f, 0.14f, 0.28f, 0.88f));
         Hold(shield, () => BlockHeld = true, () => BlockHeld = false);
+
+        // Especial (L/Q) e dash (Shift): toque único no mesmo padrão de botão.
+        var special = IconButton(parent, "Especial", SpecialSprite(), new Vector2(1f, 0f), new Vector2(-470f, 300f), 200f,
+            new Color(0.08f, 0.22f, 0.16f, 0.9f));
+        Hold(special, () => _specialPressed = true, () => { });
+
+        var dash = IconButton(parent, "Dash", DashSprite(), new Vector2(1f, 0f), new Vector2(-470f, 100f), 190f,
+            new Color(0.28f, 0.18f, 0.06f, 0.9f));
+        Hold(dash, () => _dashPressed = true, () => { });
     }
 
     void BuildLeftZone(Transform parent)
@@ -214,6 +245,65 @@ public class MobileControls : MonoBehaviour
         texture.filterMode = FilterMode.Bilinear;
         _circle = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
         return _circle;
+    }
+
+    static Sprite SpecialSprite()
+    {
+        if (_special != null)
+            return _special;
+        // arco simples (pixel)
+        string[] art =
+        {
+            "................",
+            "........g.......",
+            ".......g.g......",
+            "......g...g.....",
+            ".....g.....g....",
+            "....g.......g...",
+            "...g.........g..",
+            "...g.........g..",
+            "....g.......g...",
+            ".....g.....g....",
+            "......g...g.....",
+            ".......g.g......",
+            "........g.......",
+            "................",
+            "................",
+            "................",
+        };
+        _special = PixelSprite(art, ch => ch == 'g'
+            ? new Color32(120, 235, 150, 255)
+            : new Color32(0, 0, 0, 0));
+        return _special;
+    }
+
+    static Sprite DashSprite()
+    {
+        if (_dash != null)
+            return _dash;
+        string[] art =
+        {
+            "................",
+            "................",
+            "....yy..........",
+            "...yyyy.........",
+            "..yyyyyy..yy....",
+            ".yyyyyyyyyyyy...",
+            "..yyyyyy..yy....",
+            "...yyyy.........",
+            "....yy..........",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+        };
+        _dash = PixelSprite(art, ch => ch == 'y'
+            ? new Color32(245, 200, 80, 255)
+            : new Color32(0, 0, 0, 0));
+        return _dash;
     }
 
     static Sprite SwordSprite()
