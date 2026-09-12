@@ -12,6 +12,7 @@ public class PlayerCombat : MonoBehaviour
     float _cooldownLeft;
     float _dashCooldown;
     float _specialCooldown;
+    float _specialAnimLeft;
     float _attackLeft;
     bool _locked;
     bool _blocking;
@@ -20,6 +21,7 @@ public class PlayerCombat : MonoBehaviour
     public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldown);
     public float SpecialCooldownMax => SpecialCooldown;
     public bool SpecialReady => IsArcher && _specialCooldown <= 0f;
+    public bool IsSpecialAttacking => _specialAnimLeft > 0f;
 
     public bool IsBlocking => CanBlock && _blocking && !_locked;
     public bool IsAttacking => _attackLeft > 0f;
@@ -108,6 +110,8 @@ public class PlayerCombat : MonoBehaviour
         _cooldownLeft -= Time.deltaTime;
         _dashCooldown -= Time.deltaTime;
         _specialCooldown -= Time.deltaTime;
+        if (_specialAnimLeft > 0f)
+            _specialAnimLeft -= Time.deltaTime;
         if (_attackLeft > 0f)
             _attackLeft -= Time.deltaTime;
 
@@ -180,6 +184,7 @@ public class PlayerCombat : MonoBehaviour
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         FireArrow(facing, Vector3.zero, DamageForShot(), _ability.Color);
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.55f, _ability.Color, 3);
+        _attackLeft = 0.28f;
         ArmCooldown();
     }
 
@@ -195,6 +200,7 @@ public class PlayerCombat : MonoBehaviour
             FireArrow(Rotate(facing, angles[i]), new Vector3(0f, yOff[i], 0f), damage, tint);
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.6f, tint, 8);
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.35f, new Color(0.95f, 0.85f, 0.35f), 4);
+        _specialAnimLeft = 0.42f;
         _specialCooldown = SpecialCooldown;
     }
 

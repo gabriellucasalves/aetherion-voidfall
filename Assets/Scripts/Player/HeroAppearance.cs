@@ -6,6 +6,8 @@ public static class HeroAppearance
     {
         if (hero != null && hero.Id == "guerreiro" && GuerreiroVisual.Attach(parent))
             return;
+        if (hero != null && hero.Id == "arqueiro" && ArqueiroVisual.Attach(parent))
+            return;
 
         Color body = hero != null ? hero.Accent : Color.white;
         Vector2 bodySize = BodySize(hero);
@@ -27,7 +29,7 @@ public static class HeroAppearance
         }
         else if (hero != null && hero.Id == "arqueiro")
         {
-            // Placeholder até ArqueiroVisual + Resources/Arqueiro/ (pipeline do Guerreiro).
+            // Fallback só se Resources/Arqueiro/sheet.png falhar no Attach acima.
             CreateQuad(parent, "Arco", new Vector3(-0.48f, 0.15f, 0f), new Vector2(0.14f, 0.95f), new Color(0.55f, 0.38f, 0.22f));
             CreateQuad(parent, "Corda", new Vector3(-0.38f, 0.15f, 0f), new Vector2(0.04f, 0.78f), new Color(0.85f, 0.8f, 0.65f));
             CreateQuad(parent, "Aljava", new Vector3(0.48f, 0.05f, 0f), new Vector2(0.22f, 0.45f), new Color(0.4f, 0.28f, 0.18f));
