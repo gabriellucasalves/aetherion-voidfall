@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class CharacterCatalog
 {
-    // FASE 5: Mago liberado na seleção junto com o Guerreiro.
+    // FASE 5: Mago liberado na seleção junto com o Guerreiro e o Arqueiro.
     public const bool UnlockMagoInSelection = true;
 
     /// <summary>
@@ -27,8 +27,7 @@ public static class CharacterCatalog
 
     public static CharacterData[] Playable()
     {
-        // Demo WebGL: Guerreiro permanece; Arqueiro entra só para testar kit em T1.
-        // Mago fica de fora até a demo permitir os 3 (sem retrato/sheet nova).
+        // Demo WebGL: Guerreiro + Mago + Arqueiro jogáveis.
         var all = All();
         var playable = new System.Collections.Generic.List<CharacterData>();
         for (int i = 0; i < all.Length; i++)

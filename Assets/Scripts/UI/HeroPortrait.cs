@@ -10,6 +10,7 @@ public static class HeroPortrait
 
     static Sprite[] _guerreiroIdle;
     static Sprite[] _magoIdle;
+    static Sprite[] _arqueiroIdle;
 
     public static Sprite[] GuerreiroIdle()
     {
@@ -19,6 +20,11 @@ public static class HeroPortrait
     public static Sprite[] MagoIdle()
     {
         return IdleFrames(ref _magoIdle, "Mago/sheet");
+    }
+
+    public static Sprite[] ArqueiroIdle()
+    {
+        return IdleFrames(ref _arqueiroIdle, "Arqueiro/sheet");
     }
 
     // frames de idle (células 0..3 do sheet, linha de cima)
@@ -55,6 +61,8 @@ public static class HeroPortrait
             frames = GuerreiroIdle();
         else if (heroId == "mago")
             frames = MagoIdle();
+        else if (heroId == "arqueiro")
+            frames = ArqueiroIdle();
 
         if (frames == null)
             return null;
