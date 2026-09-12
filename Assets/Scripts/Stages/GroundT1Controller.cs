@@ -414,8 +414,8 @@ public class GroundT1Controller : MonoBehaviour
         }
         if (hero != null && hero.Id == "mago")
             return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   L/Q Núcleo Arcano   ·   ESC pausa";
-        if (hero != null && hero.Id == "anjo")
-            return "A/D andar   ·   ESPAÇO pular   ·   clique / J pena   ·   SHIFT dash   ·   ESC pausa";
+        if (hero != null && hero.Id == "arqueiro")
+            return "A/D andar   ·   ESPAÇO pular   ·   clique / J flecha   ·   SHIFT dash   ·   ESC pausa";
         return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q onda   ·   S / K / direito bloqueia   ·   ESC pausa";
     }
 

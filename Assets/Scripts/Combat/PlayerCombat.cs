@@ -34,7 +34,7 @@ public class PlayerCombat : MonoBehaviour
     public ShieldSystem Shield => _shield;
     public bool IsWarrior => _hero != null && _hero.Id == "guerreiro";
     public bool IsMage => _hero != null && _hero.Id == "mago";
-    public bool IsAngel => _hero != null && _hero.Id == "anjo";
+    public bool IsArcher => _hero != null && _hero.Id == "arqueiro";
     public bool CanBlock => IsWarrior;
     public AbilityData Ability => _ability;
 
@@ -47,7 +47,7 @@ public class PlayerCombat : MonoBehaviour
             float range = _ability.Range;
             if (IsMage)
                 range += _hero.Power * 0.028f;
-            if (IsAngel)
+            if (IsArcher)
                 range += _hero.Agility * 0.012f;
             return range;
         }
@@ -135,7 +135,7 @@ public class PlayerCombat : MonoBehaviour
 
         _blocking = false;
 
-        if (IsAngel && WantsDash() && _dashCooldown <= 0f && _player != null)
+        if (IsArcher && WantsDash() && _dashCooldown <= 0f && _player != null)
             Dash();
 
         if (IsMage)
@@ -152,8 +152,8 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        if (IsAngel && WantsAttack() && _cooldownLeft <= 0f)
-            FireAngel();
+        if (IsArcher && WantsAttack() && _cooldownLeft <= 0f)
+            FireArcher();
     }
 
     void FireWarrior()
@@ -236,12 +236,13 @@ public class PlayerCombat : MonoBehaviour
         PixelBurst.Spawn(transform.position + Vector3.up * 0.8f, color, 6);
     }
 
-    void FireAngel()
+    void FireArcher()
     {
+        // Fase 1: mesma pipeline de projéteis do antigo "anjo"; Fase 2 refinará a flecha.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
-        FireFeather(Rotate(facing, 11f), new Vector3(0f, 0.22f, 0f));
-        FireFeather(facing, Vector3.zero);
-        FireFeather(Rotate(facing, -11f), new Vector3(0f, -0.2f, 0f));
+        FireArrow(Rotate(facing, 11f), new Vector3(0f, 0.22f, 0f));
+        FireArrow(facing, Vector3.zero);
+        FireArrow(Rotate(facing, -11f), new Vector3(0f, -0.2f, 0f));
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.55f, _ability.Color, 4);
         ArmCooldown();
     }
@@ -267,9 +268,9 @@ public class PlayerCombat : MonoBehaviour
         go.AddComponent<HomingOrb>().Launch(direction, _ability, DamageForShot(), target);
     }
 
-    void FireFeather(Vector2 direction, Vector3 localOffset)
+    void FireArrow(Vector2 direction, Vector3 localOffset)
     {
-        var go = MakeShot("Pena", _ability.ProjectileSize, _ability.Color, direction);
+        var go = MakeShot("Flecha", _ability.ProjectileSize, _ability.Color, direction);
         go.transform.position += localOffset;
         go.AddComponent<Projectile>().Launch(direction, _ability, DamageForShot());
     }
@@ -308,7 +309,7 @@ public class PlayerCombat : MonoBehaviour
         // Mago: Power * DamageScale (kit de dano à distância). Guerreiro continua em Strength.
         if (IsMage)
             return _hero.Power * _ability.DamageScale;
-        if (IsAngel)
+        if (IsArcher)
             return (_hero.Strength * 0.55f + _hero.Power * 0.45f) * _ability.DamageScale;
         return _hero.Strength * _ability.DamageScale;
     }
@@ -317,7 +318,7 @@ public class PlayerCombat : MonoBehaviour
     {
         float attackSpeed = Mathf.Max(20, _hero.AttackSpeed);
         float cooldown = _ability.Cooldown * (40f / attackSpeed);
-        if (IsAngel)
+        if (IsArcher)
             cooldown *= 80f / Mathf.Max(40, _hero.Agility);
         _cooldownLeft = cooldown;
     }
