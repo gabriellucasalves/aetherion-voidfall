@@ -57,7 +57,7 @@ public class CharacterSelectController : MonoBehaviour
         UiKit.Label(canvas.transform, "ESCOLHA SEU HERÓI", 42, new Vector2(0f, 430f), MenuTheme.CelestialGold, new Vector2(1200f, 70f));
 
         _cardBackgrounds = new Image[_heroes.Length];
-        // Espaça Guerreiro / Mago lado a lado sem sobrepor.
+        // Espaça Guerreiro / Mago / Arqueiro lado a lado sem sobrepor.
         float spacing = 420f;
         float startX = -(_heroes.Length - 1) * spacing * 0.5f;
         for (int i = 0; i < _heroes.Length; i++)
