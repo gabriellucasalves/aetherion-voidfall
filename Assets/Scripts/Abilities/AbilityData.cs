@@ -18,11 +18,12 @@ public class AbilityData : ScriptableObject
         var data = CreateInstance<AbilityData>();
         data.Id = "corte";
         data.DisplayName = "Corte de Energia";
-        data.Range = 1.7f;
-        data.Cooldown = 0.52f;
+        // Janela ~0.28s cobre frames 14–16 do ataque (12 fps); hitbox ativa após delay no MeleeSlash.
+        data.Range = 2.1f;
+        data.Cooldown = 0.48f;
         data.ProjectileSpeed = 0f;
-        data.Lifetime = 0.16f;
-        data.ProjectileSize = new Vector2(1.55f, 0.85f);
+        data.Lifetime = 0.28f;
+        data.ProjectileSize = new Vector2(1.9f, 1.15f);
         data.DamageScale = 0.45f;
         data.Color = new Color(1f, 0.7f, 0.22f);
         return data;
