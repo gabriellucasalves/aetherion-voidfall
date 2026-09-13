@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 public class GroundT1Controller : MonoBehaviour
 {
+    // Fallback de debug (FASE 5: seleção já libera o Mago).
+    // Caminho principal: CharacterCatalog.UnlockMagoInSelection.
+    public const bool ForceMagoForTesting = false;
+
     StageData _stage;
     PlayerController _player;
     SimpleEnemySpawner _spawner;
@@ -114,6 +118,17 @@ public class GroundT1Controller : MonoBehaviour
 
     CharacterData ResolveHero()
     {
+        if (ForceMagoForTesting)
+        {
+            var mago = CharacterCatalog.ById("mago");
+            if (mago != null)
+            {
+                if (GameManager.Instance != null)
+                    GameManager.Instance.SelectHero(mago);
+                return mago;
+            }
+        }
+
         if (GameManager.Instance != null && GameManager.Instance.SelectedHero != null)
             return GameManager.Instance.SelectedHero;
 
@@ -390,9 +405,13 @@ public class GroundT1Controller : MonoBehaviour
     static string HintFor(CharacterData hero)
     {
         if (MobileControls.ShouldShow() || MobileControls.IsVisible)
-            return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: espada / escudo";
+        {
+            if (hero != null && hero.Id == "mago")
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / especial (Núcleo Arcano)";
+            return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo";
+        }
         if (hero != null && hero.Id == "mago")
-            return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   ESC pausa";
+            return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   L/Q Núcleo Arcano   ·   ESC pausa";
         if (hero != null && hero.Id == "anjo")
             return "A/D andar   ·   ESPAÇO pular   ·   clique / J pena   ·   SHIFT dash   ·   ESC pausa";
         return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   S / K / direito bloqueia   ·   ESC pausa";

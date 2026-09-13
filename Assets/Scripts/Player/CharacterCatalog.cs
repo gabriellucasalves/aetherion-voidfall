@@ -2,13 +2,40 @@ using UnityEngine;
 
 public static class CharacterCatalog
 {
+    // FASE 5: Mago liberado na seleção junto com o Guerreiro.
+    public const bool UnlockMagoInSelection = true;
+
+    /// <summary>
+    /// Caminho principal: escolha o Mago na tela de seleção (UnlockMagoInSelection).
+    /// Fallback de debug: <c>GroundT1Controller.ForceMagoForTesting = true</c>
+    /// ou <c>GameManager.EnsureExists().SelectHero(CharacterCatalog.ById("mago"))</c>.
+    /// </summary>
+    public static CharacterData ById(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+            return null;
+
+        var all = All();
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i] != null && all[i].Id == id)
+                return all[i];
+        }
+
+        return null;
+    }
+
     public static CharacterData[] Playable()
     {
         var all = All();
         var playable = new System.Collections.Generic.List<CharacterData>();
         for (int i = 0; i < all.Length; i++)
         {
-            if (all[i] != null && all[i].Id == "guerreiro")
+            if (all[i] == null)
+                continue;
+            if (all[i].Id == "guerreiro")
+                playable.Add(all[i]);
+            else if (UnlockMagoInSelection && all[i].Id == "mago")
                 playable.Add(all[i]);
         }
 
@@ -28,10 +55,12 @@ public static class CharacterCatalog
                 150, 90, 20, 80, 30, 40,
                 "Corte de Energia", "Golpe de espada curto. Segura o escudo para bloquear.",
                 new Color(0.72f, 0.74f, 0.82f)),
+            // Kit: vida baixa, Power alto, alcance longo.
+            // Especial FASE 3: Núcleo Arcano (L/Q) — explosão em área, CD 6.5s.
             Make("mago", "Mago", "Dano mágico / área",
-                "Manto e cajado. Queima o Vazio à distância com orbes arcanos.",
+                "Manto e cajado. Orbe teleguiado à distância; Núcleo Arcano explode em área.",
                 80, 20, 100, 20, 50, 60,
-                "Orbe Arcano", "Dispara energia automaticamente contra inimigos próximos.",
+                "Núcleo Arcano", "Especial (L/Q): explosão arcana em área, CD 6.5s. Orbe básico busca sozinho; clique / J força o tiro.",
                 new Color(0.45f, 0.55f, 0.95f)),
             Make("anjo", "Anjo", "Mobilidade / equilíbrio",
                 "Asas e armadura leve. Esquiva, avança e corta com penas celestiais.",

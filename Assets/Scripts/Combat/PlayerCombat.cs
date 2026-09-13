@@ -11,12 +11,22 @@ public class PlayerCombat : MonoBehaviour
     Vector3 _shieldRest;
     float _cooldownLeft;
     float _dashCooldown;
+    float _specialCooldownLeft;
+    float _specialAnimLeft;
     float _attackLeft;
     bool _locked;
     bool _blocking;
 
+    // Especial do Mago (Núcleo Arcano). Guerreiro/Anjo não usam.
+    public const float MageSpecialCooldown = 6.5f;
+    public const float MageSpecialRadius = 3.4f;
+    public const float MageSpecialDamageScale = 0.95f;
+
     public bool IsBlocking => CanBlock && _blocking && !_locked;
     public bool IsAttacking => _attackLeft > 0f;
+    public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldownLeft);
+    public bool SpecialReady => _specialCooldownLeft <= 0f;
+    public bool IsCastingSpecial => _specialAnimLeft > 0f;
     public ShieldSystem Shield => _shield;
     public bool IsWarrior => _hero != null && _hero.Id == "guerreiro";
     public bool IsMage => _hero != null && _hero.Id == "mago";
@@ -93,6 +103,9 @@ public class PlayerCombat : MonoBehaviour
 
         _cooldownLeft -= Time.deltaTime;
         _dashCooldown -= Time.deltaTime;
+        _specialCooldownLeft -= Time.deltaTime;
+        if (_specialAnimLeft > 0f)
+            _specialAnimLeft -= Time.deltaTime;
         if (_attackLeft > 0f)
             _attackLeft -= Time.deltaTime;
 
@@ -117,6 +130,11 @@ public class PlayerCombat : MonoBehaviour
 
         if (IsMage)
         {
+            // Especial tem CD próprio — não fica bloqueado pelo CD do Orbe básico.
+            // CD primeiro: não consome o toque/tecla se ainda estiver em cooldown.
+            if (_specialCooldownLeft <= 0f && WantsSpecial())
+                FireMageSpecial();
+
             if (_cooldownLeft > 0f)
                 return;
             if (WantsAttack() || HasTargetInRange())
@@ -139,12 +157,16 @@ public class PlayerCombat : MonoBehaviour
 
     void FireMage()
     {
+        // Auto: só com inimigo em AttackRange. Clique/J: força tiro mesmo sem alvo.
         var target = FindNearest(transform, transform.position, AttackRange);
-        Vector2 direction = _player != null ? _player.Facing : Vector2.right;
+        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        Vector2 direction = facing;
         Transform lockOn = null;
         if (target != null)
         {
-            direction = target.transform.position - transform.position;
+            direction = (Vector2)(target.transform.position - transform.position);
+            if (direction.sqrMagnitude < 0.01f)
+                direction = facing;
             lockOn = target.transform;
         }
         else if (!WantsAttack())
@@ -152,9 +174,36 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
+        if (direction.sqrMagnitude < 0.01f)
+            direction = Vector2.right;
+        direction.Normalize();
+
         SpawnOrb(direction, lockOn);
-        PixelBurst.Spawn(transform.position + (Vector3)direction.normalized * 0.5f, _ability.Color, 3);
+        PixelBurst.Spawn(transform.position + (Vector3)direction * 0.5f, _ability.Color, 3);
+        _attackLeft = 0.4f; // MagoVisual cast (4 frames @ ~12 fps)
         ArmCooldown();
+    }
+
+    void FireMageSpecial()
+    {
+        // Núcleo Arcano: explosão em área no inimigo mais próximo (ou à frente).
+        // Distinto do Orbe teleguiado — limpa grupo com CD longo (6.5s).
+        var target = FindNearest(transform, transform.position, AttackRange);
+        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        Vector3 center;
+        if (target != null)
+            center = target.transform.position + Vector3.up * 0.55f;
+        else
+            center = transform.position + (Vector3)(facing.normalized * 4.2f) + Vector3.up * 0.55f;
+
+        float damage = _hero.Power * MageSpecialDamageScale;
+        var color = _ability != null ? _ability.Color : new Color(0.45f, 0.72f, 1f);
+        ArcaneNova.Detonate(center, MageSpecialRadius, damage, color);
+
+        _attackLeft = 0.45f; // cast visual (MagoVisual)
+        _specialAnimLeft = 0.55f; // clip special 17–20
+        _specialCooldownLeft = MageSpecialCooldown;
+        PixelBurst.Spawn(transform.position + Vector3.up * 0.8f, color, 6);
     }
 
     void FireAngel()
@@ -183,22 +232,26 @@ public class PlayerCombat : MonoBehaviour
 
     void SpawnOrb(Vector2 direction, Transform target)
     {
-        var go = MakeShot("Orbe", _ability.ProjectileSize, _ability.Color);
+        var go = MakeShot("Orbe", _ability.ProjectileSize, _ability.Color, direction);
+        // Dano = Power * DamageScale (CreateOrbe). HomingOrb trava / re-adquire o alvo.
         go.AddComponent<HomingOrb>().Launch(direction, _ability, DamageForShot(), target);
     }
 
     void FireFeather(Vector2 direction, Vector3 localOffset)
     {
-        var go = MakeShot("Pena", _ability.ProjectileSize, _ability.Color);
+        var go = MakeShot("Pena", _ability.ProjectileSize, _ability.Color, direction);
         go.transform.position += localOffset;
         go.AddComponent<Projectile>().Launch(direction, _ability, DamageForShot());
     }
 
-    GameObject MakeShot(string name, Vector2 size, Color color)
+    GameObject MakeShot(string name, Vector2 size, Color color, Vector2 muzzleDir)
     {
-        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        if (muzzleDir.sqrMagnitude < 0.01f)
+            muzzleDir = _player != null ? _player.Facing : Vector2.right;
+        muzzleDir.Normalize();
+
         var go = new GameObject(name);
-        go.transform.position = transform.position + (Vector3)facing.normalized * 0.55f;
+        go.transform.position = transform.position + (Vector3)muzzleDir * 0.55f;
         var renderer = go.AddComponent<SpriteRenderer>();
         var texture = Texture2D.whiteTexture;
         renderer.sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), texture.width);
@@ -209,6 +262,7 @@ public class PlayerCombat : MonoBehaviour
         var body = go.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
         body.gravityScale = 0f;
+        body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         var collider = go.AddComponent<BoxCollider2D>();
         collider.isTrigger = true;
         collider.size = Vector2.one;
@@ -221,6 +275,7 @@ public class PlayerCombat : MonoBehaviour
 
     float DamageForShot()
     {
+        // Mago: Power * DamageScale (kit de dano à distância). Guerreiro continua em Strength.
         if (IsMage)
             return _hero.Power * _ability.DamageScale;
         if (IsAngel)
@@ -301,6 +356,14 @@ public class PlayerCombat : MonoBehaviour
         return Input.GetMouseButton(1)
             || Input.GetKey(KeyCode.K)
             || Input.GetKey(KeyCode.S);
+    }
+
+    static bool WantsSpecial()
+    {
+        // Teclado: L ou Q. Mobile: botão de especial (ConsumeSpecialDown).
+        if (MobileControls.IsVisible)
+            return MobileControls.ConsumeSpecialDown();
+        return Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Q);
     }
 
     static bool WantsDash()
