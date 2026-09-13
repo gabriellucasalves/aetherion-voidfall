@@ -1,23 +1,32 @@
 using UnityEngine;
 
 /// <summary>
-/// Visual pixel do Mago. Espelha <see cref="GuerreiroVisual"/>:
-/// idle / walk / jump / cast / hurt — cast no lugar do block do Guerreiro.
-/// Carrega Resources/Mago/sheet.png; se a sheet não existir, Attach retorna false
-/// e HeroAppearance cai no placeholder colorido sem quebrar o Guerreiro.
+/// Visual pixel do Mago. Espelha <see cref="GuerreiroVisual"/> na grade 7×N / 64px.
+/// Sheet: Resources/Mago/sheet.png (cópia em Assets/Art/Mago/Mago_sheet.png).
+/// Mapa completo: Assets/Art/Mago/FRAME_MAP.md
+///
+/// Frame map (7 cols × 4 rows = 28):
+///   0–3   idle
+///   4–9   walk
+///  10–12  jump
+///  13–16  cast   (Orbe — PlayerCombat.IsAttacking)
+///  17–20  special (Núcleo Arcano — PlayerCombat.IsCastingSpecial)
+///  21–22  hurt
+///  23–27  meta (silhueta / paleta / spare) — não animados em runtime
 /// </summary>
 public class MagoVisual : MonoBehaviour
 {
     const int Cell = 64;
     const int Cols = 7;
-    const int FrameCount = 21;
+    const int FrameCount = 28; // 7×4 — especial + hurt além do layout 21 do Guerreiro
     const float Ppu = 15f;
     const float FootPivot = 3f / 64f;
 
     static readonly int[] Idle = { 0, 1, 2, 3 };
     static readonly int[] Walk = { 4, 5, 6, 7, 8, 9 };
     static readonly int[] Cast = { 13, 14, 15, 16 };
-    static readonly int[] Hurt = { 19, 20 };
+    static readonly int[] Special = { 17, 18, 19, 20 };
+    static readonly int[] Hurt = { 21, 22 };
 
     Sprite[] _frames;
     SpriteRenderer _renderer;
@@ -66,7 +75,13 @@ public class MagoVisual : MonoBehaviour
             return;
         }
 
-        // cast (orbe) no lugar do block do Guerreiro
+        // Especial tem prioridade sobre o cast do Orbe básico.
+        if (_combat != null && _combat.IsCastingSpecial)
+        {
+            Play("special", Special, 11f, false);
+            return;
+        }
+
         if (_combat != null && _combat.IsAttacking)
         {
             Play("cast", Cast, 12f, false);

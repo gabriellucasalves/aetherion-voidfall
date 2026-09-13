@@ -12,6 +12,7 @@ public class PlayerCombat : MonoBehaviour
     float _cooldownLeft;
     float _dashCooldown;
     float _specialCooldownLeft;
+    float _specialAnimLeft;
     float _attackLeft;
     bool _locked;
     bool _blocking;
@@ -25,6 +26,7 @@ public class PlayerCombat : MonoBehaviour
     public bool IsAttacking => _attackLeft > 0f;
     public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldownLeft);
     public bool SpecialReady => _specialCooldownLeft <= 0f;
+    public bool IsCastingSpecial => _specialAnimLeft > 0f;
     public ShieldSystem Shield => _shield;
     public bool IsWarrior => _hero != null && _hero.Id == "guerreiro";
     public bool IsMage => _hero != null && _hero.Id == "mago";
@@ -102,6 +104,8 @@ public class PlayerCombat : MonoBehaviour
         _cooldownLeft -= Time.deltaTime;
         _dashCooldown -= Time.deltaTime;
         _specialCooldownLeft -= Time.deltaTime;
+        if (_specialAnimLeft > 0f)
+            _specialAnimLeft -= Time.deltaTime;
         if (_attackLeft > 0f)
             _attackLeft -= Time.deltaTime;
 
@@ -197,6 +201,7 @@ public class PlayerCombat : MonoBehaviour
         ArcaneNova.Detonate(center, MageSpecialRadius, damage, color);
 
         _attackLeft = 0.45f; // cast visual (MagoVisual)
+        _specialAnimLeft = 0.55f; // clip special 17–20
         _specialCooldownLeft = MageSpecialCooldown;
         PixelBurst.Spawn(transform.position + Vector3.up * 0.8f, color, 6);
     }
