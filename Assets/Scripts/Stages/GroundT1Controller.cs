@@ -408,13 +408,15 @@ public class GroundT1Controller : MonoBehaviour
         {
             if (hero != null && hero.Id == "mago")
                 return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / especial (Núcleo Arcano)";
+            if (hero != null && hero.Id == "guerreiro")
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: corte / escudo / especial (Onda)";
             return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo";
         }
         if (hero != null && hero.Id == "mago")
             return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   L/Q Núcleo Arcano   ·   ESC pausa";
         if (hero != null && hero.Id == "anjo")
             return "A/D andar   ·   ESPAÇO pular   ·   clique / J pena   ·   SHIFT dash   ·   ESC pausa";
-        return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   S / K / direito bloqueia   ·   ESC pausa";
+        return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q onda   ·   S / K / direito bloqueia   ·   ESC pausa";
     }
 
     static GameObject CreateQuad(string name, Vector3 position, Vector2 size, Color color, int order)

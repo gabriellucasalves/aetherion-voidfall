@@ -53,7 +53,7 @@ public static class CharacterCatalog
             Make("guerreiro", "Guerreiro", "Tank / combate físico",
                 "Armadura pesada e espada. Segura a linha enquanto o Vazio avança.",
                 150, 90, 20, 80, 30, 40,
-                "Corte de Energia", "Golpe de espada curto. Segura o escudo para bloquear.",
+                "Corte de Energia", "Corte curto (J/clique). Especial L/Q: Lâmina/Onda de Energia à frente, CD 6s. Escudo (S/K/direito) bloqueia.",
                 new Color(0.72f, 0.74f, 0.82f)),
             // Kit: vida baixa, Power alto, alcance longo.
             // Especial FASE 3: Núcleo Arcano (L/Q) — explosão em área, CD 6.5s.

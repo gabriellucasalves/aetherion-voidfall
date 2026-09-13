@@ -60,6 +60,25 @@ public class AbilityData : ScriptableObject
         return data;
     }
 
+    /// <summary>
+    /// Especial do Guerreiro — Lâmina / Onda de Energia (projétil horizontal).
+    /// CD real fica em PlayerCombat.WarriorSpecialCooldown (~6s), independente do Corte.
+    /// </summary>
+    public static AbilityData CreateOndaEspada()
+    {
+        var data = CreateInstance<AbilityData>();
+        data.Id = "onda_espada";
+        data.DisplayName = "Lâmina de Energia";
+        data.Range = 6f; // alcance efetivo ≈ speed * lifetime
+        data.Cooldown = 6f;
+        data.ProjectileSpeed = 14f;
+        data.Lifetime = 0.42f; // ~5.9 unidades de voo
+        data.ProjectileSize = new Vector2(2.2f, 1.05f);
+        data.DamageScale = 0.95f; // dano = Strength * DamageScale (90 → ~85.5)
+        data.Color = new Color(1f, 0.72f, 0.2f);
+        return data;
+    }
+
     public static AbilityData CreatePena()
     {
         var data = CreateInstance<AbilityData>();

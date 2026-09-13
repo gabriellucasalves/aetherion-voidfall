@@ -82,6 +82,14 @@ public class GuerreiroVisual : MonoBehaviour
             return;
         }
 
+        // TODO Aseprite: frames dedicados de especial (Lâmina/Onda) no sheet 7×N.
+        // Sheet atual (21 frames) não tem clip de special — reusa Attack 13–16 como placeholder.
+        if (_combat != null && _combat.IsCastingSpecial)
+        {
+            Play("special", Attack, 12f, false);
+            return;
+        }
+
         if (_combat != null && _combat.IsAttacking)
         {
             Play("attack", Attack, 12f, false);

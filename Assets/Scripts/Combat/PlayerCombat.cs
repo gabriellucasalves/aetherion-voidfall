@@ -17,10 +17,14 @@ public class PlayerCombat : MonoBehaviour
     bool _locked;
     bool _blocking;
 
-    // Especial do Mago (Núcleo Arcano). Guerreiro/Anjo não usam.
+    // Especial do Mago (Núcleo Arcano).
     public const float MageSpecialCooldown = 6.5f;
     public const float MageSpecialRadius = 3.4f;
     public const float MageSpecialDamageScale = 0.95f;
+
+    // Especial do Guerreiro (Lâmina / Onda de Energia) — CD próprio, separado do Corte.
+    public const float WarriorSpecialCooldown = 6f;
+    public const float WarriorSpecialShieldCost = 10f;
 
     public bool IsBlocking => CanBlock && _blocking && !_locked;
     public bool IsAttacking => _attackLeft > 0f;
@@ -116,8 +120,14 @@ public class PlayerCombat : MonoBehaviour
             if (_blocking)
             {
                 _attackLeft = 0f; // levantar o escudo cancela o corte
+                _specialAnimLeft = 0f;
                 return;
             }
+
+            // Especial tem CD próprio — não fica bloqueado pelo CD do Corte.
+            if (_specialCooldownLeft <= 0f && WantsSpecial())
+                FireWarriorSpecial();
+
             if (WantsAttack() && _cooldownLeft <= 0f)
                 FireWarrior();
             return;
@@ -155,6 +165,24 @@ public class PlayerCombat : MonoBehaviour
         // 4 frames de ataque a ~12 fps (~0.33s) + hold curto no último frame
         _attackLeft = 0.40f;
         ArmCooldown();
+    }
+
+    void FireWarriorSpecial()
+    {
+        // Lâmina / Onda de Energia: projétil horizontal na facing. Distinto do Corte melee.
+        var wave = AbilityData.CreateOndaEspada();
+        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        float damage = _hero.Strength * wave.DamageScale;
+        SwordWave.Launch(transform, facing, wave, damage);
+
+        // Custo leve de escudo (opcional) — não impede o especial se o escudo estiver baixo/quebrado.
+        if (_shield != null && !_shield.IsBroken)
+            _shield.Absorb(WarriorSpecialShieldCost);
+
+        _attackLeft = 0.40f; // GuerreiroVisual: placeholder nos frames de attack
+        _specialAnimLeft = 0.45f;
+        _specialCooldownLeft = WarriorSpecialCooldown;
+        PixelBurst.Spawn(transform.position + (Vector3)facing * 1.1f + Vector3.up * 0.45f, wave.Color, 6);
     }
 
     void FireMage()
