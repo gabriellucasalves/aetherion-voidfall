@@ -2,21 +2,32 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // Retratos animados dos heróis para os menus: recorta o mesmo sheet usado
-// no jogo (Resources/Guerreiro/sheet.png) em sprites de UI e anima o idle.
+// no jogo (Resources/<Herói>/sheet.png) em sprites de UI e anima o idle.
 public static class HeroPortrait
 {
     const int Cell = 64;
     const int Cols = 7;
 
     static Sprite[] _guerreiroIdle;
+    static Sprite[] _magoIdle;
 
-    // frames de idle do guerreiro (células 0..3 do sheet, linha de cima)
     public static Sprite[] GuerreiroIdle()
     {
-        if (_guerreiroIdle != null)
-            return _guerreiroIdle;
+        return IdleFrames(ref _guerreiroIdle, "Guerreiro/sheet");
+    }
 
-        var texture = Resources.Load<Texture2D>("Guerreiro/sheet");
+    public static Sprite[] MagoIdle()
+    {
+        return IdleFrames(ref _magoIdle, "Mago/sheet");
+    }
+
+    // frames de idle (células 0..3 do sheet, linha de cima)
+    static Sprite[] IdleFrames(ref Sprite[] cache, string resourcePath)
+    {
+        if (cache != null)
+            return cache;
+
+        var texture = Resources.Load<Texture2D>(resourcePath);
         if (texture == null)
             return null;
 
@@ -32,14 +43,19 @@ public static class HeroPortrait
                 texture, new Rect(x, y, Cell, Cell), new Vector2(0.5f, 0.5f), Cell, 0, SpriteMeshType.FullRect);
         }
 
-        _guerreiroIdle = frames;
+        cache = frames;
         return frames;
     }
 
     // coloca o retrato animado num canvas; retorna null se o herói ainda não tem arte
     public static Image Attach(Transform parent, string heroId, Vector2 position, float sizePx)
     {
-        Sprite[] frames = heroId == "guerreiro" ? GuerreiroIdle() : null;
+        Sprite[] frames = null;
+        if (heroId == "guerreiro")
+            frames = GuerreiroIdle();
+        else if (heroId == "mago")
+            frames = MagoIdle();
+
         if (frames == null)
             return null;
 

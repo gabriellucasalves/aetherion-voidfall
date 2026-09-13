@@ -2,17 +2,13 @@ using UnityEngine;
 
 public static class CharacterCatalog
 {
-    // FASE 5: ligar para liberar o Mago na tela de seleção.
-    // FASE 1 mantém só o Guerreiro jogável na UI (demo T1 intacta).
-    public const bool UnlockMagoInSelection = false;
+    // FASE 5: Mago liberado na seleção junto com o Guerreiro.
+    public const bool UnlockMagoInSelection = true;
 
     /// <summary>
-    /// Force-test do Mago em T1 (seleção ainda trava no Guerreiro):
-    /// <code>
-    /// GameManager.EnsureExists().SelectHero(CharacterCatalog.ById("mago"));
-    /// SceneTransitionManager.Instance.Load(GameScenes.GroundT1);
-    /// </code>
-    /// Ou ligue <c>GroundT1Controller.ForceMagoForTesting</c>.
+    /// Caminho principal: escolha o Mago na tela de seleção (UnlockMagoInSelection).
+    /// Fallback de debug: <c>GroundT1Controller.ForceMagoForTesting = true</c>
+    /// ou <c>GameManager.EnsureExists().SelectHero(CharacterCatalog.ById("mago"))</c>.
     /// </summary>
     public static CharacterData ById(string id)
     {
@@ -39,7 +35,6 @@ public static class CharacterCatalog
                 continue;
             if (all[i].Id == "guerreiro")
                 playable.Add(all[i]);
-            // FASE 5 — desbloquear mago na seleção:
             else if (UnlockMagoInSelection && all[i].Id == "mago")
                 playable.Add(all[i]);
         }

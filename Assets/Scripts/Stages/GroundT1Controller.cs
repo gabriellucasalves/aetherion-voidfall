@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 public class GroundT1Controller : MonoBehaviour
 {
-    // FASE 1 playtest: ligue true para spawnar o Mago em T1 sem passar pela seleção.
-    // A UI continua só com Guerreiro enquanto UnlockMagoInSelection for false.
+    // Fallback de debug (FASE 5: seleção já libera o Mago).
+    // Caminho principal: CharacterCatalog.UnlockMagoInSelection.
     public const bool ForceMagoForTesting = false;
 
     StageData _stage;
@@ -405,7 +405,11 @@ public class GroundT1Controller : MonoBehaviour
     static string HintFor(CharacterData hero)
     {
         if (MobileControls.ShouldShow() || MobileControls.IsVisible)
-            return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo / especial";
+        {
+            if (hero != null && hero.Id == "mago")
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / especial (Núcleo Arcano)";
+            return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo";
+        }
         if (hero != null && hero.Id == "mago")
             return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   L/Q Núcleo Arcano   ·   ESC pausa";
         if (hero != null && hero.Id == "anjo")

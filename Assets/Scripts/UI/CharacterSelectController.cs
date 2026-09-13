@@ -54,11 +54,17 @@ public class CharacterSelectController : MonoBehaviour
     void BuildUi()
     {
         var canvas = UiKit.CreateCanvas(transform, "SelectCanvas");
-        UiKit.Label(canvas.transform, "O GUERREIRO", 42, new Vector2(0f, 430f), MenuTheme.CelestialGold, new Vector2(1200f, 70f));
+        UiKit.Label(canvas.transform, "ESCOLHA SEU HERÓI", 42, new Vector2(0f, 430f), MenuTheme.CelestialGold, new Vector2(1200f, 70f));
 
         _cardBackgrounds = new Image[_heroes.Length];
+        // Espaça Guerreiro / Mago lado a lado sem sobrepor.
+        float spacing = 420f;
+        float startX = -(_heroes.Length - 1) * spacing * 0.5f;
         for (int i = 0; i < _heroes.Length; i++)
-            _cardBackgrounds[i] = BuildCard(canvas.transform, _heroes[i], new Vector2(0f, 140f));
+        {
+            var pos = new Vector2(startX + i * spacing, 140f);
+            _cardBackgrounds[i] = BuildCard(canvas.transform, _heroes[i], pos);
+        }
 
         // painel de detalhes: descrição à esquerda, barras de atributos à direita
         var detail = UiKit.Panel(canvas.transform, "Detalhe", new Vector2(1240f, 280f), new Vector2(0f, -220f), MenuTheme.Panel);
