@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class CharacterCatalog
 {
-    // FASE 5: Mago liberado na seleção junto com o Guerreiro.
+    // FASE 5: Mago liberado na seleção junto com o Guerreiro e o Arqueiro.
     public const bool UnlockMagoInSelection = true;
 
     /// <summary>
@@ -27,13 +27,14 @@ public static class CharacterCatalog
 
     public static CharacterData[] Playable()
     {
+        // Demo WebGL: Guerreiro + Mago + Arqueiro jogáveis.
         var all = All();
         var playable = new System.Collections.Generic.List<CharacterData>();
         for (int i = 0; i < all.Length; i++)
         {
             if (all[i] == null)
                 continue;
-            if (all[i].Id == "guerreiro")
+            if (all[i].Id == "guerreiro" || all[i].Id == "arqueiro")
                 playable.Add(all[i]);
             else if (UnlockMagoInSelection && all[i].Id == "mago")
                 playable.Add(all[i]);
@@ -62,10 +63,10 @@ public static class CharacterCatalog
                 80, 20, 100, 20, 50, 60,
                 "Núcleo Arcano", "Especial (L/Q): explosão arcana em área, CD 6.5s. Orbe básico busca sozinho; clique / J força o tiro.",
                 new Color(0.45f, 0.55f, 0.95f)),
-            Make("anjo", "Anjo", "Mobilidade / equilíbrio",
-                "Asas e armadura leve. Esquiva, avança e corta com penas celestiais.",
+            Make("arqueiro", "Arqueiro", "Mobilidade / equilíbrio",
+                "Arco leve e aljava. Esquiva, avança e dispara flechas à distância.",
                 100, 50, 65, 45, 100, 80,
-                "Pena Celestial", "Leque de penas na frente. Shift dá um dash curto.",
+                "Flecha", "Flecha reta (clique/J). Shift: dash. L/Q: rajada em leque (CD ~6.5s).",
                 new Color(0.93f, 0.82f, 0.42f))
         };
     }

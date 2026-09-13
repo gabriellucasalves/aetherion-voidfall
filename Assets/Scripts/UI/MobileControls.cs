@@ -17,12 +17,13 @@ public class MobileControls : MonoBehaviour
     static bool _stickJump;
     static bool _jumpPressed;
     static bool _specialPressed;
+    static bool _dashPressed;
     static bool _forcedOn;
     static Sprite _circle;
     static Sprite _sword;
     static Sprite _shield;
     static Sprite _orb;
-
+    static Sprite _dash;
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     static extern int AetherionIsMobile();
@@ -42,6 +43,14 @@ public class MobileControls : MonoBehaviour
         if (!_specialPressed)
             return false;
         _specialPressed = false;
+        return true;
+    }
+
+    public static bool ConsumeDashPressed()
+    {
+        if (!_dashPressed)
+            return false;
+        _dashPressed = false;
         return true;
     }
 
@@ -112,6 +121,7 @@ public class MobileControls : MonoBehaviour
         AttackHeld = false;
         BlockHeld = false;
         _specialPressed = false;
+        _dashPressed = false;
         IsVisible = false;
     }
 
@@ -134,10 +144,15 @@ public class MobileControls : MonoBehaviour
             new Color(0.08f, 0.14f, 0.28f, 0.88f));
         Hold(shield, () => BlockHeld = true, () => BlockHeld = false);
 
-        // Especial (Mago: Núcleo Arcano / Guerreiro: Onda). Pressão única — ConsumeSpecialDown no combate.
+        // Especial (Mago/Guerreiro/Arqueiro). Pressão única — ConsumeSpecialDown no combate.
         var special = IconButton(parent, "Especial", OrbSprite(), new Vector2(1f, 0f), new Vector2(-460f, 300f), 210f,
             new Color(0.1f, 0.18f, 0.42f, 0.9f));
         Hold(special, () => _specialPressed = true, () => { });
+
+        // Dash do Arqueiro (Shift). Guerreiro/Mago podem ignorar o botão.
+        var dash = IconButton(parent, "Dash", DashSprite(), new Vector2(1f, 0f), new Vector2(-460f, 90f), 190f,
+            new Color(0.28f, 0.18f, 0.06f, 0.9f));
+        Hold(dash, () => _dashPressed = true, () => { });
     }
 
     void BuildLeftZone(Transform parent)
@@ -231,6 +246,35 @@ public class MobileControls : MonoBehaviour
         texture.filterMode = FilterMode.Bilinear;
         _circle = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
         return _circle;
+    }
+
+    static Sprite DashSprite()
+    {
+        if (_dash != null)
+            return _dash;
+        string[] art =
+        {
+            "................",
+            "................",
+            "....yy..........",
+            "...yyyy.........",
+            "..yyyyyy..yy....",
+            ".yyyyyyyyyyyy...",
+            "..yyyyyy..yy....",
+            "...yyyy.........",
+            "....yy..........",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+        };
+        _dash = PixelSprite(art, ch => ch == 'y'
+            ? new Color32(245, 200, 80, 255)
+            : new Color32(0, 0, 0, 0));
+        return _dash;
     }
 
     static Sprite SwordSprite()

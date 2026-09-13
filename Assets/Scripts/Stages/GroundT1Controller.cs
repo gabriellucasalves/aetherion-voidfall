@@ -20,6 +20,7 @@ public class GroundT1Controller : MonoBehaviour
     Image _lifeFill;
     Image _shieldFill;
     GameObject _shieldTrack;
+    bool _showSpecialCd;
     Text _waveBanner;
     float _waveBannerLeft;
     const float BarWidth = 360f;
@@ -80,6 +81,10 @@ public class GroundT1Controller : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
             TogglePause();
+
+        // CD do especial do arqueiro usa a barra reaproveitada do escudo.
+        if (_showSpecialCd)
+            RefreshHud();
     }
 
     public void AnnounceWave(int wave, string enemyName)
@@ -270,12 +275,29 @@ public class GroundT1Controller : MonoBehaviour
         _shieldText.alignment = TextAnchor.MiddleLeft;
 
         bool showShield = hero != null && hero.Id == "guerreiro";
+        // Mago e Arqueiro reusam a barra do escudo para o CD do especial.
+        _showSpecialCd = hero != null && (hero.Id == "arqueiro" || hero.Id == "mago");
         if (_shieldLabel != null)
-            _shieldLabel.gameObject.SetActive(showShield);
+        {
+            _shieldLabel.gameObject.SetActive(showShield || _showSpecialCd);
+            if (_showSpecialCd)
+            {
+                _shieldLabel.text = "ESPECIAL";
+                _shieldLabel.color = hero.Id == "mago"
+                    ? new Color(0.55f, 0.75f, 1f)
+                    : new Color(0.55f, 0.92f, 0.65f);
+            }
+        }
         if (_shieldTrack != null)
-            _shieldTrack.SetActive(showShield);
+            _shieldTrack.SetActive(showShield || _showSpecialCd);
         if (_shieldText != null)
-            _shieldText.gameObject.SetActive(showShield);
+            _shieldText.gameObject.SetActive(showShield || _showSpecialCd);
+        if (_showSpecialCd && _shieldFill != null)
+        {
+            _shieldFill.color = hero.Id == "mago"
+                ? new Color(0.4f, 0.7f, 1f)
+                : new Color(0.45f, 0.88f, 0.58f);
+        }
 
         RefreshHud();
         UiKit.Label(canvas.transform, HintFor(hero), 16, new Vector2(0f, -480f), new Color(1f, 1f, 1f, 0.55f), new Vector2(1600f, 30f));
@@ -341,11 +363,22 @@ public class GroundT1Controller : MonoBehaviour
         if (_lifeText != null)
             _lifeText.text = Mathf.CeilToInt(life) + " / " + Mathf.CeilToInt(lifeMax);
 
-        if (shield != null)
+        if (shield != null && !_showSpecialCd)
         {
             UiKit.SetBar(_shieldFill, shield.Current / shield.Max, BarWidth);
             if (_shieldText != null)
                 _shieldText.text = Mathf.CeilToInt(shield.Current) + " / " + Mathf.CeilToInt(shield.Max);
+        }
+
+        if (_showSpecialCd)
+        {
+            var combat = _player.GetComponent<PlayerCombat>();
+            float left = combat != null ? combat.SpecialCooldownLeft : 0f;
+            float max = combat != null ? combat.SpecialCooldownMax : PlayerCombat.ArcherSpecialCooldown;
+            float ready = max > 0f ? 1f - Mathf.Clamp01(left / max) : 1f;
+            UiKit.SetBar(_shieldFill, ready, BarWidth);
+            if (_shieldText != null)
+                _shieldText.text = left > 0.05f ? left.ToString("0.0") + "s" : "PRONTO";
         }
     }
 
@@ -410,12 +443,14 @@ public class GroundT1Controller : MonoBehaviour
                 return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / especial (Núcleo Arcano)";
             if (hero != null && hero.Id == "guerreiro")
                 return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: corte / escudo / especial (Onda)";
+            if (hero != null && hero.Id == "arqueiro")
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: flecha / especial (rajada) / dash";
             return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo";
         }
         if (hero != null && hero.Id == "mago")
             return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   L/Q Núcleo Arcano   ·   ESC pausa";
-        if (hero != null && hero.Id == "anjo")
-            return "A/D andar   ·   ESPAÇO pular   ·   clique / J pena   ·   SHIFT dash   ·   ESC pausa";
+        if (hero != null && hero.Id == "arqueiro")
+            return "A/D andar   ·   ESPAÇO pular   ·   clique / J flecha   ·   SHIFT dash   ·   L/Q rajada   ·   ESC pausa";
         return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q onda   ·   S / K / direito bloqueia   ·   ESC pausa";
     }
 
