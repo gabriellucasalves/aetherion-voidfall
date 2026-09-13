@@ -134,7 +134,7 @@ public class MobileControls : MonoBehaviour
             new Color(0.08f, 0.14f, 0.28f, 0.88f));
         Hold(shield, () => BlockHeld = true, () => BlockHeld = false);
 
-        // Especial (Mago: Núcleo Arcano). Pressão única — ConsumeSpecialDown no combate.
+        // Especial (Mago: Núcleo Arcano / Guerreiro: Onda). Pressão única — ConsumeSpecialDown no combate.
         var special = IconButton(parent, "Especial", OrbSprite(), new Vector2(1f, 0f), new Vector2(-460f, 300f), 210f,
             new Color(0.1f, 0.18f, 0.42f, 0.9f));
         Hold(special, () => _specialPressed = true, () => { });

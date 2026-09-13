@@ -1,7 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeSlash : MonoBehaviour
 {
+    // Atraso para alinhar o hit com os frames 14–16 do Guerreiro (~12 fps).
+    const float ActiveDelay = 0.06f;
+
     static readonly string[] SlashArt =
     {
         "..oyy..........",
@@ -29,14 +33,19 @@ public class MeleeSlash : MonoBehaviour
     float _damage;
     float _life;
     float _age;
+    Color _fxColor;
     SpriteRenderer _renderer;
+    BoxCollider2D _hitbox;
+    readonly HashSet<int> _hitIds = new HashSet<int>();
 
     public void Swing(Transform owner, AbilityData ability, float damage)
     {
         _damage = damage;
         _life = ability.Lifetime;
+        _fxColor = ability.Color;
         transform.SetParent(owner, false);
-        transform.localPosition = new Vector3(0.92f, 0.12f, 0f);
+        // Offset alto o bastante para o arco da espada no sprite 64×64 (pivot nos pés).
+        transform.localPosition = new Vector3(1.08f, 0.38f, 0f);
         transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
         transform.localScale = new Vector3(ability.ProjectileSize.x, ability.ProjectileSize.y, 1f);
 
@@ -49,18 +58,22 @@ public class MeleeSlash : MonoBehaviour
         body.gravityScale = 0f;
         body.freezeRotation = true;
 
-        var collider = gameObject.AddComponent<BoxCollider2D>();
-        collider.isTrigger = true;
-        collider.size = Vector2.one;
+        _hitbox = gameObject.AddComponent<BoxCollider2D>();
+        _hitbox.isTrigger = true;
+        _hitbox.size = Vector2.one;
+        _hitbox.enabled = false; // wind-up do frame 13
 
         var ownerCollider = owner.GetComponent<Collider2D>();
         if (ownerCollider != null)
-            Physics2D.IgnoreCollision(collider, ownerCollider, true);
+            Physics2D.IgnoreCollision(_hitbox, ownerCollider, true);
     }
 
     void Update()
     {
         _age += Time.deltaTime;
+        if (_hitbox != null && !_hitbox.enabled && _age >= ActiveDelay)
+            _hitbox.enabled = true;
+
         if (_renderer != null)
         {
             var color = _renderer.color;
@@ -123,13 +136,20 @@ public class MeleeSlash : MonoBehaviour
 
     void Hit(Collider2D other)
     {
+        if (_hitbox == null || !_hitbox.enabled || _damage <= 0f)
+            return;
+
         var enemy = other.GetComponent<EnemyController>();
         if (enemy == null)
             enemy = other.GetComponentInParent<EnemyController>();
         if (enemy == null || enemy.Health == null || enemy.Health.IsDead)
             return;
 
+        int id = enemy.GetInstanceID();
+        if (!_hitIds.Add(id))
+            return;
+
         enemy.ReceiveDamage(_damage);
-        _damage = 0f;
+        PixelBurst.Spawn(other.bounds.center, _fxColor, 6);
     }
 }
