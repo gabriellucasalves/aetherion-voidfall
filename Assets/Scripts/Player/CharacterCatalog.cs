@@ -60,11 +60,12 @@ public static class CharacterCatalog
                 150, 90, 20, 80, 30, 40,
                 "Corte de Energia", "Golpe de espada curto. Segura o escudo para bloquear.",
                 new Color(0.72f, 0.74f, 0.82f)),
-            // Kit: vida baixa, Power alto, alcance longo (range vem de AbilityData.CreateOrbe).
+            // Kit: vida baixa, Power alto, alcance longo.
+            // Especial FASE 3: Núcleo Arcano (L/Q) — explosão em área, CD 6.5s.
             Make("mago", "Mago", "Dano mágico / área",
-                "Manto e cajado. Queima o Vazio à distância com orbes arcanos.",
+                "Manto e cajado. Orbe teleguiado à distância; Núcleo Arcano explode em área.",
                 80, 20, 100, 20, 50, 60,
-                "Orbe Arcano", "Busca o inimigo mais perto sozinho; clique / J força o tiro.",
+                "Núcleo Arcano", "Especial (L/Q): explosão arcana em área, CD 6.5s. Orbe básico busca sozinho; clique / J força o tiro.",
                 new Color(0.45f, 0.55f, 0.95f)),
             Make("anjo", "Anjo", "Mobilidade / equilíbrio",
                 "Asas e armadura leve. Esquiva, avança e corta com penas celestiais.",

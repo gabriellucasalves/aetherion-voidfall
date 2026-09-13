@@ -16,10 +16,12 @@ public class MobileControls : MonoBehaviour
 
     static bool _stickJump;
     static bool _jumpPressed;
+    static bool _specialPressed;
     static bool _forcedOn;
     static Sprite _circle;
     static Sprite _sword;
     static Sprite _shield;
+    static Sprite _orb;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
@@ -31,6 +33,15 @@ public class MobileControls : MonoBehaviour
         if (!_jumpPressed)
             return false;
         _jumpPressed = false;
+        return true;
+    }
+
+    /// <summary>Consome um toque no botão de especial (estilo GetKeyDown).</summary>
+    public static bool ConsumeSpecialDown()
+    {
+        if (!_specialPressed)
+            return false;
+        _specialPressed = false;
         return true;
     }
 
@@ -100,6 +111,7 @@ public class MobileControls : MonoBehaviour
         _stickJump = false;
         AttackHeld = false;
         BlockHeld = false;
+        _specialPressed = false;
         IsVisible = false;
     }
 
@@ -121,6 +133,11 @@ public class MobileControls : MonoBehaviour
         var shield = IconButton(parent, "Escudo", ShieldSprite(), new Vector2(1f, 0f), new Vector2(-210f, 160f), 230f,
             new Color(0.08f, 0.14f, 0.28f, 0.88f));
         Hold(shield, () => BlockHeld = true, () => BlockHeld = false);
+
+        // Especial (Mago: Núcleo Arcano). Pressão única — ConsumeSpecialDown no combate.
+        var special = IconButton(parent, "Especial", OrbSprite(), new Vector2(1f, 0f), new Vector2(-460f, 300f), 210f,
+            new Color(0.1f, 0.18f, 0.42f, 0.9f));
+        Hold(special, () => _specialPressed = true, () => { });
     }
 
     void BuildLeftZone(Transform parent)
@@ -278,6 +295,37 @@ public class MobileControls : MonoBehaviour
             _ => new Color32(0, 0, 0, 0),
         });
         return _shield;
+    }
+
+    static Sprite OrbSprite()
+    {
+        if (_orb != null)
+            return _orb;
+        string[] art =
+        {
+            "......cc......",
+            "....ccwwcc....",
+            "...cwwyywwc...",
+            "..cwyyyyyywc..",
+            ".cwyywwwwyywc.",
+            ".cwywwccwwywc.",
+            "cwyywc..cwyycw",
+            "cwyywc..cwyycw",
+            ".cwywwccwwywc.",
+            ".cwyywwwwyywc.",
+            "..cwyyyyyywc..",
+            "...cwwyywwc...",
+            "....ccwwcc....",
+            "......cc......",
+        };
+        _orb = PixelSprite(art, ch => ch switch
+        {
+            'w' => new Color32(210, 235, 255, 255),
+            'y' => new Color32(120, 200, 255, 255),
+            'c' => new Color32(40, 90, 200, 255),
+            _ => new Color32(0, 0, 0, 0),
+        });
+        return _orb;
     }
 
     static Sprite PixelSprite(string[] art, System.Func<char, Color32> paint)

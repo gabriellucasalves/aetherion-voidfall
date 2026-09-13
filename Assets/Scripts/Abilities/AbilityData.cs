@@ -44,6 +44,21 @@ public class AbilityData : ScriptableObject
         return data;
     }
 
+    public static AbilityData CreateNucleoArcano()
+    {
+        var data = CreateInstance<AbilityData>();
+        data.Id = "nucleo_arcano";
+        data.DisplayName = "Núcleo Arcano";
+        data.Range = 9.2f;
+        data.Cooldown = 6.5f; // especial — CD fixo no PlayerCombat.MageSpecialCooldown
+        data.ProjectileSpeed = 0f;
+        data.Lifetime = 0.42f;
+        data.ProjectileSize = new Vector2(3.4f, 3.4f);
+        data.DamageScale = 0.95f; // dano = Power * DamageScale
+        data.Color = new Color(0.4f, 0.75f, 1f);
+        return data;
+    }
+
     public static AbilityData CreatePena()
     {
         var data = CreateInstance<AbilityData>();

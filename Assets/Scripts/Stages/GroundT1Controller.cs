@@ -405,9 +405,9 @@ public class GroundT1Controller : MonoBehaviour
     static string HintFor(CharacterData hero)
     {
         if (MobileControls.ShouldShow() || MobileControls.IsVisible)
-            return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: espada / escudo";
+            return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo / especial";
         if (hero != null && hero.Id == "mago")
-            return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   ESC pausa";
+            return "A/D andar   ·   ESPAÇO pular   ·   Orbe busca sozinho   ·   clique força o tiro   ·   L/Q Núcleo Arcano   ·   ESC pausa";
         if (hero != null && hero.Id == "anjo")
             return "A/D andar   ·   ESPAÇO pular   ·   clique / J pena   ·   SHIFT dash   ·   ESC pausa";
         return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   S / K / direito bloqueia   ·   ESC pausa";

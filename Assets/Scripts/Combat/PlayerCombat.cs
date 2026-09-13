@@ -11,12 +11,20 @@ public class PlayerCombat : MonoBehaviour
     Vector3 _shieldRest;
     float _cooldownLeft;
     float _dashCooldown;
+    float _specialCooldownLeft;
     float _attackLeft;
     bool _locked;
     bool _blocking;
 
+    // Especial do Mago (Núcleo Arcano). Guerreiro/Anjo não usam.
+    public const float MageSpecialCooldown = 6.5f;
+    public const float MageSpecialRadius = 3.4f;
+    public const float MageSpecialDamageScale = 0.95f;
+
     public bool IsBlocking => CanBlock && _blocking && !_locked;
     public bool IsAttacking => _attackLeft > 0f;
+    public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldownLeft);
+    public bool SpecialReady => _specialCooldownLeft <= 0f;
     public ShieldSystem Shield => _shield;
     public bool IsWarrior => _hero != null && _hero.Id == "guerreiro";
     public bool IsMage => _hero != null && _hero.Id == "mago";
@@ -93,6 +101,7 @@ public class PlayerCombat : MonoBehaviour
 
         _cooldownLeft -= Time.deltaTime;
         _dashCooldown -= Time.deltaTime;
+        _specialCooldownLeft -= Time.deltaTime;
         if (_attackLeft > 0f)
             _attackLeft -= Time.deltaTime;
 
@@ -117,6 +126,11 @@ public class PlayerCombat : MonoBehaviour
 
         if (IsMage)
         {
+            // Especial tem CD próprio — não fica bloqueado pelo CD do Orbe básico.
+            // CD primeiro: não consome o toque/tecla se ainda estiver em cooldown.
+            if (_specialCooldownLeft <= 0f && WantsSpecial())
+                FireMageSpecial();
+
             if (_cooldownLeft > 0f)
                 return;
             if (WantsAttack() || HasTargetInRange())
@@ -164,6 +178,27 @@ public class PlayerCombat : MonoBehaviour
         PixelBurst.Spawn(transform.position + (Vector3)direction * 0.5f, _ability.Color, 3);
         _attackLeft = 0.4f; // MagoVisual cast (4 frames @ ~12 fps)
         ArmCooldown();
+    }
+
+    void FireMageSpecial()
+    {
+        // Núcleo Arcano: explosão em área no inimigo mais próximo (ou à frente).
+        // Distinto do Orbe teleguiado — limpa grupo com CD longo (6.5s).
+        var target = FindNearest(transform, transform.position, AttackRange);
+        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        Vector3 center;
+        if (target != null)
+            center = target.transform.position + Vector3.up * 0.55f;
+        else
+            center = transform.position + (Vector3)(facing.normalized * 4.2f) + Vector3.up * 0.55f;
+
+        float damage = _hero.Power * MageSpecialDamageScale;
+        var color = _ability != null ? _ability.Color : new Color(0.45f, 0.72f, 1f);
+        ArcaneNova.Detonate(center, MageSpecialRadius, damage, color);
+
+        _attackLeft = 0.45f; // cast visual (MagoVisual)
+        _specialCooldownLeft = MageSpecialCooldown;
+        PixelBurst.Spawn(transform.position + Vector3.up * 0.8f, color, 6);
     }
 
     void FireAngel()
@@ -316,6 +351,14 @@ public class PlayerCombat : MonoBehaviour
         return Input.GetMouseButton(1)
             || Input.GetKey(KeyCode.K)
             || Input.GetKey(KeyCode.S);
+    }
+
+    static bool WantsSpecial()
+    {
+        // Teclado: L ou Q. Mobile: botão de especial (ConsumeSpecialDown).
+        if (MobileControls.IsVisible)
+            return MobileControls.ConsumeSpecialDown();
+        return Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Q);
     }
 
     static bool WantsDash()
