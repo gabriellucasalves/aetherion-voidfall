@@ -7,6 +7,9 @@ public static class HeroAppearance
         if (hero != null && hero.Id == "guerreiro" && GuerreiroVisual.Attach(parent))
             return;
 
+        if (hero != null && hero.Id == "mago" && MagoVisual.Attach(parent))
+            return;
+
         Color body = hero != null ? hero.Accent : Color.white;
         Vector2 bodySize = BodySize(hero);
         Vector2 headSize = new Vector2(bodySize.x * 0.55f, bodySize.x * 0.55f);
