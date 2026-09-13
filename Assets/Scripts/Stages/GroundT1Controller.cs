@@ -275,14 +275,17 @@ public class GroundT1Controller : MonoBehaviour
         _shieldText.alignment = TextAnchor.MiddleLeft;
 
         bool showShield = hero != null && hero.Id == "guerreiro";
-        _showSpecialCd = hero != null && hero.Id == "arqueiro";
+        // Mago e Arqueiro reusam a barra do escudo para o CD do especial.
+        _showSpecialCd = hero != null && (hero.Id == "arqueiro" || hero.Id == "mago");
         if (_shieldLabel != null)
         {
             _shieldLabel.gameObject.SetActive(showShield || _showSpecialCd);
             if (_showSpecialCd)
             {
                 _shieldLabel.text = "ESPECIAL";
-                _shieldLabel.color = new Color(0.55f, 0.92f, 0.65f);
+                _shieldLabel.color = hero.Id == "mago"
+                    ? new Color(0.55f, 0.75f, 1f)
+                    : new Color(0.55f, 0.92f, 0.65f);
             }
         }
         if (_shieldTrack != null)
@@ -290,7 +293,11 @@ public class GroundT1Controller : MonoBehaviour
         if (_shieldText != null)
             _shieldText.gameObject.SetActive(showShield || _showSpecialCd);
         if (_showSpecialCd && _shieldFill != null)
-            _shieldFill.color = new Color(0.45f, 0.88f, 0.58f);
+        {
+            _shieldFill.color = hero.Id == "mago"
+                ? new Color(0.4f, 0.7f, 1f)
+                : new Color(0.45f, 0.88f, 0.58f);
+        }
 
         RefreshHud();
         UiKit.Label(canvas.transform, HintFor(hero), 16, new Vector2(0f, -480f), new Color(1f, 1f, 1f, 0.55f), new Vector2(1600f, 30f));
@@ -367,7 +374,7 @@ public class GroundT1Controller : MonoBehaviour
         {
             var combat = _player.GetComponent<PlayerCombat>();
             float left = combat != null ? combat.SpecialCooldownLeft : 0f;
-            float max = combat != null ? combat.SpecialCooldownMax : PlayerCombat.SpecialCooldown;
+            float max = combat != null ? combat.SpecialCooldownMax : PlayerCombat.ArcherSpecialCooldown;
             float ready = max > 0f ? 1f - Mathf.Clamp01(left / max) : 1f;
             UiKit.SetBar(_shieldFill, ready, BarWidth);
             if (_shieldText != null)
