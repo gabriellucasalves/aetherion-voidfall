@@ -263,9 +263,11 @@ public class PlayerCombat : MonoBehaviour
         ArcaneNova.Detonate(center, MageSpecialRadius, damage, color);
 
         _attackLeft = 0.45f; // cast visual (MagoVisual)
-        _specialAnimLeft = 0.55f; // clip special 17–20
-        _specialCooldownLeft = MageSpecialCooldown;
+        // Clip special 17–20 (~11 fps) + hold: cobre wind-up (0.18s) e pico da explosão VFX.
+        _specialAnimLeft = 0.70f;
+        _specialCooldownLeft = MageSpecialCooldown; // CD próprio ~6.5s — independente do Orbe básico
         PixelBurst.Spawn(transform.position + Vector3.up * 0.8f, color, 6);
+        PixelBurst.Spawn(transform.position + Vector3.up * 0.55f, new Color(0.7f, 0.45f, 1f), 4);
     }
 
     void FireArcher()

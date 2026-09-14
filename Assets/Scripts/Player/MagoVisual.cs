@@ -76,6 +76,7 @@ public class MagoVisual : MonoBehaviour
         }
 
         // Especial tem prioridade sobre o cast do Orbe básico.
+        // Frames 17–20 sync com wind-up + pico do Núcleo Arcano (ArcaneNova ArmDelay ~0.18s).
         if (_combat != null && _combat.IsCastingSpecial)
         {
             Play("special", Special, 11f, false);
