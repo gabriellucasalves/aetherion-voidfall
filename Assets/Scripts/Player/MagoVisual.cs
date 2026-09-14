@@ -9,7 +9,7 @@ using UnityEngine;
 ///   0–3   idle
 ///   4–9   walk
 ///  10–12  jump
-///  13–16  cast   (Orbe — PlayerCombat.IsAttacking)
+///  13–16  cast   (Orbe Arcano reto — PlayerCombat.IsAttacking, ~0.38s)
 ///  17–20  special (Núcleo Arcano — PlayerCombat.IsCastingSpecial)
 ///  21–22  hurt
 ///  23–27  meta (silhueta / paleta / spare) — não animados em runtime

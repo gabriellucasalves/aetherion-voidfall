@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Especial do Mago — Núcleo Arcano: explosão em área azul/arcana.
-/// Distinto do Orbe básico (projétil teleguiado). CD fica em PlayerCombat.
+/// Distinto do Orbe básico (tiro reto / ArcaneBolt). CD fica em PlayerCombat.
 /// </summary>
 public class ArcaneNova : MonoBehaviour
 {

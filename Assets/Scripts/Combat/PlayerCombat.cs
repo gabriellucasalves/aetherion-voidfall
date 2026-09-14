@@ -162,9 +162,8 @@ public class PlayerCombat : MonoBehaviour
             if (_specialCooldownLeft <= 0f && WantsSpecial())
                 FireMageSpecial();
 
-            if (_cooldownLeft > 0f)
-                return;
-            if (WantsAttack() || HasTargetInRange())
+            // Tiro básico: só clique/J (ou hold) — sem auto-fire por proximidade.
+            if (WantsAttack() && _cooldownLeft <= 0f)
                 FireMage();
             return;
         }
@@ -204,37 +203,22 @@ public class PlayerCombat : MonoBehaviour
 
     void FireMage()
     {
-        // Auto: só com inimigo em AttackRange. Clique/J: força tiro mesmo sem alvo.
-        var target = FindNearest(transform, transform.position, AttackRange);
+        // Orbe Arcano: tiro reto na facing (sem lock / sem homing). Clique/J ou hold.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
-        Vector2 direction = facing;
-        Transform lockOn = null;
-        if (target != null)
-        {
-            direction = (Vector2)(target.transform.position - transform.position);
-            if (direction.sqrMagnitude < 0.01f)
-                direction = facing;
-            lockOn = target.transform;
-        }
-        else if (!WantsAttack())
-        {
-            return;
-        }
+        if (facing.sqrMagnitude < 0.01f)
+            facing = Vector2.right;
+        facing.Normalize();
 
-        if (direction.sqrMagnitude < 0.01f)
-            direction = Vector2.right;
-        direction.Normalize();
-
-        SpawnOrb(direction, lockOn);
-        PixelBurst.Spawn(transform.position + (Vector3)direction * 0.5f, _ability.Color, 3);
-        _attackLeft = 0.4f; // MagoVisual cast (4 frames @ ~12 fps)
+        ArcaneBolt.Launch(transform, facing, _ability, DamageForShot());
+        // 4 frames de cast @ ~12 fps (~0.33s) + hold curto no último frame — sync MagoVisual 13–16.
+        _attackLeft = 0.38f;
         ArmCooldown();
     }
 
     void FireMageSpecial()
     {
         // Núcleo Arcano: explosão em área no inimigo mais próximo (ou à frente).
-        // Distinto do Orbe teleguiado — limpa grupo com CD longo (6.5s).
+        // Distinto do Orbe básico (tiro reto) — limpa grupo com CD longo (6.5s).
         var target = FindNearest(transform, transform.position, AttackRange);
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         Vector3 center;
@@ -292,13 +276,6 @@ public class PlayerCombat : MonoBehaviour
         PixelBurst.Spawn(transform.position, new Color(0.95f, 0.72f, 0.28f), 5);
     }
 
-    void SpawnOrb(Vector2 direction, Transform target)
-    {
-        var go = MakeShot("Orbe", _ability.ProjectileSize, _ability.Color, direction);
-        // Dano = Power * DamageScale (CreateOrbe). HomingOrb trava / re-adquire o alvo.
-        go.AddComponent<HomingOrb>().Launch(direction, _ability, DamageForShot(), target);
-    }
-
     void FireArrow(Vector2 direction, Vector3 localOffset, float damage, Color color)
     {
         var go = MakeShot("Flecha", _ability.ProjectileSize, color, direction);
@@ -352,11 +329,6 @@ public class PlayerCombat : MonoBehaviour
         if (IsArcher)
             cooldown *= 80f / Mathf.Max(40, _hero.Agility);
         _cooldownLeft = cooldown;
-    }
-
-    bool HasTargetInRange()
-    {
-        return FindNearest(transform, transform.position, AttackRange) != null;
     }
 
     public static EnemyController FindNearest(Transform from, Vector2 origin, float range)
