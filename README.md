@@ -32,6 +32,20 @@ No celular aparecem botões virtuais (analógico, pular, atacar, escudo, dash).
 | Isabela Rosa Dos Santos Gontijo | [batmavis](https://github.com/batmavis) | write |
 | Wesley Thiago Matias Xavier | [wesshub](https://github.com/wesshub) | write |
 
+## Pixel art — tools (Etapas 2–10)
+
+Docs: `Assets/Documentation/` (`CharacterPixelArtAudit.md`, `CharacterStyleGuide.md`, `MagoRedesignSpec.md`, `PixelArtTools.md`).
+
+| Ferramenta | Como abrir |
+| --- | --- |
+| Template Aseprite | `Tools/Aseprite/CreateCharacterTemplate.lua` → no Aseprite: **File → Scripts** (copie o `.lua` para a pasta Scripts) |
+| Import Tool | Unity: **Tools → Pixel Art → Import Tool** |
+| Character Validator | Unity: **Tools → Pixel Art → Character Validator** |
+| Character Comparison | Unity: **Tools → Pixel Art → Character Comparison** |
+| Proportion Debug | Componente `CharacterProportionDebug` no herói (Scene View) |
+
+Contrato de runtime (não mudar tamanho global à toa): **PPU 15**, pivot `(0.5, 3/64)`, **Point**, GO pixel `y = -0.5`. Referência estrutural: **Guerreiro**.
+
 ## Build WebGL (Unity 6)
 
 No terminal, com o Editor fechado:
