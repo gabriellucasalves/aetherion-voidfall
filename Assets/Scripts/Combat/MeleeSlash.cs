@@ -36,7 +36,7 @@ public class MeleeSlash : MonoBehaviour
     Color _fxColor;
     SpriteRenderer _renderer;
     BoxCollider2D _hitbox;
-    readonly HashSet<int> _hitIds = new HashSet<int>();
+    readonly HashSet<EnemyController> _hitIds = new HashSet<EnemyController>();
 
     public void Swing(Transform owner, AbilityData ability, float damage)
     {
@@ -145,8 +145,7 @@ public class MeleeSlash : MonoBehaviour
         if (enemy == null || enemy.Health == null || enemy.Health.IsDead)
             return;
 
-        int id = enemy.GetInstanceID();
-        if (!_hitIds.Add(id))
+        if (!_hitIds.Add(enemy))
             return;
 
         enemy.ReceiveDamage(_damage);

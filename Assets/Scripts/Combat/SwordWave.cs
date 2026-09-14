@@ -41,7 +41,7 @@ public class SwordWave : MonoBehaviour
     float _age;
     Color _fxColor;
     SpriteRenderer _renderer;
-    readonly HashSet<int> _hitIds = new HashSet<int>();
+    readonly HashSet<EnemyController> _hitIds = new HashSet<EnemyController>();
 
     public static void Launch(Transform owner, Vector2 direction, AbilityData ability, float damage)
     {
@@ -125,8 +125,7 @@ public class SwordWave : MonoBehaviour
         if (enemy == null || enemy.Health == null || enemy.Health.IsDead)
             return;
 
-        int id = enemy.GetInstanceID();
-        if (!_hitIds.Add(id))
+        if (!_hitIds.Add(enemy))
             return;
 
         enemy.ReceiveDamage(_damage);
