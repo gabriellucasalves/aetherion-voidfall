@@ -3,13 +3,15 @@ using UnityEngine;
 /// <summary>
 /// Tiro básico do Arqueiro — flecha reta na facing.
 /// Visual: ponta + haste + pena (pixel art Point) com rotação na direção do tiro.
-/// Spawn sincronizado com o frame de soltar (draw→release) via <see cref="MuzzleDelay"/>.
+/// Spawn sincronizado com o frame de soltar (draw→release) via <see cref="BasicMuzzleDelay"/>.
 /// Dano e velocidade vêm de <see cref="AbilityData.CreateFlecha"/>.
 /// </summary>
 public class Arrow : MonoBehaviour
 {
-    // Atraso: draw hold (13×2 @ ~12 fps) → soltar no frame 14 (~0.16–0.17s).
-    const float MuzzleDelay = 0.16f;
+    // Básico: draw hold (13×2 @ ~12 fps) → soltar no frame 14 (~0.16s).
+    // Especial: delay maior sync com frame 18 (leque) — ver Launch(muzzleDelay).
+    public const float BasicMuzzleDelay = 0.16f;
+    public const float SpecialMuzzleDelay = 0.25f;
     const float TrailInterval = 0.055f;
 
     // Flecha horizontal apontando para +X (transform.right = direção do tiro).
@@ -38,6 +40,7 @@ public class Arrow : MonoBehaviour
     float _age;
     float _trailClock;
     Color _fxColor;
+    float _muzzleDelay = BasicMuzzleDelay;
     bool _armed;
     bool _hit;
     SpriteRenderer _renderer;
@@ -49,7 +52,8 @@ public class Arrow : MonoBehaviour
         AbilityData ability,
         float damage,
         Vector3 localOffset,
-        Color color)
+        Color color,
+        float muzzleDelay = -1f)
     {
         if (ability == null || owner == null)
             return;
@@ -69,6 +73,7 @@ public class Arrow : MonoBehaviour
         arrow._lifetime = ability.Lifetime;
         arrow._damage = damage;
         arrow._fxColor = color;
+        arrow._muzzleDelay = muzzleDelay >= 0f ? muzzleDelay : BasicMuzzleDelay;
 
         arrow._renderer = go.AddComponent<SpriteRenderer>();
         arrow._renderer.sprite = ArrowSprite();
@@ -108,7 +113,7 @@ public class Arrow : MonoBehaviour
 
         if (!_armed)
         {
-            if (_age < MuzzleDelay)
+            if (_age < _muzzleDelay)
                 return;
             Arm();
         }
@@ -118,7 +123,7 @@ public class Arrow : MonoBehaviour
         transform.right = _direction;
         SpawnTrail();
 
-        if (_age - MuzzleDelay >= _lifetime)
+        if (_age - _muzzleDelay >= _lifetime)
             Destroy(gameObject);
     }
 

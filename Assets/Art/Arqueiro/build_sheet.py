@@ -227,13 +227,27 @@ STREAK = [
     "....t...",
 ]
 
+# Leque de 5 flechas (special 18) — ponta+haste+pena legíveis
 FAN = [
-    "c........",
-    ".cy......",
-    "..cyw....",
-    "...cywa..",
-    "....cya..",
-    ".....ca..",
+    "c...y...........",
+    ".cy.ycwwwaof....",
+    "..c.............",
+    "...ycwwwwwaof...",
+    "....c...........",
+    ".....ycwwwaof...",
+    "......c.y.......",
+    ".......ycwwwaof.",
+    "........c.......",
+]
+
+FAN_TOP = [
+    "ycwwwaof",
+]
+FAN_MID = [
+    "ycwwwwwaof",
+]
+FAN_BOT = [
+    "ycwwwaof",
 ]
 
 
@@ -279,9 +293,29 @@ def draw_archer(pixels, width, ox, oy, pose):
         blit(pixels, width, bow_x + 1, bow_y + 3, ARROW_SHORT)
 
     if fan:
-        blit(pixels, width, bow_x + 7, bow_y + 1, FAN)
-        blit(pixels, width, bow_x + 10, bow_y + 3, ARROW_H)
-        blit(pixels, width, bow_x + 8, bow_y + 7, ["cya"])
+        # Soltura em leque: arco em release + 5 flechas espalhadas (special legível).
+        blit(pixels, width, bow_x, bow_y, BOW)
+        blit(pixels, width, bow_x + 3, bow_y + 2, STRING_SNAP)
+        blit(pixels, width, bow_x + 8, bow_y - 2, [
+            "....y.....",
+            "...ycwwaof",
+            "c.........",
+        ])
+        blit(pixels, width, bow_x + 10, bow_y + 1, [
+            "...y......",
+            "..ycwwwaof",
+        ])
+        blit(pixels, width, bow_x + 11, bow_y + 4, ARROW_H)
+        blit(pixels, width, bow_x + 10, bow_y + 7, [
+            "..ycwwwaof",
+            "...y......",
+        ])
+        blit(pixels, width, bow_x + 8, bow_y + 10, [
+            "c.........",
+            "...ycwwaof",
+            "....y.....",
+        ])
+        blit(pixels, width, bow_x + 2, bow_y + 3, ["uyu"])
 
     if streak:
         blit(pixels, width, bx + lean - 10, by + 16, STREAK)
@@ -312,8 +346,8 @@ def poses():
         # Dash 16-17
         {"lean": 2, "x": 2, "l": 2, "r": -1, "bow": "idle", "streak": True},
         {"lean": 2, "x": 3, "l": 3, "r": -2, "bow": "idle", "streak": True},
-        # Special 18
-        {"lean": 1, "x": 1, "bow": "idle", "fan": True},
+        # Special 18 — soltura em leque bem legível
+        {"lean": 2, "x": 2, "bow": "release", "fan": True},
         # Hurt 19-20
         {"x": -3, "lean": -1, "l": -2, "r": 1, "bow": "idle"},
         {"x": -2, "lean": -1, "l": -1, "bow": "idle"},

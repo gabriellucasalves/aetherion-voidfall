@@ -275,25 +275,44 @@ public class PlayerCombat : MonoBehaviour
         // Flecha visual (Arrow): 1 tiro reto na facing. Spawn com delay no frame de soltar.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         FireArrow(facing, Vector3.zero, DamageForShot(), _ability.Color);
-        // Clip shoot 13×2→14→15 @ ~12 fps (~0.33s) + hold no recover — sync Arrow.MuzzleDelay.
+        // Clip shoot 13×2→14→15 @ ~12 fps (~0.33s) + hold no recover — sync Arrow.BasicMuzzleDelay.
         _attackLeft = 0.42f;
         ArmCooldown();
     }
 
     void FireArcherSpecial()
     {
-        // Rajada em leque curto (5 flechas) — especial próprio com CD ~6.5s. (FASE 5 polirá VFX)
+        // FASE 5 — Rajada em leque: 5 flechas com o mesmo sprite Arrow, spread angular na facing.
+        // CD próprio ~6.5s (ArcherSpecialCooldown). Spawn sync com frame special 18.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        if (facing.sqrMagnitude < 0.01f)
+            facing = Vector2.right;
+        facing.Normalize();
+
         Color tint = new Color(0.55f, 0.95f, 0.62f);
+        Color gold = new Color(0.95f, 0.85f, 0.35f);
         float damage = DamageForShot() * 0.5f;
-        float[] angles = { -20f, -10f, 0f, 10f, 20f };
-        float[] yOff = { 0.28f, 0.14f, 0f, -0.14f, -0.28f };
+        float[] angles = { -24f, -12f, 0f, 12f, 24f };
+        Vector2 perp = new Vector2(-facing.y, facing.x);
+        float[] lateral = { 0.22f, 0.11f, 0f, -0.11f, -0.22f };
+
         for (int i = 0; i < angles.Length; i++)
-            FireArrow(Rotate(facing, angles[i]), new Vector3(0f, yOff[i], 0f), damage, tint);
-        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.6f, tint, 8);
-        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.35f, new Color(0.95f, 0.85f, 0.35f), 4);
-        _attackLeft = 0.35f;
-        _specialAnimLeft = 0.42f;
+        {
+            Vector2 dir = Rotate(facing, angles[i]);
+            Vector3 offset = (Vector3)(perp * lateral[i]) + Vector3.up * 0.02f;
+            // Leve cascade: todas saem no release do leque (~0.25s), com micro-stagger.
+            float delay = Arrow.SpecialMuzzleDelay + i * 0.02f;
+            FireArrow(dir, offset, damage, tint, delay);
+        }
+
+        // VFX de wind-up (draw) — o PixelBurst de muzzle de cada Arrow dispara no soltar.
+        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.45f + Vector3.up * 0.35f, tint, 10);
+        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.25f + Vector3.up * 0.4f, gold, 6);
+        PixelBurst.Spawn(transform.position + Vector3.up * 0.55f, new Color(0.7f, 1f, 0.75f), 4);
+
+        // Clip special {13,13,14,18} @ ~12 fps (~0.33s) + hold no leque.
+        _attackLeft = 0.45f;
+        _specialAnimLeft = 0.55f;
         _specialCooldownLeft = ArcherSpecialCooldown;
     }
 
@@ -310,10 +329,10 @@ public class PlayerCombat : MonoBehaviour
         PixelBurst.Spawn(transform.position, new Color(0.95f, 0.72f, 0.28f), 5);
     }
 
-    void FireArrow(Vector2 direction, Vector3 localOffset, float damage, Color color)
+    void FireArrow(Vector2 direction, Vector3 localOffset, float damage, Color color, float muzzleDelay = -1f)
     {
         // Arrow: sprite ponta+haste+pena, rotação na direção, PixelBurst no impacto.
-        Arrow.Launch(transform, direction, _ability, damage, localOffset, color);
+        Arrow.Launch(transform, direction, _ability, damage, localOffset, color, muzzleDelay);
     }
 
     float DamageForShot()
