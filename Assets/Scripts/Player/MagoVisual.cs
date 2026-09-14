@@ -88,6 +88,27 @@ public class MagoVisual : MonoBehaviour
             return;
         }
 
+        // Campo de Magia ativo: idle/walk com tint ciano-roxo (feedback no sprite).
+        if (_combat != null && _combat.IsWarding)
+        {
+            bool groundedWard = _player != null && _player.Grounded;
+            Vector2 velWard = _player != null ? _player.Velocity : Vector2.zero;
+            bool walkingWard = Mathf.Abs(velWard.x) > 0.12f || (_player != null && _player.WantsMove);
+            if (!groundedWard || velWard.y > 1.6f)
+            {
+                Show(JumpFrame(velWard.y));
+                _clip = "ward-jump";
+            }
+            else if (walkingWard)
+                Play("ward-walk", Walk, 10f, true);
+            else
+                Play("ward-idle", Idle, 4f, true);
+            ApplyWardTint(true);
+            return;
+        }
+
+        ApplyWardTint(false);
+
         bool grounded = _player != null && _player.Grounded;
         Vector2 velocity = _player != null ? _player.Velocity : Vector2.zero;
         bool jumping = !grounded || velocity.y > 1.6f;
