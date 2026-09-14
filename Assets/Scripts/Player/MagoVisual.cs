@@ -172,6 +172,24 @@ public class MagoVisual : MonoBehaviour
         _renderer.sprite = _frames[frame];
     }
 
+    void ApplyWardTint(bool on)
+    {
+        if (_renderer == null)
+            return;
+
+        if (!on)
+        {
+            _renderer.color = Color.white;
+            return;
+        }
+
+        float pulse = 0.55f + 0.45f * Mathf.Sin(Time.time * 8f);
+        _renderer.color = Color.Lerp(
+            new Color(0.72f, 0.78f, 1f, 1f),
+            new Color(0.78f, 0.55f, 1f, 1f),
+            pulse);
+    }
+
     static Sprite[] LoadFrames()
     {
         var texture = LoadSheet();
