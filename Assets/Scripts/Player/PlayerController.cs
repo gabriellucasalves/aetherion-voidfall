@@ -120,6 +120,8 @@ public class PlayerController : MonoBehaviour
         float speed = MoveSpeed;
         if (combat != null && combat.IsBlocking)
             speed *= 0.42f;
+        else if (combat != null && combat.IsWarding)
+            speed *= 0.72f; // campo canalizado — mais leve que o escudo
 
         var velocity = _body.linearVelocity;
         velocity.x = x * speed;

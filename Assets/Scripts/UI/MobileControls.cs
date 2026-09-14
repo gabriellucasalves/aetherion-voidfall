@@ -24,6 +24,9 @@ public class MobileControls : MonoBehaviour
     static Sprite _shield;
     static Sprite _orb;
     static Sprite _dash;
+    static Sprite _field;
+    static Image _defenseIcon;
+    static Image _defenseBg;
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     static extern int AetherionIsMobile();
@@ -105,6 +108,20 @@ public class MobileControls : MonoBehaviour
         pad.ApplyVisibility(ShouldShow());
     }
 
+    
+    /// <summary>Troca o ícone de defesa: escudo (guerreiro) ou campo rúnico (mago).</summary>
+    public static void SetDefenseIcon(bool magicField)
+    {
+        if (_defenseIcon != null)
+            _defenseIcon.sprite = magicField ? FieldSprite() : ShieldSprite();
+        if (_defenseBg != null)
+            _defenseBg.color = magicField
+                ? new Color(0.12f, 0.1f, 0.32f, 0.9f)
+                : new Color(0.08f, 0.14f, 0.28f, 0.88f);
+        if (_defenseBg != null)
+            _defenseBg.gameObject.name = magicField ? "Campo" : "Escudo";
+    }
+
     void Update()
     {
         if (!IsVisible && Input.touchCount > 0)
@@ -123,6 +140,8 @@ public class MobileControls : MonoBehaviour
         _specialPressed = false;
         _dashPressed = false;
         IsVisible = false;
+        _defenseIcon = null;
+        _defenseBg = null;
     }
 
     void ApplyVisibility(bool on)
@@ -142,6 +161,10 @@ public class MobileControls : MonoBehaviour
 
         var shield = IconButton(parent, "Escudo", ShieldSprite(), new Vector2(1f, 0f), new Vector2(-210f, 160f), 230f,
             new Color(0.08f, 0.14f, 0.28f, 0.88f));
+        _defenseBg = shield;
+        _defenseIcon = shield.transform.Find("Icone") != null
+            ? shield.transform.Find("Icone").GetComponent<Image>()
+            : null;
         Hold(shield, () => BlockHeld = true, () => BlockHeld = false);
 
         // Especial (Mago/Guerreiro/Arqueiro). Pressão única — ConsumeSpecialDown no combate.
@@ -339,6 +362,36 @@ public class MobileControls : MonoBehaviour
             _ => new Color32(0, 0, 0, 0),
         });
         return _shield;
+    }
+
+    static Sprite FieldSprite()
+    {
+        if (_field != null)
+            return _field;
+        string[] art =
+        {
+            "......cc......",
+            "....ccwwcc....",
+            "...cwppppwc...",
+            "..cwp....pwc..",
+            ".cwp..yy..pwc.",
+            "cwp...yy...pwc",
+            "cwp...yy...pwc",
+            ".cwp..yy..pwc.",
+            "..cwp....pwc..",
+            "...cwppppwc...",
+            "....ccwwcc....",
+            "......cc......",
+        };
+        _field = PixelSprite(art, ch => ch switch
+        {
+            'w' => new Color32(210, 245, 255, 255),
+            'c' => new Color32(70, 190, 255, 255),
+            'p' => new Color32(160, 90, 255, 230),
+            'y' => new Color32(200, 160, 255, 255),
+            _ => new Color32(0, 0, 0, 0),
+        });
+        return _field;
     }
 
     static Sprite OrbSprite()

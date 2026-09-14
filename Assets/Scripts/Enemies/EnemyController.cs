@@ -190,6 +190,10 @@ public class EnemyController : MonoBehaviour
         if (combat != null)
             combat.TryBlock(from, incoming, out incoming);
 
+        // Campo de Magia do Mago (FASE 2) — mitigação omnidirecional, distinta do escudo.
+        if (combat != null && incoming > 0f)
+            combat.TryWard(incoming, out incoming);
+
         if (incoming > 0f)
         {
             int defense = player != null && player.Hero != null ? player.Hero.Defense : 0;

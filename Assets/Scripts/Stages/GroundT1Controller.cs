@@ -21,6 +21,7 @@ public class GroundT1Controller : MonoBehaviour
     Image _shieldFill;
     GameObject _shieldTrack;
     bool _showSpecialCd;
+    bool _showWard;
     Text _waveBanner;
     float _waveBannerLeft;
     const float BarWidth = 360f;
@@ -83,7 +84,7 @@ public class GroundT1Controller : MonoBehaviour
             TogglePause();
 
         // CD do especial do arqueiro usa a barra reaproveitada do escudo.
-        if (_showSpecialCd)
+        if (_showSpecialCd || _showWard)
             RefreshHud();
     }
 
@@ -244,6 +245,10 @@ public class GroundT1Controller : MonoBehaviour
         if (shield != null)
             shield.Changed += _ => RefreshHud();
 
+        var ward = go.GetComponent<MagicWard>();
+        if (ward != null)
+            ward.Changed += _ => RefreshHud();
+
         HeroAppearance.Build(go.transform, hero);
         return player;
     }
@@ -275,33 +280,39 @@ public class GroundT1Controller : MonoBehaviour
         _shieldText.alignment = TextAnchor.MiddleLeft;
 
         bool showShield = hero != null && hero.Id == "guerreiro";
-        // Mago e Arqueiro reusam a barra do escudo para o CD do especial.
-        _showSpecialCd = hero != null && (hero.Id == "arqueiro" || hero.Id == "mago");
+        // Arqueiro: barra = CD do especial. Mago: barra = CAMPO (não ESCUDO).
+        _showSpecialCd = hero != null && hero.Id == "arqueiro";
+        _showWard = hero != null && hero.Id == "mago";
         if (_shieldLabel != null)
         {
-            _shieldLabel.gameObject.SetActive(showShield || _showSpecialCd);
-            if (_showSpecialCd)
+            _shieldLabel.gameObject.SetActive(showShield || _showSpecialCd || _showWard);
+            if (_showWard)
+            {
+                _shieldLabel.text = "CAMPO";
+                _shieldLabel.color = new Color(0.55f, 0.78f, 1f);
+            }
+            else if (_showSpecialCd)
             {
                 _shieldLabel.text = "ESPECIAL";
-                _shieldLabel.color = hero.Id == "mago"
-                    ? new Color(0.55f, 0.75f, 1f)
-                    : new Color(0.55f, 0.92f, 0.65f);
+                _shieldLabel.color = new Color(0.55f, 0.92f, 0.65f);
             }
         }
         if (_shieldTrack != null)
-            _shieldTrack.SetActive(showShield || _showSpecialCd);
+            _shieldTrack.SetActive(showShield || _showSpecialCd || _showWard);
         if (_shieldText != null)
-            _shieldText.gameObject.SetActive(showShield || _showSpecialCd);
-        if (_showSpecialCd && _shieldFill != null)
+            _shieldText.gameObject.SetActive(showShield || _showSpecialCd || _showWard);
+        if (_shieldFill != null)
         {
-            _shieldFill.color = hero.Id == "mago"
-                ? new Color(0.4f, 0.7f, 1f)
-                : new Color(0.45f, 0.88f, 0.58f);
+            if (_showWard)
+                _shieldFill.color = new Color(0.45f, 0.7f, 1f);
+            else if (_showSpecialCd)
+                _shieldFill.color = new Color(0.45f, 0.88f, 0.58f);
         }
 
         RefreshHud();
         UiKit.Label(canvas.transform, HintFor(hero), 16, new Vector2(0f, -480f), new Color(1f, 1f, 1f, 0.55f), new Vector2(1600f, 30f));
         MobileControls.Attach(transform);
+        MobileControls.SetDefenseIcon(_showWard);
 
         _waveBanner = UiKit.Label(canvas.transform, "", 32, new Vector2(0f, 290f), MenuTheme.CelestialGold, new Vector2(1000f, 48f));
         _waveBanner.gameObject.SetActive(false);
@@ -363,11 +374,27 @@ public class GroundT1Controller : MonoBehaviour
         if (_lifeText != null)
             _lifeText.text = Mathf.CeilToInt(life) + " / " + Mathf.CeilToInt(lifeMax);
 
-        if (shield != null && !_showSpecialCd)
+        if (shield != null && !_showSpecialCd && !_showWard)
         {
             UiKit.SetBar(_shieldFill, shield.Current / shield.Max, BarWidth);
             if (_shieldText != null)
                 _shieldText.text = Mathf.CeilToInt(shield.Current) + " / " + Mathf.CeilToInt(shield.Max);
+        }
+
+        if (_showWard)
+        {
+            var ward = _player.GetComponent<MagicWard>();
+            float n = ward != null ? ward.Normalized : 0f;
+            UiKit.SetBar(_shieldFill, n, BarWidth);
+            if (_shieldText != null)
+            {
+                if (ward != null && ward.IsActive)
+                    _shieldText.text = "ATIVO";
+                else
+                    _shieldText.text = ward != null
+                        ? Mathf.CeilToInt(ward.Charge) + " / " + Mathf.CeilToInt(ward.Max)
+                        : "0";
+            }
         }
 
         if (_showSpecialCd)
@@ -440,7 +467,7 @@ public class GroundT1Controller : MonoBehaviour
         if (MobileControls.ShouldShow() || MobileControls.IsVisible)
         {
             if (hero != null && hero.Id == "mago")
-                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / especial (Núcleo Arcano)";
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / campo / especial (Núcleo Arcano)";
             if (hero != null && hero.Id == "guerreiro")
                 return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: corte / escudo / especial (Onda)";
             if (hero != null && hero.Id == "arqueiro")
@@ -448,7 +475,7 @@ public class GroundT1Controller : MonoBehaviour
             return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo";
         }
         if (hero != null && hero.Id == "mago")
-            return "A/D andar   ·   ESPAÇO pular   ·   clique / J orbe reto   ·   L/Q Núcleo Arcano   ·   ESC pausa";
+            return "A/D andar   ·   ESPAÇO pular   ·   clique / J orbe reto   ·   S/K/direito campo   ·   L/Q Núcleo Arcano   ·   ESC pausa";
         if (hero != null && hero.Id == "arqueiro")
             return "A/D andar   ·   ESPAÇO pular   ·   clique / J flecha   ·   SHIFT dash   ·   L/Q rajada   ·   ESC pausa";
         return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q onda   ·   S / K / direito bloqueia   ·   ESC pausa";

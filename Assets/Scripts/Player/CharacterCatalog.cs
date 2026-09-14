@@ -59,9 +59,9 @@ public static class CharacterCatalog
             // Kit: vida baixa, Power alto, alcance longo.
             // Especial FASE 3: Núcleo Arcano (L/Q) — explosão em área, CD 6.5s.
             Make("mago", "Mago", "Dano mágico / área",
-                "Manto e cajado. Orbe Arcano reto na facing; Núcleo Arcano explode em área.",
+                "Manto e cajado. Orbe Arcano reto na facing; Campo de Magia (S/K) reduz dano; Núcleo Arcano explode em área.",
                 80, 20, 100, 20, 50, 60,
-                "Núcleo Arcano", "Especial (L/Q): explosão arcana em área, CD 6.5s. Orbe básico: clique / J (ou hold) na direção que o mago olha.",
+                "Núcleo Arcano", "Especial (L/Q): explosão arcana em área, CD 6.5s. Orbe: clique / J. Campo (S/K/direito): hold reduz 55% do dano.",
                 new Color(0.45f, 0.55f, 0.95f)),
             Make("arqueiro", "Arqueiro", "Mobilidade / equilíbrio",
                 "Arco leve e aljava. Esquiva, avança e dispara flechas à distância.",

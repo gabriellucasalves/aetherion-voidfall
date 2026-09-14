@@ -7,6 +7,7 @@ public class PlayerCombat : MonoBehaviour
     PlayerController _player;
     HealthSystem _health;
     ShieldSystem _shield;
+    MagicWard _ward;
     Transform _shieldVisual;
     Vector3 _shieldRest;
     float _cooldownLeft;
@@ -30,6 +31,7 @@ public class PlayerCombat : MonoBehaviour
     public const float ArcherSpecialCooldown = 6.5f;
 
     public bool IsBlocking => CanBlock && _blocking && !_locked;
+    public bool IsWarding => IsMage && _ward != null && _ward.IsActive && !_locked;
     public bool IsAttacking => _attackLeft > 0f;
     public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldownLeft);
     public float SpecialCooldownMax =>
@@ -38,6 +40,7 @@ public class PlayerCombat : MonoBehaviour
     public bool IsCastingSpecial => _specialAnimLeft > 0f;
     public bool IsSpecialAttacking => _specialAnimLeft > 0f;
     public ShieldSystem Shield => _shield;
+    public MagicWard Ward => _ward;
     public bool IsWarrior => _hero != null && _hero.Id == "guerreiro";
     public bool IsMage => _hero != null && _hero.Id == "mago";
     public bool IsArcher => _hero != null && _hero.Id == "arqueiro";
@@ -76,13 +79,25 @@ public class PlayerCombat : MonoBehaviour
             if (_shieldVisual != null)
                 _shieldRest = _shieldVisual.localPosition;
         }
+
+        if (IsMage)
+        {
+            _ward = GetComponent<MagicWard>();
+            if (_ward == null)
+                _ward = gameObject.AddComponent<MagicWard>();
+            _ward.Configure();
+        }
     }
 
     public void SetLocked(bool locked)
     {
         _locked = locked;
         if (_locked)
+        {
             _blocking = false;
+            if (_ward != null)
+                _ward.SetHolding(false);
+        }
     }
 
     public bool TryBlock(Vector3 attackerPosition, float rawDamage, out float leftover)
@@ -104,6 +119,17 @@ public class PlayerCombat : MonoBehaviour
             PixelBurst.Spawn(impact, new Color(0.45f, 0.72f, 1f), 5);
         }
         return blocked;
+    }
+
+    /// <summary>Campo de Magia do Mago — mitigação omnidirecional (não é escudo físico).</summary>
+    public bool TryWard(float rawDamage, out float leftover)
+    {
+        leftover = rawDamage;
+        if (!IsWarding || _ward == null || rawDamage <= 0f)
+            return false;
+
+        leftover = _ward.Mitigate(rawDamage);
+        return leftover < rawDamage;
     }
 
     void Update()
@@ -157,13 +183,18 @@ public class PlayerCombat : MonoBehaviour
 
         if (IsMage)
         {
+            // Campo de Magia: mesmo input de block do Guerreiro (S/K/direito / mobile Block).
+            if (_ward != null)
+                _ward.SetHolding(WantsBlock());
+
             // Especial tem CD próprio — não fica bloqueado pelo CD do Orbe básico.
             // CD primeiro: não consome o toque/tecla se ainda estiver em cooldown.
             if (_specialCooldownLeft <= 0f && WantsSpecial())
                 FireMageSpecial();
 
             // Tiro básico: só clique/J (ou hold) — sem auto-fire por proximidade.
-            if (WantsAttack() && _cooldownLeft <= 0f)
+            // Hold do campo cancela o orbe (canalizar defesa).
+            if (!IsWarding && WantsAttack() && _cooldownLeft <= 0f)
                 FireMage();
             return;
         }
