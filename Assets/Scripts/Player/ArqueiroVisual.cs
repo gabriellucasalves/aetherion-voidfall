@@ -2,13 +2,12 @@ using UnityEngine;
 
 // Runtime visual do Arqueiro — mesma pipeline do GuerreiroVisual
 // (Resources/<Hero>/sheet.png, célula 64, 7 colunas, pivot no pé, PPU 15).
-//
-// Mapa do sheet (índice = linha*7 + coluna, topo→baixo / esq→dir):
+// Mapa completo: Assets/Art/Arqueiro/FRAME_MAP.md
 //
 //   Idle      0  1  2  3
 //   Walk      4  5  6  7  8  9
 //   Jump     10 11 12          (subida / ápice / queda)
-//   Shoot    13 14 15          (puxa → solta → recolhe)
+//   Shoot    13 14 15          (puxa → solta → recolhe) — sync Arrow.MuzzleDelay no 14
 //   Dash     16 17
 //   Special  18                (soltura em leque; wind-up reusa 13–14)
 //   Hurt     19 20
@@ -25,8 +24,8 @@ public class ArqueiroVisual : MonoBehaviour
     static readonly int[] Idle = { 0, 1, 2, 3 };
     // Walk — passada curta
     static readonly int[] Walk = { 4, 5, 6, 7, 8, 9 };
-    // Shoot — draw / release / recover
-    static readonly int[] Shoot = { 13, 14, 15 };
+    // Shoot — draw hold → release → recover (legível; flecha spawna no release)
+    static readonly int[] Shoot = { 13, 13, 14, 15 };
     // Dash — impulso (no Guerreiro estes slots são Block)
     static readonly int[] Dash = { 16, 17 };
     // Special — puxa (13–14) + soltura em leque (18)
@@ -88,6 +87,7 @@ public class ArqueiroVisual : MonoBehaviour
 
         if (_combat != null && _combat.IsAttacking)
         {
+            // ~12 fps: draw (13×2) cobre MuzzleDelay ~0.16s; release (14) bate com spawn da flecha.
             Play("shoot", Shoot, 12f, false);
             return;
         }

@@ -272,16 +272,17 @@ public class PlayerCombat : MonoBehaviour
 
     void FireArcher()
     {
+        // Flecha visual (Arrow): 1 tiro reto na facing. Spawn com delay no frame de soltar.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         FireArrow(facing, Vector3.zero, DamageForShot(), _ability.Color);
-        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.55f, _ability.Color, 3);
-        _attackLeft = 0.28f;
+        // Clip shoot 13×2→14→15 @ ~12 fps (~0.33s) + hold no recover — sync Arrow.MuzzleDelay.
+        _attackLeft = 0.42f;
         ArmCooldown();
     }
 
     void FireArcherSpecial()
     {
-        // Rajada em leque curto (5 flechas) — especial próprio com CD ~6.5s.
+        // Rajada em leque curto (5 flechas) — especial próprio com CD ~6.5s. (FASE 5 polirá VFX)
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         Color tint = new Color(0.55f, 0.95f, 0.62f);
         float damage = DamageForShot() * 0.5f;
@@ -311,38 +312,8 @@ public class PlayerCombat : MonoBehaviour
 
     void FireArrow(Vector2 direction, Vector3 localOffset, float damage, Color color)
     {
-        var go = MakeShot("Flecha", _ability.ProjectileSize, color, direction);
-        go.transform.position += localOffset;
-        go.AddComponent<Projectile>().Launch(direction, _ability, damage);
-    }
-
-    GameObject MakeShot(string name, Vector2 size, Color color, Vector2 muzzleDir)
-    {
-        if (muzzleDir.sqrMagnitude < 0.01f)
-            muzzleDir = _player != null ? _player.Facing : Vector2.right;
-        muzzleDir.Normalize();
-
-        var go = new GameObject(name);
-        go.transform.position = transform.position + (Vector3)muzzleDir * 0.55f;
-        var renderer = go.AddComponent<SpriteRenderer>();
-        var texture = Texture2D.whiteTexture;
-        renderer.sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), texture.width);
-        renderer.color = color;
-        renderer.sortingOrder = 20;
-        go.transform.localScale = new Vector3(size.x, size.y, 1f);
-
-        var body = go.AddComponent<Rigidbody2D>();
-        body.bodyType = RigidbodyType2D.Kinematic;
-        body.gravityScale = 0f;
-        body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        var collider = go.AddComponent<BoxCollider2D>();
-        collider.isTrigger = true;
-        collider.size = Vector2.one;
-
-        var owner = GetComponent<Collider2D>();
-        if (owner != null)
-            Physics2D.IgnoreCollision(collider, owner, true);
-        return go;
+        // Arrow: sprite ponta+haste+pena, rotação na direção, PixelBurst no impacto.
+        Arrow.Launch(transform, direction, _ability, damage, localOffset, color);
     }
 
     float DamageForShot()
