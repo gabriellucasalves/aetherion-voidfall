@@ -82,15 +82,16 @@ public class AbilityData : ScriptableObject
 
     public static AbilityData CreateFlecha()
     {
-        // Média distância: projétil rápido; dano híbrido Str/Power é aplicado em PlayerCombat.
+        // Média distância: flecha rápida (Arrow.cs — ponta+haste+pena); dano híbrido Str/Power em PlayerCombat.
         var data = CreateInstance<AbilityData>();
         data.Id = "flecha";
         data.DisplayName = "Flecha";
         data.Range = 7.4f;
         data.Cooldown = 0.38f;
-        data.ProjectileSpeed = 19f;
-        data.Lifetime = 0.48f;
-        data.ProjectileSize = new Vector2(0.78f, 0.14f);
+        data.ProjectileSpeed = 22f;
+        data.Lifetime = 0.52f;
+        // Escala visual da flecha pixel (silhueta alongada; não é mais retângulo branco).
+        data.ProjectileSize = new Vector2(1.05f, 0.48f);
         data.DamageScale = 0.36f;
         data.Color = new Color(1f, 0.82f, 0.35f);
         return data;

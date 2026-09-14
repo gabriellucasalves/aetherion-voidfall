@@ -2,15 +2,14 @@ using UnityEngine;
 
 // Runtime visual do Arqueiro — mesma pipeline do GuerreiroVisual
 // (Resources/<Hero>/sheet.png, célula 64, 7 colunas, pivot no pé, PPU 15).
-//
-// Mapa do sheet (índice = linha*7 + coluna, topo→baixo / esq→dir):
+// Mapa completo: Assets/Art/Arqueiro/FRAME_MAP.md
 //
 //   Idle      0  1  2  3
 //   Walk      4  5  6  7  8  9
 //   Jump     10 11 12          (subida / ápice / queda)
-//   Shoot    13 14 15          (puxa → solta → recolhe)
+//   Shoot    13 14 15          (puxa → solta → recolhe) — sync Arrow.MuzzleDelay no 14
 //   Dash     16 17
-//   Special  18                (soltura em leque; wind-up reusa 13–14)
+//   Special  18                (soltura em leque; wind-up 13×2→14; sync SpecialMuzzleDelay)
 //   Hurt     19 20
 //
 public class ArqueiroVisual : MonoBehaviour
@@ -25,12 +24,12 @@ public class ArqueiroVisual : MonoBehaviour
     static readonly int[] Idle = { 0, 1, 2, 3 };
     // Walk — passada curta
     static readonly int[] Walk = { 4, 5, 6, 7, 8, 9 };
-    // Shoot — draw / release / recover
-    static readonly int[] Shoot = { 13, 14, 15 };
+    // Shoot — draw hold → release → recover (legível; flecha spawna no release)
+    static readonly int[] Shoot = { 13, 13, 14, 15 };
     // Dash — impulso (no Guerreiro estes slots são Block)
     static readonly int[] Dash = { 16, 17 };
-    // Special — puxa (13–14) + soltura em leque (18)
-    static readonly int[] Special = { 13, 14, 18 };
+    // Special — draw hold → release → leque (18); sync Arrow.SpecialMuzzleDelay
+    static readonly int[] Special = { 13, 13, 14, 18 };
     // Hurt — recuo
     static readonly int[] Hurt = { 19, 20 };
 
@@ -44,6 +43,7 @@ public class ArqueiroVisual : MonoBehaviour
     int _index;
     string _clip = "";
     float _hurtLeft;
+    float _afterimageClock;
 
     public static bool Attach(Transform parent)
     {
@@ -82,12 +82,14 @@ public class ArqueiroVisual : MonoBehaviour
 
         if (_combat != null && _combat.IsSpecialAttacking)
         {
-            Play("special", Special, 14f, false);
+            // ~12 fps: draw (13×2) + release (14) → leque (18) ~0.25s (= Arrow.SpecialMuzzleDelay).
+            Play("special", Special, 12f, false);
             return;
         }
 
         if (_combat != null && _combat.IsAttacking)
         {
+            // ~12 fps: draw (13×2) cobre MuzzleDelay ~0.16s; release (14) bate com spawn da flecha.
             Play("shoot", Shoot, 12f, false);
             return;
         }
@@ -95,8 +97,17 @@ public class ArqueiroVisual : MonoBehaviour
         if (_player != null && _player.IsDashing)
         {
             Play("dash", Dash, 14f, false);
+            // Rastro leve (pós-imagem) — VFX trivial do dash Shift.
+            _afterimageClock += Time.deltaTime;
+            if (_afterimageClock >= 0.045f)
+            {
+                _afterimageClock = 0f;
+                SpawnDashAfterimage();
+            }
             return;
         }
+
+        _afterimageClock = 0f;
 
         bool grounded = _player != null && _player.Grounded;
         Vector2 velocity = _player != null ? _player.Velocity : Vector2.zero;
@@ -202,6 +213,25 @@ public class ArqueiroVisual : MonoBehaviour
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
         return texture;
+    }
+
+
+    void SpawnDashAfterimage()
+    {
+        if (_renderer == null || _renderer.sprite == null)
+            return;
+
+        var go = new GameObject("DashGhost");
+        go.transform.position = transform.position;
+        go.transform.localScale = transform.lossyScale;
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = _renderer.sprite;
+        sr.flipX = _renderer.flipX;
+        sr.sortingOrder = _renderer.sortingOrder - 1;
+        var c = _renderer.color;
+        c.a = 0.4f;
+        sr.color = c;
+        go.AddComponent<DashGhost>().Begin(0.16f);
     }
 
     void Bind()

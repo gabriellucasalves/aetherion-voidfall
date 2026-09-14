@@ -153,16 +153,27 @@ BOW = [
     "......kwk...",
 ]
 
+# Arco bem puxado — corda esticada, silhueta de draw legível
 BOW_DRAWN = [
-    "......kwk...",
-    ".....kw.wk..",
-    "....kw...wk.",
-    "..kw.......wk",
-    "..kw.......wk",
-    "..kw.......wk",
-    "....kw...wk.",
-    ".....kw.wk..",
-    "......kwk...",
+    "........kwk.....",
+    ".......kw.wk....",
+    "......kw...wk...",
+    "....kw.......wk.",
+    "..kw...........wk",
+    "....kw.......wk.",
+    "......kw...wk...",
+    ".......kw.wk....",
+    "........kwk.....",
+]
+
+STRING_DRAWN = [
+    "k",
+    "u",
+    "y",
+    "u",
+    "y",
+    "u",
+    "k",
 ]
 
 STRING = [
@@ -175,8 +186,29 @@ STRING = [
     "k",
 ]
 
-ARROW_H = ["ycwwwwa"]
-ARROW_SHORT = ["ycwa"]
+# Flecha nocked / em voo — ponta + haste + pena (2–3 px de altura, legível no 64)
+ARROW_H = [
+    "..y........",
+    "ycwwwwwaof.",
+    "..y........",
+]
+ARROW_SHORT = [
+    ".y..",
+    "ycwa",
+    ".y..",
+]
+ARROW_FLY = [
+    "..y.........",
+    "ycwwwwwaofc.",
+    "..y.........",
+]
+
+# Vibração da corda no release
+STRING_SNAP = [
+    ".u.",
+    "uyu",
+    ".y.",
+]
 
 QUIVER = [
     ".kddk.",
@@ -195,13 +227,27 @@ STREAK = [
     "....t...",
 ]
 
+# Leque de 5 flechas (special 18) — ponta+haste+pena legíveis
 FAN = [
-    "c........",
-    ".cy......",
-    "..cyw....",
-    "...cywa..",
-    "....cya..",
-    ".....ca..",
+    "c...y...........",
+    ".cy.ycwwwaof....",
+    "..c.............",
+    "...ycwwwwwaof...",
+    "....c...........",
+    ".....ycwwwaof...",
+    "......c.y.......",
+    ".......ycwwwaof.",
+    "........c.......",
+]
+
+FAN_TOP = [
+    "ycwwwaof",
+]
+FAN_MID = [
+    "ycwwwwwaof",
+]
+FAN_BOT = [
+    "ycwwwaof",
 ]
 
 
@@ -231,22 +277,45 @@ def draw_archer(pixels, width, ox, oy, pose):
     bow_x = bx + lean + 22
     bow_y = by + 10
     if bow == "draw":
-        blit(pixels, width, bow_x - 1, bow_y, BOW_DRAWN)
-        blit(pixels, width, bow_x + 2, bow_y + 1, STRING)
+        blit(pixels, width, bow_x - 4, bow_y, BOW_DRAWN)
+        blit(pixels, width, bow_x - 1, bow_y + 1, STRING_DRAWN)
+    elif bow == "release":
+        blit(pixels, width, bow_x, bow_y, BOW)
+        blit(pixels, width, bow_x + 3, bow_y + 2, STRING_SNAP)
     else:
         blit(pixels, width, bow_x, bow_y, BOW)
 
     if arrow == "nocked":
-        blit(pixels, width, bow_x - 2, bow_y + 4, ARROW_H)
+        blit(pixels, width, bow_x - 7, bow_y + 3, ARROW_H)
     elif arrow == "fly":
-        blit(pixels, width, bow_x + 8, bow_y + 4, ARROW_H)
+        blit(pixels, width, bow_x + 9, bow_y + 3, ARROW_FLY)
     elif arrow == "held":
-        blit(pixels, width, bow_x + 1, bow_y + 4, ARROW_SHORT)
+        blit(pixels, width, bow_x + 1, bow_y + 3, ARROW_SHORT)
 
     if fan:
-        blit(pixels, width, bow_x + 7, bow_y + 1, FAN)
-        blit(pixels, width, bow_x + 10, bow_y + 4, ARROW_H)
-        blit(pixels, width, bow_x + 8, bow_y + 7, ["cya"])
+        # Soltura em leque: arco em release + 5 flechas espalhadas (special legível).
+        blit(pixels, width, bow_x, bow_y, BOW)
+        blit(pixels, width, bow_x + 3, bow_y + 2, STRING_SNAP)
+        blit(pixels, width, bow_x + 8, bow_y - 2, [
+            "....y.....",
+            "...ycwwaof",
+            "c.........",
+        ])
+        blit(pixels, width, bow_x + 10, bow_y + 1, [
+            "...y......",
+            "..ycwwwaof",
+        ])
+        blit(pixels, width, bow_x + 11, bow_y + 4, ARROW_H)
+        blit(pixels, width, bow_x + 10, bow_y + 7, [
+            "..ycwwwaof",
+            "...y......",
+        ])
+        blit(pixels, width, bow_x + 8, bow_y + 10, [
+            "c.........",
+            "...ycwwaof",
+            "....y.....",
+        ])
+        blit(pixels, width, bow_x + 2, bow_y + 3, ["uyu"])
 
     if streak:
         blit(pixels, width, bx + lean - 10, by + 16, STREAK)
@@ -270,15 +339,15 @@ def poses():
         {"y": -2, "l": -3, "r": 3, "bow": "idle", "arrow": "held"},
         {"y": -4, "legs": "tuck", "bow": "idle", "arrow": "held"},
         {"y": -1, "l": -4, "r": 4, "bow": "idle", "arrow": "held"},
-        # Shoot 13-15
-        {"lean": -1, "bow": "draw", "arrow": "nocked"},
-        {"lean": 1, "x": 1, "bow": "idle", "arrow": "fly"},
-        {"bow": "idle", "arrow": "held"},
+        # Shoot 13-15 — draw → release → recover (mais legível)
+        {"lean": -2, "x": -1, "bow": "draw", "arrow": "nocked"},
+        {"lean": 2, "x": 2, "bow": "release", "arrow": "fly"},
+        {"lean": 1, "bow": "idle", "arrow": "held"},
         # Dash 16-17
         {"lean": 2, "x": 2, "l": 2, "r": -1, "bow": "idle", "streak": True},
         {"lean": 2, "x": 3, "l": 3, "r": -2, "bow": "idle", "streak": True},
-        # Special 18
-        {"lean": 1, "x": 1, "bow": "idle", "fan": True},
+        # Special 18 — soltura em leque bem legível
+        {"lean": 2, "x": 2, "bow": "release", "fan": True},
         # Hurt 19-20
         {"x": -3, "lean": -1, "l": -2, "r": 1, "bow": "idle"},
         {"x": -2, "lean": -1, "l": -1, "bow": "idle"},
