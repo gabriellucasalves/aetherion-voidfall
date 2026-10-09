@@ -11,6 +11,9 @@ public class AcidBall : MonoBehaviour
     Transform _player;
     Rigidbody2D _body;
     float _age;
+    bool _held;
+    Vector2 _heldVelocity;
+    float _heldGravity;
 
     public static void Lob(Vector3 from, Transform player, float damage)
     {
@@ -49,6 +52,9 @@ public class AcidBall : MonoBehaviour
 
     void Update()
     {
+        if (VoidTimeStop.TickFreeze(_body, ref _held, ref _heldVelocity, ref _heldGravity))
+            return;
+
         _age += Time.deltaTime;
         transform.Rotate(0f, 0f, 540f * Time.deltaTime);
         if (_age > 5f)
@@ -57,6 +63,9 @@ public class AcidBall : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (VoidTimeStop.ProjectilesHeld || _held)
+            return;
+
         // não estoura em outros inimigos nem em gatilhos (aura, corte etc.)
         if (other.GetComponentInParent<EnemyController>() != null)
             return;

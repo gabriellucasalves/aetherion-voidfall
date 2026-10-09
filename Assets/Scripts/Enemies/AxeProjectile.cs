@@ -9,6 +9,10 @@ public class AxeProjectile : MonoBehaviour
 
     float _damage;
     float _age;
+    Rigidbody2D _body;
+    bool _held;
+    Vector2 _heldVelocity;
+    float _heldGravity;
 
     public static void Throw(Vector3 from, Transform player, float damage)
     {
@@ -27,6 +31,7 @@ public class AxeProjectile : MonoBehaviour
         var body = go.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Dynamic;
         body.gravityScale = 0f; // voo reto — contrasta com o arco da bola ácida
+        axe._body = body;
 
         var collider = go.AddComponent<CircleCollider2D>();
         collider.isTrigger = true;
@@ -38,6 +43,9 @@ public class AxeProjectile : MonoBehaviour
 
     void Update()
     {
+        if (VoidTimeStop.TickFreeze(_body, ref _held, ref _heldVelocity, ref _heldGravity))
+            return;
+
         _age += Time.deltaTime;
         transform.Rotate(0f, 0f, -720f * Time.deltaTime); // gira como machado arremessado
         if (_age > 3.5f)
@@ -46,6 +54,9 @@ public class AxeProjectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (VoidTimeStop.ProjectilesHeld || _held)
+            return;
+
         // atravessa outros inimigos e gatilhos (aura, cortes, chuva)
         if (other.GetComponentInParent<EnemyController>() != null)
             return;

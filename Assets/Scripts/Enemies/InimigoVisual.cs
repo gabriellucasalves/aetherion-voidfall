@@ -75,6 +75,12 @@ public class InimigoVisual : MonoBehaviour
         if (_renderer == null || _frames == null)
             return;
 
+        if (_controller != null && _controller.IsFrozen)
+        {
+            _renderer.color = new Color(0.55f, 0.55f, 0.62f);
+            return;
+        }
+
         _clock += Time.deltaTime;
 
         // flash de dano > telegraph de ataque > normal
@@ -92,6 +98,11 @@ public class InimigoVisual : MonoBehaviour
             var flash = exploding ? new Color(1f, 0.3f, 0.24f) : new Color(1f, 0.62f, 0.4f);
             bool on = (int)(Time.time * speed) % 2 == 0;
             _renderer.color = on ? flash : Color.white;
+        }
+        else if (_controller != null && _controller.VitalMarks > 0)
+        {
+            bool on = (int)(Time.time * 12f) % 2 == 0;
+            _renderer.color = on ? new Color(1f, 0.84f, 0.25f) : Color.white;
         }
         else
         {
