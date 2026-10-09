@@ -16,10 +16,12 @@ Menu → história → escolha do herói → Terra 1 (ruínas de Aetherion).
 - Espaço / W — pular
 - Mouse esquerdo ou J — atacar
 - Mouse direito / K / S — escudo (guerreiro)
+- L / Q — especial da classe
+- E — especial supremo (barra de Ressonância cheia)
 - Shift — dash
 - ESC — pausa
 
-No celular aparecem botões virtuais (analógico, pular, atacar, escudo, dash).
+No celular aparecem botões virtuais (analógico, pular, atacar, escudo, especial, dash). O botão SUPREMO só aparece quando a Ressonância enche.
 
 ## Time
 

@@ -60,6 +60,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void GrantIFrames(float seconds)
+    {
+        _iFrames = Mathf.Max(_iFrames, seconds);
+        if (_health != null && _iFrames > 0f)
+            _health.IsInvulnerable = true;
+    }
+
     public float MoveSpeed
     {
         get
@@ -83,7 +90,8 @@ public class PlayerController : MonoBehaviour
         if (_iFrames > 0f)
         {
             _iFrames -= Time.deltaTime;
-            if (_health != null)
+            // O Supremo segura a invulnerabilidade sozinho; não deixa o fim do dash apagá-la.
+            if (_health != null && !SpecialController.IsCinematic)
                 _health.IsInvulnerable = _iFrames > 0f;
         }
     }

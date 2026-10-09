@@ -18,13 +18,17 @@ public class MobileControls : MonoBehaviour
     static bool _jumpPressed;
     static bool _specialPressed;
     static bool _dashPressed;
+    static bool _supremePressed;
+    static bool _supremeWanted;
     static bool _forcedOn;
+    static GameObject _supremeRoot;
     static Sprite _circle;
     static Sprite _sword;
     static Sprite _shield;
     static Sprite _orb;
     static Sprite _dash;
     static Sprite _field;
+    static Sprite _star;
     static Image _defenseIcon;
     static Image _defenseBg;
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -55,6 +59,22 @@ public class MobileControls : MonoBehaviour
             return false;
         _dashPressed = false;
         return true;
+    }
+
+    /// <summary>Consome um toque no botão SUPREMO (estilo GetKeyDown). Tecla E continua no SpecialController.</summary>
+    public static bool ConsumeSupremeDown()
+    {
+        if (!_supremePressed)
+            return false;
+        _supremePressed = false;
+        return true;
+    }
+
+    public static void SetSupremeVisible(bool on)
+    {
+        _supremeWanted = on;
+        if (_supremeRoot != null)
+            _supremeRoot.SetActive(on && IsVisible);
     }
 
     public static bool ShouldShow()
@@ -139,6 +159,8 @@ public class MobileControls : MonoBehaviour
         BlockHeld = false;
         _specialPressed = false;
         _dashPressed = false;
+        _supremePressed = false;
+        _supremeRoot = null;
         IsVisible = false;
         _defenseIcon = null;
         _defenseBg = null;
@@ -148,7 +170,13 @@ public class MobileControls : MonoBehaviour
     {
         IsVisible = on;
         for (int i = 0; i < transform.childCount; i++)
-            transform.GetChild(i).gameObject.SetActive(on);
+        {
+            var child = transform.GetChild(i).gameObject;
+            if (child == _supremeRoot)
+                child.SetActive(on && _supremeWanted);
+            else
+                child.SetActive(on);
+        }
     }
 
     void Build(Transform parent)
@@ -176,6 +204,15 @@ public class MobileControls : MonoBehaviour
         var dash = IconButton(parent, "Dash", DashSprite(), new Vector2(1f, 0f), new Vector2(-460f, 90f), 190f,
             new Color(0.28f, 0.18f, 0.06f, 0.9f));
         Hold(dash, () => _dashPressed = true, () => { });
+
+        // Supremo só aparece com a Ressonância cheia (SetSupremeVisible, chamado pelo HUD).
+        var supreme = IconButton(parent, "Supremo", StarSprite(), new Vector2(1f, 0f), new Vector2(-700f, 430f), 200f,
+            new Color(0.42f, 0.26f, 0.05f, 0.94f));
+        var caption = UiKit.Label(supreme.transform, "SUPREMO", 16, new Vector2(0f, -78f), new Color(1f, 0.84f, 0.25f), new Vector2(180f, 28f));
+        caption.raycastTarget = false;
+        Hold(supreme, () => _supremePressed = true, () => { });
+        _supremeRoot = supreme.gameObject;
+        _supremeRoot.SetActive(false);
     }
 
     void BuildLeftZone(Transform parent)
@@ -392,6 +429,29 @@ public class MobileControls : MonoBehaviour
             _ => new Color32(0, 0, 0, 0),
         });
         return _field;
+    }
+
+    static Sprite StarSprite()
+    {
+        if (_star != null)
+            return _star;
+        string[] art =
+        {
+            "......y......",
+            "......y......",
+            "...y.y.y.....",
+            "....yyyy.....",
+            "..yyyyyyyyy..",
+            "....yyyy.....",
+            "...y.y.y.....",
+            "..y..y..y....",
+            "......y......",
+            ".............",
+        };
+        _star = PixelSprite(art, ch => ch == 'y'
+            ? new Color32(255, 214, 64, 255)
+            : new Color32(0, 0, 0, 0));
+        return _star;
     }
 
     static Sprite OrbSprite()

@@ -19,7 +19,11 @@ public class GroundT1Controller : MonoBehaviour
     Text _shieldLabel;
     Image _lifeFill;
     Image _shieldFill;
+    Image _resonanceFill;
+    Text _resonanceText;
+    SpecialController _special;
     GameObject _shieldTrack;
+    static readonly Color ResonanceGold = new Color(1f, 0.839f, 0.251f); // #FFD640
     bool _showSpecialCd;
     bool _showWard;
     Text _waveBanner;
@@ -84,7 +88,9 @@ public class GroundT1Controller : MonoBehaviour
             TogglePause();
 
         // CD do especial do arqueiro usa a barra reaproveitada do escudo.
-        if (_showSpecialCd || _showWard)
+        // Com a Ressonância cheia, o "PRONTO!" pulsa todo frame.
+        bool resonanceLive = _special != null && (_special.Ready || _special.CooldownLeft > 0f);
+        if (_showSpecialCd || _showWard || resonanceLive)
             RefreshHud();
     }
 
@@ -106,6 +112,8 @@ public class GroundT1Controller : MonoBehaviour
             return;
 
         _demoDone = true;
+        SpecialController.AbortActive();
+        CinematicTime.End();
         Time.timeScale = 0f;
         if (_player != null)
         {
@@ -241,6 +249,10 @@ public class GroundT1Controller : MonoBehaviour
 
         var combat = go.AddComponent<PlayerCombat>();
         combat.Setup(hero, AbilityData.ForHero(hero));
+        go.AddComponent<SpecialController>().Setup(hero);
+        var meter = go.GetComponent<ResonanceMeter>();
+        if (meter != null)
+            meter.Changed += _ => RefreshHud();
         var shield = go.GetComponent<ShieldSystem>();
         if (shield != null)
             shield.Changed += _ => RefreshHud();
@@ -301,6 +313,18 @@ public class GroundT1Controller : MonoBehaviour
             _shieldTrack.SetActive(showShield || _showSpecialCd || _showWard);
         if (_shieldText != null)
             _shieldText.gameObject.SetActive(showShield || _showSpecialCd || _showWard);
+
+        UiKit.Label(canvas.transform, "RESSONÂNCIA", 14, new Vector2(-870f, 336f), ResonanceGold, new Vector2(160f, 22f)).alignment = TextAnchor.MiddleLeft;
+        _resonanceFill = UiKit.Bar(
+            canvas.transform,
+            "BarraRessonancia",
+            new Vector2(-560f, 336f),
+            new Vector2(BarWidth, 12f),
+            new Color(0.12f, 0.1f, 0.03f, 0.85f),
+            ResonanceGold);
+        _resonanceText = UiKit.Label(canvas.transform, "", 14, new Vector2(-250f, 336f), MenuTheme.SoftIvory, new Vector2(180f, 22f));
+        _resonanceText.alignment = TextAnchor.MiddleLeft;
+
         if (_shieldFill != null)
         {
             if (_showWard)
@@ -309,10 +333,12 @@ public class GroundT1Controller : MonoBehaviour
                 _shieldFill.color = new Color(0.45f, 0.88f, 0.58f);
         }
 
+        _special = _player != null ? _player.GetComponent<SpecialController>() : null;
         RefreshHud();
-        UiKit.Label(canvas.transform, HintFor(hero), 16, new Vector2(0f, -480f), new Color(1f, 1f, 1f, 0.55f), new Vector2(1600f, 30f));
+        UiKit.Label(canvas.transform, HintFor(hero), 16, new Vector2(0f, -480f), new Color(1f, 1f, 1f, 0.55f), new Vector2(1700f, 30f));
         MobileControls.Attach(transform);
         MobileControls.SetDefenseIcon(_showWard);
+        RefreshHud();
 
         _waveBanner = UiKit.Label(canvas.transform, "", 32, new Vector2(0f, 290f), MenuTheme.CelestialGold, new Vector2(1000f, 48f));
         _waveBanner.gameObject.SetActive(false);
@@ -407,6 +433,34 @@ public class GroundT1Controller : MonoBehaviour
             if (_shieldText != null)
                 _shieldText.text = left > 0.05f ? left.ToString("0.0") + "s" : "PRONTO";
         }
+
+        var meter = _player.GetComponent<ResonanceMeter>();
+        float resonance = meter != null ? meter.Normalized : 0f;
+        UiKit.SetBar(_resonanceFill, resonance, BarWidth);
+        bool supremeReady = _special != null && _special.Ready;
+        if (_resonanceText != null)
+        {
+            if (supremeReady)
+            {
+                _resonanceText.text = "PRONTO! [E]";
+                var pulse = ResonanceGold;
+                pulse.a = 0.4f + 0.6f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * 3f));
+                _resonanceText.color = pulse;
+            }
+            else if (meter != null && meter.IsFull && _special != null && _special.CooldownLeft > 0.05f)
+            {
+                _resonanceText.color = ResonanceGold;
+                _resonanceText.text = _special.CooldownLeft.ToString("0.0") + "s";
+            }
+            else
+            {
+                _resonanceText.color = MenuTheme.SoftIvory;
+                float current = meter != null ? meter.Current : 0f;
+                _resonanceText.text = Mathf.CeilToInt(current) + " / 100";
+            }
+        }
+
+        MobileControls.SetSupremeVisible(supremeReady);
     }
 
     void OnPlayerDied(HealthSystem _)
@@ -415,7 +469,10 @@ public class GroundT1Controller : MonoBehaviour
             return;
 
         _dead = true;
+        SpecialController.AbortActive();
+        CinematicTime.End();
         Time.timeScale = 0f;
+        MobileControls.SetSupremeVisible(false);
         if (_player != null)
             _player.SetLocked(true);
         var combat = _player != null ? _player.GetComponent<PlayerCombat>() : null;
@@ -429,7 +486,7 @@ public class GroundT1Controller : MonoBehaviour
 
     public void RequestPause()
     {
-        if (_dead || _demoDone)
+        if (_dead || _demoDone || CinematicTime.IsActive || SpecialController.IsCinematic)
             return;
         if (!_paused)
             TogglePause();
@@ -437,7 +494,7 @@ public class GroundT1Controller : MonoBehaviour
 
     void TogglePause()
     {
-        if (_dead || _demoDone)
+        if (_dead || _demoDone || CinematicTime.IsActive || SpecialController.IsCinematic)
             return;
 
         _paused = !_paused;
@@ -457,6 +514,8 @@ public class GroundT1Controller : MonoBehaviour
 
     void BackToMenu()
     {
+        SpecialController.AbortActive();
+        CinematicTime.End();
         Time.timeScale = 1f;
         Physics2D.gravity = new Vector2(0f, -9.81f);
         SceneTransitionManager.Instance.Load(GameScenes.MainMenu);
@@ -467,18 +526,18 @@ public class GroundT1Controller : MonoBehaviour
         if (MobileControls.ShouldShow() || MobileControls.IsVisible)
         {
             if (hero != null && hero.Id == "mago")
-                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / campo / especial (Núcleo Arcano)";
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / campo / especial   |   SUPREMO quando a barra encher";
             if (hero != null && hero.Id == "guerreiro")
-                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: corte / escudo / especial (Onda)";
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: corte / escudo / especial   |   SUPREMO quando a barra encher";
             if (hero != null && hero.Id == "arqueiro")
-                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: flecha / especial (rajada) / dash";
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: flecha / especial / dash   |   SUPREMO quando a barra encher";
             return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo";
         }
         if (hero != null && hero.Id == "mago")
-            return "A/D andar   ·   ESPAÇO pular   ·   clique / J orbe reto   ·   S/K/direito campo   ·   L/Q Núcleo Arcano   ·   ESC pausa";
+            return "A/D andar   ·   ESPAÇO pular   ·   clique / J orbe reto   ·   S/K/direito campo   ·   L/Q Núcleo Arcano   ·   E supremo   ·   ESC pausa";
         if (hero != null && hero.Id == "arqueiro")
-            return "A/D andar   ·   ESPAÇO pular   ·   clique / J flecha   ·   SHIFT dash   ·   L/Q rajada   ·   ESC pausa";
-        return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q onda   ·   S / K / direito bloqueia   ·   ESC pausa";
+            return "A/D andar   ·   ESPAÇO pular   ·   clique / J flecha   ·   SHIFT dash   ·   L/Q rajada   ·   E supremo   ·   ESC pausa";
+        return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q onda   ·   E supremo   ·   S / K / direito bloqueia   ·   ESC pausa";
     }
 
     static GameObject CreateQuad(string name, Vector3 position, Vector2 size, Color color, int order)
