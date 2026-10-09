@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>AETHERION: APOCALIPSE — Trailer 198X</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect fill='%23050308' width='16' height='16'/%3E%3Crect fill='%23efc75f' x='5' y='4' width='6' height='8'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="media/trailer-ceu.png" />
+  <link rel="preload" as="image" href="media/trailer-veu.png" />
+  <link rel="preload" as="image" href="media/trailer-ruinas.png" />
+  <link rel="preload" as="image" href="media/trailer-guerreiro.png" />
+  <link rel="preload" as="image" href="media/trailer-inimigos.png" />
+  <link rel="preload" as="image" href="media/trailer-gameplay.png" />
+  <link rel="preload" as="image" href="media/trailer-mago.png" />
+  <link rel="preload" as="image" href="media/trailer-arqueiro.png" />
+  <link rel="preload" as="image" href="media/trailer-herois.png" />
+  <link rel="preload" as="image" href="media/trailer-titulo.png" />
+  <link rel="preload" as="image" href="media/trailer-boss-terra.png" />
+  <link rel="preload" as="image" href="media/trailer-boss-terra-relance.png" />
+  <link rel="preload" as="image" href="media/trailer-espaco.png" />
+  <link rel="preload" as="image" href="media/trailer-naves.png" />
+  <link rel="preload" as="image" href="media/trailer-naves-combate.png" />
+  <link rel="preload" as="image" href="media/trailer-boss-espaco.png" />
+  <link rel="preload" as="image" href="media/trailer-boss-espaco-relance.png" />
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      background: #030105;
+      color: #f3ead0;
+      font-family: "Press Start 2P", monospace;
+      overflow: hidden;
+    }
+    #frame {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: #000;
+    }
+    #stage {
+      position: relative;
+      width: min(100vw, calc(100vh * 16 / 9));
+      height: min(100vh, calc(100vw * 9 / 16));
+      overflow: hidden;
+      background: #07040c;
+      image-rendering: pixelated;
+    }
+    .layer {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transform: scale(1.12);
+      transition: opacity 0.85s linear, transform 8s linear;
+      filter: contrast(1.08) saturate(0.92);
+    }
+    .layer.on {
+      opacity: 1;
+      transform: scale(1);
+    }
+    #flash {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      z-index: 6;
+      pointer-events: none;
+    }
+    #flash.go {
+      animation: bolt 0.45s steps(4) 1;
+    }
+    @keyframes bolt {
+      0% { opacity: 0; }
+      15% { opacity: 0.85; }
+      30% { opacity: 0.1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 0; }
+    }
+    #hero {
+      position: absolute;
+      left: 10%;
+      bottom: 16%;
+      width: 64px;
+      height: 64px;
+      background: url("media/hero_idle.png") no-repeat;
+      background-size: 256px 64px;
+      image-rendering: pixelated;
+      transform: scale(3.4);
+      transform-origin: bottom left;
+      opacity: 0;
+      z-index: 5;
+      filter: drop-shadow(0 4px 0 #000);
+      transition: opacity 0.5s;
+    }
+    #hero.show { opacity: 1; animation: idle 0.8s steps(1) infinite; }
+    @keyframes idle {
+      0% { background-position: 0 0; }
+      25% { background-position: -64px 0; }
+      50% { background-position: -128px 0; }
+      75% { background-position: -192px 0; }
+    }
+    #sprites {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: 12%;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: flex-end;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s;
+      z-index: 4;
+    }
+    #sprites.show { opacity: 1; }
+    #sprites img {
+      height: 22%;
+      min-height: 64px;
+      image-rendering: pixelated;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 6px 0 #000);
+    }
+    #caption {
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      bottom: 10%;
+      z-index: 8;
+      font-size: clamp(8px, 1.55vw, 15px);
+      line-height: 1.75;
+      text-align: center;
+      text-shadow: 0 3px 0 #000, 0 0 18px #4a1858;
+      min-height: 3.6em;
+    }
+    #titlecard {
+      position: absolute;
+      inset: 0;
+      z-index: 9;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transition: opacity 1.1s;
+      background: linear-gradient(180deg, transparent 18%, rgba(0,0,0,.78) 100%);
+      pointer-events: none;
+      text-align: center;
+      padding: 24px;
+    }
+    #titlecard.show { opacity: 1; }
+    #titlecard h1 {
+      font-size: clamp(14px, 3.5vw, 38px);
+      color: #efc75f;
+      letter-spacing: 0.14em;
+      text-shadow: 0 4px 0 #3a2208, 0 0 32px #c44;
+      line-height: 1.45;
+    }
+    #titlecard p {
+      margin-top: 18px;
+      font-size: clamp(8px, 1.25vw, 12px);
+      opacity: 0.88;
+    }
+    #scan {
+      position: absolute;
+      inset: 0;
+      z-index: 12;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(180deg, transparent 0 2px, rgba(0,0,0,.26) 2px 3px),
+        radial-gradient(ellipse at center, transparent 46%, rgba(0,0,0,.62) 100%);
+    }
+    #grain {
+      position: absolute;
+      inset: -20%;
+      z-index: 11;
+      pointer-events: none;
+      opacity: 0.14;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: drift 1.1s steps(4) infinite;
+    }
+    @keyframes drift { to { transform: translate(-4%, 3%); } }
+    #vhs {
+      position: absolute;
+      inset: 0;
+      z-index: 13;
+      pointer-events: none;
+      opacity: 0;
+      background: repeating-linear-gradient(
+        180deg,
+        transparent 0 40%,
+        rgba(255,255,255,.18) 40% 41%,
+        transparent 41% 100%
+      );
+    }
+    #vhs.glitch { animation: track 0.28s steps(3) 1; }
+    @keyframes track {
+      0% { opacity: 0; transform: translateY(0); }
+      30% { opacity: 0.7; transform: translateY(-8%); }
+      100% { opacity: 0; transform: translateY(12%); }
+    }
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      right: 12px;
+      z-index: 14;
+      display: none;
+      justify-content: space-between;
+      font-size: 8px;
+      color: #efc75f;
+      text-shadow: 0 2px 0 #000;
+      letter-spacing: 0.08em;
+    }
+    #hud.on { display: flex; }
+    #playmark { animation: blink 1s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: 0.25; } }
+    #bar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 3px;
+      background: #efc75f;
+      transform-origin: left;
+      transform: scaleX(0);
+      z-index: 15;
+    }
+    #start, #end {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      background: #050308;
+      text-align: center;
+      padding: 24px;
+    }
+    #end { display: none; }
+    button {
+      margin: 10px 8px 0;
+      font-family: inherit;
+      font-size: 10px;
+      color: #050308;
+      background: #efc75f;
+      border: 4px solid #3a2208;
+      padding: 14px 20px;
+      cursor: pointer;
+    }
+    button.ghost {
+      background: transparent;
+      color: #efc75f;
+      border-color: #efc75f;
+    }
+    button:hover { background: #fff2b0; color: #050308; }
+    #start h2, #end h2 {
+      color: #efc75f;
+      font-size: clamp(12px, 2.7vw, 26px);
+      line-height: 1.55;
+      text-shadow: 0 3px 0 #3a2208, 0 0 22px #c44;
+    }
+    #start p, #end p {
+      margin-top: 16px;
+      font-size: 8px;
+      line-height: 1.9;
+      opacity: 0.78;
+      max-width: 54ch;
+    }
+    #mute, #skip {
+      position: absolute;
+      top: 8px;
+      z-index: 22;
+      font-size: 8px;
+      padding: 8px 10px;
+    }
+    #mute { right: 8px; }
+    #skip { right: 92px; display: none; }
+  </style>
+</head>
+<body>
+  <div id="frame">
+    <div id="stage">
+      <div id="bgA" class="layer"></div>
+      <div id="bgB" class="layer"></div>
+      <div id="hero"></div>
+      <div id="sprites">
+        <img src="media/esqueleto_walk.gif" alt="" />
+        <img src="media/ghoul_walk.gif" alt="" />
+        <img src="media/zumbi_walk.gif" alt="" />
+      </div>
+      <div id="flash"></div>
+      <div id="titlecard">
+        <div>
+          <h1>AETHERION<br />APOCALIPSE</h1>
+          <p>O Véu caiu. O Vazio avança.</p>
+        </div>
+      </div>
+      <div id="caption"></div>
+      <div id="grain"></div>
+      <div id="scan"></div>
+      <div id="vhs"></div>
+      <div id="hud">
+        <span id="playmark">▶ PLAY</span>
+        <span id="clock">00:00</span>
+        <span>VHS · 198X</span>
+      </div>
+      <div id="bar"></div>
+      <div id="start">
+        <div>
+          <h2>AETHERION: APOCALIPSE</h2>
+          <p>TRAILER OFICIAL · DARK FANTASY 16-BIT · 198X</p>
+          <p>A terra em ruínas. O espaço rasgado.<br />Vorthak. Morveth. Guerreiro, mago e arqueiro.</p>
+          <button id="play">INSERIR FITA</button>
+        </div>
+      </div>
+      <div id="end">
+        <div>
+          <h2>AETHERION: APOCALIPSE</h2>
+          <p>Ainda existem aqueles dispostos a lutar.</p>
+          <button id="again">REBOBINAR</button>
+          <button id="jogo" class="ghost">JOGAR A DEMO</button>
+        </div>
+      </div>
+      <button id="skip">PULAR</button>
+      <button id="mute">SOM: ON</button>
+    </div>
+  </div>
+  <script>
+    const scenes = [
+      { img: "media/trailer-ceu.png", caption: "Por milhares de anos, o Véu protegeu Aetherion.", hold: 5800, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-veu.png", caption: "Até que algo despertou além das estrelas.", hold: 5600, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-veu.png", caption: "O Véu foi destruído.", hold: 3800, hero: false, mobs: false, title: false, flash: true },
+      { img: "media/trailer-ruinas.png", caption: "Aetherion está caindo. Suas torres viraram ruínas.", hold: 5200, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-guerreiro.png", caption: "Na chuva e no silêncio, um guerreiro se levanta.", hold: 6000, hero: true, mobs: false, title: false, flash: false },
+      { img: "media/trailer-inimigos.png", caption: "Seus mortos não descansam.", hold: 5800, hero: false, mobs: true, title: false, flash: false },
+      { img: "media/trailer-gameplay.png", caption: "Espada contra ossos. Escudo contra o Vazio.", hold: 6400, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-mago.png", caption: "Orbes arcanos rasgam a noite.", hold: 6000, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-arqueiro.png", caption: "Penas de luz atravessam o Véu.", hold: 5800, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-herois.png", caption: "Três destinos. Uma última linha.", hold: 6200, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-boss-terra.png", caption: "Nas ruínas desperta Vorthak.", hold: 6200, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-boss-terra-relance.png", caption: "O Olhar Eterno rasga a pedra.", hold: 5400, hero: false, mobs: false, title: false, flash: true },
+      { img: "media/trailer-espaco.png", caption: "A guerra não termina na terra.", hold: 6200, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-naves.png", caption: "Depois da terra, o céu vira campo de guerra.", hold: 6200, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-naves-combate.png", caption: "Três naves. Uma frota do Vazio.", hold: 6000, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-boss-espaco.png", caption: "Nas estrelas espera Morveth.", hold: 5600, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-boss-espaco-relance.png", caption: "O Encapuzado abre as garras.", hold: 6000, hero: false, mobs: false, title: false, flash: false },
+      { img: "media/trailer-titulo.png", caption: "Dois senhores. Uma última resistência.", hold: 7400, hero: false, mobs: false, title: true, flash: false },
+    ];
+
+    const bgA = document.getElementById("bgA");
+    const bgB = document.getElementById("bgB");
+    const caption = document.getElementById("caption");
+    const bar = document.getElementById("bar");
+    const hero = document.getElementById("hero");
+    const sprites = document.getElementById("sprites");
+    const titlecard = document.getElementById("titlecard");
+    const start = document.getElementById("start");
+    const end = document.getElementById("end");
+    const flash = document.getElementById("flash");
+    const vhs = document.getElementById("vhs");
+    const hud = document.getElementById("hud");
+    const clock = document.getElementById("clock");
+    const skipBtn = document.getElementById("skip");
+    let flip = false;
+    let audio;
+    let muted = false;
+    let typing;
+    let aborted = false;
+    let startedAt = 0;
+    let clockTimer;
+
+    function typeText(text) {
+      clearInterval(typing);
+      caption.textContent = "";
+      let i = 0;
+      typing = setInterval(() => {
+        caption.textContent = text.slice(0, ++i);
+        if (i >= text.length) clearInterval(typing);
+      }, 26);
+    }
+
+    function glitch() {
+      vhs.classList.remove("glitch");
+      void vhs.offsetWidth;
+      vhs.classList.add("glitch");
+    }
+
+    function show(scene) {
+      const incoming = flip ? bgA : bgB;
+      const outgoing = flip ? bgB : bgA;
+      flip = !flip;
+      incoming.style.backgroundImage = "url('" + scene.img + "')";
+      incoming.classList.add("on");
+      outgoing.classList.remove("on");
+      hero.classList.toggle("show", scene.hero);
+      sprites.classList.toggle("show", scene.mobs);
+      titlecard.classList.toggle("show", scene.title);
+      typeText(scene.caption);
+      if (scene.flash) {
+        flash.classList.remove("go");
+        void flash.offsetWidth;
+        flash.classList.add("go");
+      }
+      if (Math.random() > 0.45) glitch();
+      bar.style.transition = "none";
+      bar.style.transform = "scaleX(0)";
+      requestAnimationFrame(() => {
+        bar.style.transition = "transform " + scene.hold + "ms linear";
+        bar.style.transform = "scaleX(1)";
+      });
+    }
+
+    async function run() {
+      aborted = false;
+      start.style.display = "none";
+      end.style.display = "none";
+      skipBtn.style.display = "inline-block";
+      hud.classList.add("on");
+      caption.textContent = "";
+      titlecard.classList.remove("show");
+      startedAt = Date.now();
+      clockTimer = setInterval(() => {
+        const s = Math.min(99, Math.floor((Date.now() - startedAt) / 1000));
+        clock.textContent = "00:" + String(s).padStart(2, "0");
+      }, 250);
+      if (!muted) startAudio();
+      for (const scene of scenes) {
+        if (aborted) break;
+        show(scene);
+        await wait(scene.hold);
+      }
+      finish();
+    }
+
+    function finish() {
+      aborted = true;
+      clearInterval(clockTimer);
+      skipBtn.style.display = "none";
+      hud.classList.remove("on");
+      hero.classList.remove("show");
+      sprites.classList.remove("show");
+      titlecard.classList.add("show");
+      end.style.display = "grid";
+      stopAudio();
+    }
+
+    function wait(ms) {
+      return new Promise((r) => setTimeout(r, ms));
+    }
+
+    function startAudio() {
+      stopAudio();
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      audio = new Ctx();
+      const master = audio.createGain();
+      master.gain.value = 0.11;
+      master.connect(audio.destination);
+
+      const bass = audio.createOscillator();
+      bass.type = "triangle";
+      bass.frequency.value = 36.71;
+      const bassGain = audio.createGain();
+      bassGain.gain.value = 0.55;
+      bass.connect(bassGain);
+      bassGain.connect(master);
+      bass.start();
+
+      const pad = audio.createOscillator();
+      pad.type = "sine";
+      pad.frequency.value = 73.42;
+      const padGain = audio.createGain();
+      padGain.gain.value = 0.12;
+      pad.connect(padGain);
+      padGain.connect(master);
+      pad.start();
+
+      const lead = audio.createOscillator();
+      lead.type = "square";
+      const leadGain = audio.createGain();
+      leadGain.gain.value = 0.09;
+      lead.connect(leadGain);
+      leadGain.connect(master);
+      lead.start();
+
+      const notes = [146.83, 174.61, 164.81, 130.81, 155.56, 146.83, 110.00, 130.81];
+      let n = 0;
+      audio._tick = setInterval(() => {
+        const now = audio.currentTime;
+        lead.frequency.setValueAtTime(notes[n % notes.length], now);
+        pad.frequency.setValueAtTime(notes[n % notes.length] * 0.5, now);
+        bass.frequency.setValueAtTime(n % 4 < 2 ? 36.71 : 43.65, now);
+        n++;
+      }, 720);
+
+      audio._bass = bass;
+      audio._lead = lead;
+      audio._pad = pad;
+    }
+
+    function stopAudio() {
+      if (!audio) return;
+      clearInterval(audio._tick);
+      try {
+        audio._bass.stop();
+        audio._lead.stop();
+        audio._pad.stop();
+      } catch (e) {}
+      audio.close();
+      audio = null;
+    }
+
+    document.getElementById("play").onclick = run;
+    document.getElementById("again").onclick = run;
+    document.getElementById("jogo").onclick = () => {
+      location.href = "https://aetherion-voidfall.vercel.app";
+    };
+    skipBtn.onclick = finish;
+    document.getElementById("mute").onclick = () => {
+      muted = !muted;
+      document.getElementById("mute").textContent = muted ? "SOM: OFF" : "SOM: ON";
+      if (muted) stopAudio();
+      else if (start.style.display === "none" && end.style.display === "none") startAudio();
+    };
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && start.style.display !== "none") {
+        e.preventDefault();
+        run();
+      }
+      if (e.code === "Escape" && end.style.display === "none" && start.style.display === "none") finish();
+    });
+  </script>
+</body>
+</html>
