@@ -15,6 +15,9 @@ public class PixelPresentation : MonoBehaviour
     Camera _world;
     RenderTexture _target;
     Rect _dest;
+    GameObject _screenRoot;
+    UnityEngine.UI.RawImage _view;
+    RectTransform _viewRt;
 
     void OnEnable()
     {
@@ -28,10 +31,13 @@ public class PixelPresentation : MonoBehaviour
         };
         _target.Create();
         _world.targetTexture = _target;
+        if (_screenRoot != null)
+            _screenRoot.SetActive(true);
         _world.orthographic = true;
         _world.orthographicSize = OrthoSize;
         ApplyAspect();
         Fit();
+        UpdateScreen();
     }
 
     void OnDisable()
@@ -44,12 +50,15 @@ public class PixelPresentation : MonoBehaviour
             Destroy(_target);
             _target = null;
         }
+        if (_screenRoot != null)
+            _screenRoot.SetActive(false);
     }
 
     void LateUpdate()
     {
         ApplyAspect();
         Fit();
+        UpdateScreen();
     }
 
     void ApplyAspect()
@@ -69,27 +78,52 @@ public class PixelPresentation : MonoBehaviour
         _dest = new Rect(x, y, w, h);
     }
 
-    void OnGUI()
+    // Mostra o framebuffer num Canvas overlay atrás do HUD. RawImage já respeita
+    // a orientação da RenderTexture em todas as plataformas (inclusive WebGL),
+    // e o HUD (outros Canvas overlay) continua desenhado por cima.
+    void EnsureScreen()
     {
-        if (_target == null || Event.current.type != EventType.Repaint)
+        if (_screenRoot != null)
             return;
+        _screenRoot = new GameObject("PixelPresentationScreen");
+        var canvas = _screenRoot.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = -1000;
 
-        var prev = GUI.color;
-        GUI.color = Color.black;
-        if (_dest.x > 0.5f)
-        {
-            GUI.DrawTexture(new Rect(0f, 0f, _dest.x, Screen.height), Texture2D.whiteTexture);
-            GUI.DrawTexture(new Rect(_dest.xMax, 0f, Screen.width - _dest.xMax, Screen.height), Texture2D.whiteTexture);
-        }
-        if (_dest.y > 0.5f)
-        {
-            GUI.DrawTexture(new Rect(0f, 0f, Screen.width, _dest.y), Texture2D.whiteTexture);
-            GUI.DrawTexture(new Rect(0f, _dest.yMax, Screen.width, Screen.height - _dest.yMax), Texture2D.whiteTexture);
-        }
-        GUI.color = Color.white;
-        // RenderTexture nasce de baixo para cima; altura negativa desvira no GUI.
-        var flipped = new Rect(_dest.x, _dest.yMax, _dest.width, -_dest.height);
-        GUI.DrawTexture(flipped, _target, ScaleMode.StretchToFill, false);
-        GUI.color = prev;
+        var bg = new GameObject("Fundo", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+        bg.transform.SetParent(_screenRoot.transform, false);
+        var bgRt = (RectTransform)bg.transform;
+        bgRt.anchorMin = Vector2.zero;
+        bgRt.anchorMax = Vector2.one;
+        bgRt.offsetMin = Vector2.zero;
+        bgRt.offsetMax = Vector2.zero;
+        var bgImg = bg.GetComponent<UnityEngine.UI.Image>();
+        bgImg.color = Color.black;
+        bgImg.raycastTarget = false;
+
+        var view = new GameObject("Mundo", typeof(RectTransform), typeof(UnityEngine.UI.RawImage));
+        view.transform.SetParent(_screenRoot.transform, false);
+        _view = view.GetComponent<UnityEngine.UI.RawImage>();
+        _view.raycastTarget = false;
+        _viewRt = (RectTransform)view.transform;
+        _viewRt.anchorMin = Vector2.zero;
+        _viewRt.anchorMax = Vector2.zero;
+        _viewRt.pivot = Vector2.zero;
+    }
+
+    void UpdateScreen()
+    {
+        EnsureScreen();
+        _view.texture = _target;
+        var scaler = _screenRoot.GetComponent<Canvas>().scaleFactor;
+        if (scaler <= 0f) scaler = 1f;
+        _viewRt.anchoredPosition = new Vector2(_dest.x, _dest.y) / scaler;
+        _viewRt.sizeDelta = new Vector2(_dest.width, _dest.height) / scaler;
+    }
+
+    void OnDestroy()
+    {
+        if (_screenRoot != null)
+            Destroy(_screenRoot);
     }
 }
