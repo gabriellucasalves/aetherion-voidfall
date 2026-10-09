@@ -19,7 +19,7 @@ public class MagoVisual : MonoBehaviour
     const int Cell = 64;
     const int Cols = 7;
     const int FrameCount = 28; // 7×4 — especial + hurt além do layout 21 do Guerreiro
-    const float Ppu = 15f;
+    const float Ppu = PixelArt.Ppu;
     const float FootPivot = 3f / 64f;
 
     static readonly int[] Idle = { 0, 1, 2, 3 };
@@ -27,6 +27,7 @@ public class MagoVisual : MonoBehaviour
     static readonly int[] Cast = { 13, 14, 15, 16 };
     static readonly int[] Special = { 17, 18, 19, 20 };
     static readonly int[] Hurt = { 21, 22 };
+    static readonly int[] Land = { 25, 26 };
 
     Sprite[] _frames;
     SpriteRenderer _renderer;
@@ -38,6 +39,8 @@ public class MagoVisual : MonoBehaviour
     int _index;
     string _clip = "";
     float _hurtLeft;
+    float _landLeft;
+    bool _wasAirborne;
 
     public static bool Attach(Transform parent)
     {
@@ -116,15 +119,32 @@ public class MagoVisual : MonoBehaviour
 
         if (jumping)
         {
+            _wasAirborne = true;
             Show(JumpFrame(velocity.y));
             _clip = "jump";
             return;
         }
 
+        // tocou o chao vindo do ar: dispara squash de aterrissagem (25-26)
+        if (_wasAirborne)
+        {
+            _wasAirborne = false;
+            _landLeft = 0.16f;
+        }
+        if (_landLeft > 0f)
+            _landLeft -= Time.deltaTime;
+
         bool walking = Mathf.Abs(velocity.x) > 0.12f || (_player != null && _player.WantsMove);
         if (walking)
         {
+            _landLeft = 0f; // andar cancela o squash
             Play("walk", Walk, 12f, true);
+            return;
+        }
+
+        if (_landLeft > 0f)
+        {
+            Play("land", Land, 13f, false);
             return;
         }
 

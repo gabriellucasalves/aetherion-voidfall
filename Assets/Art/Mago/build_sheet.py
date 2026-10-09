@@ -21,106 +21,125 @@ MAC_RES = Path("/Users/gabriellucas/Desktop/trabalho jogo sexta/Assets/Resources
 
 CELL, COLS, ROWS = 64, 7, 4
 
-# Deep purple / indigo + silver staff + purple crystal glow (~12 colors)
+# Deep purple / indigo + silver staff + purple crystal (~16 colors) — alinhado a mago_conceito.png
 C = {
     ".": None,
-    "k": (10, 8, 18, 255),       # outline / deepest shadow
-    "n": (18, 14, 32, 255),      # hood void / face shadow
-    "d": (32, 22, 58, 255),      # robe deep
-    "s": (48, 34, 88, 255),      # robe mid-shadow
-    "m": (72, 48, 128, 255),     # robe mid
-    "r": (98, 68, 168, 255),     # robe
-    "l": (138, 102, 210, 255),   # robe light
-    "h": (178, 148, 235, 255),   # hood highlight / trim
-    "a": (150, 150, 168, 255),   # silver staff
-    "i": (210, 214, 230, 255),   # silver highlight
-    "p": (160, 60, 220, 255),    # crystal purple
-    "c": (220, 140, 255, 255),   # crystal bright / sparkle
-    "w": (248, 236, 255, 255),   # crystal core white
-    "b": (28, 18, 40, 255),      # boot
-    "t": (92, 58, 42, 255),      # belt / pouch brown
-    "e": (180, 140, 110, 255),   # hand (pale, barely visible in sleeves)
+    "k": (8, 6, 14, 255),        # outline
+    "n": (12, 8, 22, 255),       # hood void (rosto vazio)
+    "d": (28, 18, 48, 255),      # robe deepest
+    "s": (42, 28, 72, 255),      # robe shadow
+    "m": (62, 40, 108, 255),     # robe mid
+    "r": (88, 58, 148, 255),     # robe
+    "l": (118, 82, 188, 255),    # robe light
+    "h": (158, 122, 220, 255),   # mantle highlight / quilt
+    "q": (138, 98, 198, 255),    # mantle quilt mid
+    "a": (148, 152, 172, 255),   # silver staff
+    "i": (210, 214, 232, 255),   # silver highlight
+    "p": (148, 52, 210, 255),    # crystal purple
+    "c": (210, 130, 255, 255),   # crystal bright
+    "w": (248, 236, 255, 255),   # crystal core
+    "b": (22, 14, 32, 255),      # boot
+    "t": (98, 62, 40, 255),      # belt / pouch
+    "e": (186, 148, 118, 255),   # mão
     "u": (160, 48, 72, 255),     # hurt tint
     "v": (210, 80, 100, 255),    # hurt bright
+    "z": (20, 12, 36, 255),      # capa / fold deep
 }
 
-# ---------- chibi hooded mage parts (face = void, no beige smile) ----------
+# ---------- M1 idle: silhueta contínua (conceito) — não peças flutuando ----------
 
+# Capuz pontudo do conceito: pico sólido + abertura escura + ombros.
 HOOD = [
-    "........kk........",
-    "......kkhhkk......",
-    ".....khlrrlhk.....",
-    "....khlrrrrlhk....",
-    "...khlrrrrrrlhk...",
-    "..khlrrrnnnrrlhk..",
-    ".khlrrnnnnnnrrlhk.",
-    ".klrrnnnnnnnnnrlk.",
-    ".klrrnnnnnnnnnrlk.",
-    ".kmrrnnnnnnnnnrmk.",
-    ".kmrrrnnnnnnnrrmk.",
-    "..ksrrrrnnnrrrrsk.",
-    "..kkmrrrrrrrrrmkk.",
-    "...kkmmrrrrrmmk...",
-    "....kkssrrsskk....",
-    ".....kkkkkkkk.....",
+    "..........kk..........",
+    "........kkhhkk........",
+    ".......khhqqhhk.......",
+    "......khqlrrlqhk......",
+    ".....khqlrrrrlqhk.....",
+    "....khqlrrrrrrlqhk....",
+    "...khqlrrrrrrrrlqhk...",
+    "..khqlrrrnnnnrrrlqhk..",
+    ".khqlrrrnnnnnnrrrlqhk.",
+    ".kqlrrrnnnnnnnnrrrlqk.",
+    ".kqlrrrnnnnnnnnrrrlqk.",
+    ".kmqlrrrnnnnnnrrrlqmk.",
+    ".kmqqlrrrrnnrrrrlqqmk.",
+    "..ksqqlrrrrrrrrlqqsk..",
+    "..kkssqqlrrrrlqqsskk..",
+    "...kkmmssqllqssmmkk...",
+    "....kkkkkkkkkkkkkk....",
 ]
 
 HOOD_HURT = [
-    "........kk........",
-    "......kkvvkk......",
-    ".....kvuuuvk......",
-    "....kvuuuuuvk.....",
-    "...kvuuuuuuuvk....",
-    "..kvuuunnnnuuvk...",
-    ".kvuunnnnnnnuuvk..",
-    ".kuuunnnnnnnnuuk..",
-    ".kuuunnnnnnnnuuk..",
-    ".kuuunnnnnnnnuuk..",
-    ".kuuuunnnnnuuuuk..",
-    "..kuuuuunnuuuuk...",
-    "..kkuuuuuuuuukk...",
-    "...kkuuuuuuukk....",
-    "....kkuuuuukk.....",
-    ".....kkkkkkkk.....",
+    "..........kk..........",
+    "........kkvvkk........",
+    ".......kvvuuuvk.......",
+    "......kvuuuuuuvk......",
+    ".....kvuuuuuuuuvk.....",
+    "....kvuuuuuuuuuuvk....",
+    "...kvuuuuuuuuuuuvk....",
+    "..kvuuuunnnnnuuuuvk...",
+    ".kvuuuunnnnnnnuuuuvk..",
+    ".kuuuuunnnnnnnnuuuuk..",
+    ".kuuuuunnnnnnnnuuuuk..",
+    ".kuuuuunnnnnnnuuuuuk..",
+    ".kuuuuuuunnnnuuuuuuk..",
+    "..kuuuuuuuuuuuuuuuk...",
+    "..kkuuuuuuuuuuuuukk...",
+    "...kkuuuuuuuuuuukk....",
+    "....kkkkkkkkkkkkkk....",
 ]
 
+# Robe + manto acolchoado + cinto/bolsa + barra até as botas (uma peça).
 BODY = [
-    ".kkkkkkkkkkkkkk.",
-    "klhrrrrhhrrrhlk",
-    "klrrrrlllrrrrlk",
-    ".kmrrrrmmrrrrrmk",
-    ".ksrrrrllrrrrsk.",
-    ".ksrrrtttrrrrsk.",
-    "..kddktktkdddk..",
-    "..kddddssddddk..",
-    "...kddddddddk...",
-    "....kbbbbbbk....",
-    ".....kkkkkk.....",
+    "kkkkkkkkkkkkkkkk",
+    "hqhqhqhhqhqhqhhk",
+    "hqlrrlhhllrrlqhk",
+    "hlrrrrllllrrrrhk",
+    "kmrrrrrllrrrrrmk",
+    "ksrrrrrllrrrrrsk",
+    "ksrrrrmttmrrrrsk",
+    "kdddkteetktddddk",
+    "kzdddktttktdddzk",
+    "kzddddssssddddzk",
+    "kzddddddddddddzk",
+    "kkzddddddddddzkk",
+    ".kzddddddddddzk.",
+    ".kzddbbbbbbddzk.",
+    "..kzbbbbbbbbzk..",
+    "...kkkkkkkkkk...",
 ]
 
 BODY_HURT = [
-    ".kkkkkkkkkkkkkk.",
-    "kvvuuuuvvuuuvvk",
-    "kvuuuuvvvuuuuvk",
-    ".kuuuuuvvuuuuuk",
-    ".kuuuuvvvuuuuk.",
-    ".kuuuutttuuuuk.",
-    "..kuuktktkuuuk..",
-    "..kuuuuuuuuuuk..",
-    "...kuuuuuuuuk...",
-    "....kbbbbbbk....",
-    ".....kkkkkk.....",
+    "kkkkkkkkkkkkkkkk",
+    "vuvuvuvvvuvuvuvk",
+    "vuuuuuvvuuuuuuvk",
+    "vuuuuuvvvuuuuuvk",
+    "kuuuuuuvvuuuuuuk",
+    "kuuuuuuvvuuuuuuk",
+    "kuuuuutttuuuuuuk",
+    "kuuukteetkuuuuuk",
+    "kuuuuktttkuuuuuk",
+    "kuuuuuuuuuuuuuuk",
+    "kuuuuuuuuuuuuuuk",
+    "kkuuuuuuuuuuuukk",
+    ".kuuuuuuuuuuuuk.",
+    ".kuuubbbbbbuuuk.",
+    "..kzbbbbbbbbzk..",
+    "...kkkkkkkkkk...",
 ]
 
+# Manga larga + mão visível (conceito)
 SLEEVE = [
-    ".kkk.",
-    "krrrk",
-    "krmrk",
-    "ksmsk",
-    ".kdk.",
-    "..k..",
+    ".kkkk.",
+    "krrrlk",
+    "krmrlk",
+    "ksmslk",
+    ".kddek",
+    "..kek.",
+    "...k..",
 ]
 
+# Botas só quando robe levanta no walk/jump — idle a robe cobre quase tudo
 LEG = [
     "kkk.",
     "kbk.",
@@ -128,64 +147,64 @@ LEG = [
     "kkkk",
 ]
 
-# Tall silver staff with diamond purple crystal
+# Cajado prata + cristal losango + nube dither (conceito)
 STAFF = [
-    "....c.w.c....",
-    "...c.wpw.c...",
-    "....cpwpc....",
-    "...kcpipck...",
-    "....kaiak....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kak.....",
-    ".....kkk.....",
+    "...c.p.w.p.c...",
+    "..p..cpwpc..p..",
+    "...c.pwpwp.c...",
+    "....kcpipck....",
+    ".....kaiak.....",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kak......",
+    "......kkk......",
 ]
 
 STAFF_TILT = [
-    ".....c.w.c.",
-    "....c.wpw.c",
-    ".....cpwpc.",
-    ".....kpipk.",
-    "......kak..",
-    "......kak..",
-    ".....kak...",
-    ".....kak...",
-    "....kak....",
-    "....kak....",
-    "...kak.....",
-    "...kak.....",
-    "..kak......",
-    "..kak......",
-    ".kak.......",
-    ".kkk.......",
+    "....c.p.w.p.c.",
+    "...p..cpwpc..p",
+    "....c.pwpwp.c.",
+    ".....kcpipck..",
+    "......kaiak...",
+    ".......kak....",
+    ".......kak....",
+    "......kak.....",
+    "......kak.....",
+    ".....kak......",
+    ".....kak......",
+    "....kak.......",
+    "....kak.......",
+    "...kak........",
+    "...kak........",
+    "..kkk.........",
 ]
 
 STAFF_THRUST = [
-    "..........c.w.c...",
-    ".........c.wpw.c..",
-    "..........cpwpc...",
-    "..........kpipk...",
-    "...........kak....",
-    "...........kak....",
-    "...........kak....",
-    "...........kak....",
-    "...........kak....",
-    "...........kak....",
-    "...........kak....",
-    "...........kak....",
-    "...........kak....",
-    "...........kkk....",
+    "..........c.p.w.p.c.",
+    ".........p..cpwpc..p",
+    "..........c.pwpwp.c.",
+    "...........kcpipck..",
+    "............kaiak...",
+    ".............kak....",
+    ".............kak....",
+    ".............kak....",
+    ".............kak....",
+    ".............kak....",
+    ".............kak....",
+    ".............kak....",
+    ".............kak....",
+    ".............kkk....",
 ]
 
 ORB = [
@@ -271,10 +290,11 @@ def outline_cell(pixels, width, ox, oy):
 
 def draw_mage(pixels, width, ox, oy, pose):
     lean = pose.get("lean", 0)
-    bx = ox + 12 + pose.get("x", 0)
-    by = oy + 14 + pose.get("y", 0)
+    # Encaixa capuz 22px + corpo 16px numa célula 64 com pivô nos pés.
+    bx = ox + 8 + pose.get("x", 0)
+    by = oy + 6 + pose.get("y", 0)
     hurt = pose.get("hurt", False)
-    mode = pose.get("mode", "idle")  # idle/walk/jump/cast/special
+    mode = pose.get("mode", "idle")
     staff = pose.get("staff", "side")
     legs = pose.get("legs", "stand")
     back = pose.get("l", 0)
@@ -285,33 +305,15 @@ def draw_mage(pixels, width, ox, oy, pose):
     hood = HOOD_HURT if hurt else HOOD
     body = BODY_HURT if hurt else BODY
 
-    # legs
-    leg_y = by + 30 if legs != "tuck" else by + 28
-    if legs != "hide":
-        blit(pixels, width, bx + 10 + back, leg_y, LEG)
-        blit(pixels, width, bx + 16 + front, leg_y, LEG)
+    show_legs = legs != "hide" and mode in ("walk", "jump", "cast", "special")
+    leg_y = by + 44 if legs != "tuck" else by + 40
+    if show_legs:
+        blit(pixels, width, bx + 14 + back, leg_y, LEG)
+        blit(pixels, width, bx + 22 + front, leg_y, LEG)
 
-    # body
-    blit(pixels, width, bx + 4 + lean, by + 18, body)
-
-    # sleeves / arms
-    if mode == "special":
-        # arms out for arcane nova
-        blit(pixels, width, bx + lean - 2, by + 18, SLEEVE)
-        blit(pixels, width, bx + lean + 20, by + 18, SLEEVE)
-    elif mode == "cast":
-        blit(pixels, width, bx + lean + 18 + arm, by + 14 - arm, SLEEVE)
-        blit(pixels, width, bx + lean + 2, by + 20, SLEEVE)
-    else:
-        blit(pixels, width, bx + lean + 18, by + 20, SLEEVE)
-        blit(pixels, width, bx + lean + 2, by + 20, SLEEVE)
-
-    # hood (on top of body — face is shadow void)
-    blit(pixels, width, bx + lean, by, hood)
-
-    # staff
-    staff_x = bx + lean - 6
-    staff_y = by - 2
+    # Cajado atrás (esquerda do mago)
+    staff_x = bx + lean - 2
+    staff_y = by + 2
     if staff == "side":
         blit(pixels, width, staff_x, staff_y, STAFF)
     elif staff == "tilt":
@@ -321,20 +323,33 @@ def draw_mage(pixels, width, ox, oy, pose):
     elif staff == "thrust":
         blit(pixels, width, staff_x + 4 + arm, staff_y - 2, STAFF_THRUST)
     elif staff == "front":
-        blit(pixels, width, bx + lean + 10, by - 4, STAFF)
+        blit(pixels, width, bx + lean + 14, by, STAFF)
 
-    # cast orb / sparkles
+    # Corpo sob o capuz — overlap de ~6px pra silhueta contínua
+    blit(pixels, width, bx + 6 + lean, by + 14, body)
+
+    if mode == "special":
+        blit(pixels, width, bx + lean + 1, by + 22, SLEEVE)
+        blit(pixels, width, bx + lean + 24, by + 22, SLEEVE)
+    elif mode == "cast":
+        blit(pixels, width, bx + lean + 22 + arm, by + 18 - arm, SLEEVE)
+        blit(pixels, width, bx + lean + 4, by + 24, SLEEVE)
+    else:
+        blit(pixels, width, bx + lean + 22, by + 24, SLEEVE)
+        blit(pixels, width, bx + lean + 3, by + 24, SLEEVE)
+
+    blit(pixels, width, bx + lean, by, hood)
+
     if pose.get("orb"):
-        ox_o = bx + lean + 24 + arm
-        oy_o = by + 8 - arm * 2
+        ox_o = bx + lean + 28 + arm
+        oy_o = by + 12 - arm * 2
         blit(pixels, width, ox_o, oy_o, ORB)
         if glow:
             blit(pixels, width, ox_o - 1, oy_o - 4, SPARKS)
 
-    # special nova flare above / around crystal
     if pose.get("nova"):
-        nx = bx + lean + 2
-        ny = by - 10 - glow
+        nx = bx + lean + 6
+        ny = by - 4 - glow
         blit(pixels, width, nx, ny, NOVA)
         if glow >= 2:
             blit(pixels, width, nx - 2, ny - 2, SPARKS)
@@ -418,9 +433,7 @@ def to_silhouette(pixels, width, ox, oy):
 
 
 def draw_palette_cell(pixels, width, ox, oy):
-    keys = "kndsmrlhaipcwbtuev"
-    # unique-ish swatches used in sheet
-    keys = "kndsmrlhaipcwbtu"
+    keys = "kndsmrlhqzaipcwbtu"
     for i, key in enumerate(keys):
         color = C[key]
         x0 = ox + 4 + (i % 8) * 7
@@ -477,7 +490,7 @@ def build_sheet(out_root: Path | None = None):
 
 def build_palette(root: Path | None = None):
     root = root or ROOT
-    keys = "kndsmrlhaipcwbtu"
+    keys = "kndsmrlhqzaipcwbtu"
     pixels = bytearray(len(keys) * 24 * 24 * 4)
     for i, key in enumerate(keys):
         color = C[key]

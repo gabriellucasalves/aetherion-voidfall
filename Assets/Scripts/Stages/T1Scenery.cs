@@ -6,7 +6,7 @@ using UnityEngine;
 // As camadas são PNGs pixel art gerados por Assets/Art/T1/build_t1.py.
 public static class T1Scenery
 {
-    const float Ppu = 16f;
+    const float Ppu = PixelArt.Ppu;
 
     public static Color PlatformColor => new Color(0.14f, 0.13f, 0.21f);
     public static Color PlatformEdge => new Color(0.30f, 0.30f, 0.44f);
@@ -35,30 +35,37 @@ public static class T1Scenery
         Glow(skyGo.transform, new Vector3((350f - 240f) / Ppu, 142f / Ppu, 0f),
             new Color(0.78f, 0.86f, 1f), 3.6f, 3.6f, 0.06f, 0.04f, 0.3f, -49);
 
-        // camada 2 — montanhas e castelo distante
+        // camada 2 — silhueta dos templos e das torres-deus
         Place("FundoLonge", far, new Vector3(0f, -1.6f, 0f), -36)
             .AddComponent<ParallaxLayer>().Setup(0.9f);
         DriftMist("BrumaLonge", new Vector3(0f, 2.4f, 0f), 0.85f, -34, 0.16f, 2.6f, 0.045f);
 
-        // camada 3 — cidade de Aetherion destruída
+        // camada 3 — templos, estátuas e portão circular
         var cityGo = Place("Cidade", city, new Vector3(0f, -3.0f, 0f), -30);
-        cityGo.GetComponent<SpriteRenderer>().color = new Color(0.8f, 0.8f, 0.9f); // empurra a cidade pra trás
         cityGo.AddComponent<ParallaxLayer>().Setup(0.8f);
-        CityGlow(cityGo.transform, 268, 46, 2.4f, 1.6f, 0.10f, 0.08f, 1.8f);  // interior da catedral
-        CityGlow(cityGo.transform, 300, 26, 1.4f, 1.1f, 0.12f, 0.10f, 2.6f);  // fogueira na base
-        CityGlow(cityGo.transform, 446, 44, 1.4f, 1.2f, 0.12f, 0.10f, 3.0f);  // casa em chamas
-        CityGlow(cityGo.transform, 586, 74, 0.9f, 0.9f, 0.10f, 0.08f, 2.2f);  // janela da torre
+        CityGlow(cityGo.transform, 79, 33, 1.8f, 1.6f, 0.08f, 0.06f, 1.4f);  // têmpora da cabeça enterrada
+        CityGlow(cityGo.transform, 470, 22, 2.0f, 1.6f, 0.12f, 0.10f, 2.2f);  // cristal do portão
+
+        var near = LoadSprite("near");
+        if (near != null)
+        {
+            Place("VeunePerto", near, new Vector3(0f, stage.GroundTop + 0.15f, 0f), 20)
+                .AddComponent<ParallaxLayer>().Setup(0.25f);
+        }
         DriftMist("BrumaMeio", new Vector3(4f, -0.6f, 0f), 0.7f, -12, 0.14f, 3.2f, 0.06f);
 
         // camada 4 — elementos próximos
         BuildProps(stage);
 
         // camada 5 — calçada do plano jogável (sobre o bloco de colisão)
-        for (int i = -1; i <= 1; i++)
-            Place("Calcada" + i, pavement, new Vector3(i * 32f, stage.GroundTop - 2.65f, 0f), -4);
+        int tiles = Mathf.CeilToInt(stage.HalfWidth * 2f / 32f) + 2;
+        int first = -tiles / 2;
+        for (int i = 0; i < tiles; i++)
+            Place("Calcada" + i, pavement, new Vector3((first + i) * 32f, stage.GroundTop - 2.65f, 0f), -4);
 
         // camada 5b — decoração fixa do plano jogável (estilo SNES, sem parallax)
         BuildGameplayDecor(stage);
+        BuildKitWalk(stage);
 
         DriftMist("BrumaFrente", new Vector3(-4f, -2.3f, 0f), 0.88f, 25, 0.10f, 4f, 0.08f);
         return true;
@@ -106,6 +113,10 @@ public static class T1Scenery
 
         // primeiro plano: silhuetas na frente do herói, mais escuras e maiores,
         // com parallax invertido leve (passam mais rápido que a fase = mais perto)
+        ForeProp("fore_thorns", -22f, stage.GroundTop - 0.6f);
+        ForeProp("fore_thorns", -3.5f, stage.GroundTop - 0.65f);
+        ForeProp("fore_thorns", 16.5f, stage.GroundTop - 0.6f);
+        ForeProp("fore_thorns", 27.5f, stage.GroundTop - 0.65f);
         ForeProp("stones", -18f, stage.GroundTop - 0.55f);
         ForeProp("bush", -8f, stage.GroundTop - 0.5f);
         ForeProp("stones", 1.5f, stage.GroundTop - 0.55f);
@@ -341,6 +352,100 @@ public static class T1Scenery
             0,
             SpriteMeshType.FullRect);
         _sprites[name] = sprite;
+        return sprite;
+    }
+
+    // ENV-003: caminhada de descoberta, da esquerda (spawn) para a direita.
+    static void BuildKitWalk(StageData stage)
+    {
+        float g = stage.GroundTop;
+
+        // ruína pequena
+        Kit("ruina_baixa", -26f, g, 1);
+        Kit("ruina_alta", -22.5f, g, 1);
+        Kit("pedra_2", -20.2f, g, 2);
+        Kit("musgo_faixa", -24f, g, 2);
+        Kit("raiz_b", -21f, g, 2);
+
+        // fragmentos da estátua
+        Kit("pedra_1", -2f, g, 2);
+        Kit("pedra_4", 0.4f, g, 2);
+        Kit("fragmento_anel", 2.2f, g, 3);
+        Kit("fragmento_olho", 3.6f, g, 3);
+        Kit("divindade_mao", 5.2f, g, 3);
+        Kit("musgo_tufo", 1.2f, g, 2);
+        Kit("raiz_a", 6.5f, g, 2);
+
+        // cabeça enterrada
+        Kit("divindade_pedestal", 28f, g, 2);
+        Kit("divindade_cabeca", 31.2f, g, 4);
+        Kit("piso_simbolo", 26f, g, -2);
+        Kit("musgo_borda", 33.5f, g, 2);
+        Kit("planta_haste", 24.5f, g, 3);
+        Kit("pedra_3", 34.8f, g, 2);
+
+        // primeiro monumento
+        Kit("coluna_quebrada", 50f, g, 2);
+        Kit("parede_simbolo", 54f, g, 1);
+        Kit("coluna_lisa", 58f, g, 2);
+        Kit("altar_pequeno", 52.5f, g, 3);
+        Kit("simbolo_anel", 56.5f, g, 3);
+        Kit("planta_folha", 48.5f, g, 3);
+
+        // templo
+        Kit("parede_rachada", 74f, g, 1);
+        Kit("arco_inteiro", 78.5f, g, 2);
+        Kit("coluna_inteira", 83f, g, 3);
+        Kit("degrau", 76f, g, -1);
+        Kit("musgo_tufo", 81f, g, 3);
+        Kit("fungo", 73f, g, 3);
+        Kit("raiz_c", 85f, g, 2);
+
+        // grande divindade quebrada
+        Kit("divindade_quebrada", 110f, g, 3);
+        Kit("divindade_braco", 115.5f, g, 4);
+        Kit("fragmento_anel", 107f, g, 4);
+        Kit("musgo_faixa", 112f, g, 2);
+        Kit("planta_cristal", 117.5f, g, 3);
+
+        var portal = Kit("porta_selo", 140f, g, 3);
+        Kit("coluna_inteira", 136.2f, g, 2);
+        Kit("coluna_lisa", 143.8f, g, 2);
+        if (portal != null)
+        {
+            Glow(portal.transform, new Vector3(0f, 1.3f, 0f),
+                new Color(0.35f, 0.9f, 0.82f), 1.4f, 1.6f, 0.16f, 0.12f, 1.8f, 2);
+        }
+        Kit("cristal_baixo", 144f, g, 4);
+    }
+
+    static GameObject Kit(string name, float x, float y, int order)
+    {
+        var sprite = LoadKit(name);
+        if (sprite == null)
+            return null;
+        return Place("Kit_" + name, sprite, new Vector3(x, y, 0f), order);
+    }
+
+    static Sprite LoadKit(string name)
+    {
+        string key = "kit:" + name;
+        if (_sprites.TryGetValue(key, out var cached) && cached != null)
+            return cached;
+
+        var texture = Resources.Load<Texture2D>("Kit/" + name);
+        if (texture == null)
+            return null;
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        var sprite = Sprite.Create(
+            texture,
+            new Rect(0f, 0f, texture.width, texture.height),
+            new Vector2(0.5f, 0f),
+            Ppu,
+            0,
+            SpriteMeshType.FullRect);
+        _sprites[key] = sprite;
         return sprite;
     }
 

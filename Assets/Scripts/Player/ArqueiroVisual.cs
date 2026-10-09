@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Runtime visual do Arqueiro — mesma pipeline do GuerreiroVisual
-// (Resources/<Hero>/sheet.png, célula 64, 7 colunas, pivot no pé, PPU 15).
+// (Resources/<Hero>/sheet.png, célula 64, 7 colunas, pivot no pé, PixelArt.Ppu).
 // Mapa completo: Assets/Art/Arqueiro/FRAME_MAP.md
 //
 //   Idle      0  1  2  3
@@ -17,7 +17,7 @@ public class ArqueiroVisual : MonoBehaviour
     const int Cell = 64;
     const int Cols = 7;
     const int FrameCount = 21;
-    const float Ppu = 15f;
+    const float Ppu = PixelArt.Ppu;
     const float FootPivot = 3f / 64f;
 
     // Idle — respiração com arco em guarda

@@ -5,7 +5,7 @@ public class GuerreiroVisual : MonoBehaviour
     const int Cell = 64;
     const int Cols = 7;
     const int FrameCount = 21;
-    const float Ppu = 15f;
+    const float Ppu = PixelArt.Ppu;
     const float FootPivot = 3f / 64f;
 
     static readonly int[] Idle = { 0, 1, 2, 3 };

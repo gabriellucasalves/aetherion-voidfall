@@ -4,7 +4,7 @@ using UnityEngine;
 // Cada sheet tem 4 células de 64px: idle A/B + passo A/B, com brilho dos olhos piscando.
 public class InimigoVisual : MonoBehaviour
 {
-    const float Ppu = 15f;               // mesma escala do Guerreiro
+    const float Ppu = PixelArt.Ppu;      // mesma grade do herói e do cenário
     const float FootPivot = 7f / 64f;    // pés na linha 57 da célula
     static readonly int[] WalkCycle = { 2, 0, 3, 1 };
 

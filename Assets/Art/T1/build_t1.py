@@ -170,6 +170,23 @@ def build_sky():
             for y in range(-half, half // 2 + 1):
                 col = CLOUD if y < half // 2 else SKY_MID
                 c.put(nx + x, ny + y, col)
+    # nebulosa do Vazio: poeira roxa em faixa diagonal
+    for x in range(c.w):
+        base = 118 + int(26 * math.sin(x * 0.021)) - x // 16
+        for k in range(3):
+            y = base + hash2(x, 900 + k) % 24
+            if 62 < y < c.h - 4 and chance(x, y, 3):
+                c.put(x, y, (60, 30, 90) if k % 2 == 0 else (88, 48, 128))
+    # estrelas brilhantes com cruz
+    for (sx, sy) in ((40, 168), (118, 150), (206, 176), (298, 162), (452, 170), (388, 96), (26, 120)):
+        c.put(sx, sy, MOON)
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            c.put(sx + dx, sy + dy, MOON_SH)
+    # bando de corvos do Vazio em silhueta
+    for (bx, by) in ((288, 152), (295, 148), (303, 151), (312, 146), (321, 150)):
+        c.put(bx, by, INK)
+        c.put(bx - 1, by + 1, INK)
+        c.put(bx + 1, by + 1, INK)
     c.save("sky")
 
 
@@ -208,8 +225,35 @@ def build_far():
     # janelas acesas minúsculas
     for (wx, wy) in ((156, 96), (159, 84), (175, 88), (383, 78)):
         c.put(wx, wy, WIN_LIT)
+    # arvores mortas na crista da colina
+    for x in range(6, c.w - 6):
+        if chance(x, 700, 15):
+            hh = 46 + int(26 * (0.5 + 0.5 * math.sin(x * 0.017 + 1.4))) + hash2(x, 1) % 4
+            th = 3 + hash2(x, 701) % 5
+            for i in range(th):
+                c.put(x, hh + i, FAR_B)
+            c.put(x - 1, hh + th - 2, FAR_B)
+            c.put(x + 1, hh + th - 1, FAR_B)
+    # aqueduto arruinado na encosta direita
+    for i, ax in enumerate(range(300, 372, 12)):
+        if i == 3:
+            continue  # vao desabado
+        ah = 26 + hash2(ax, 5) % 5
+        c.fill(ax, 14, 3, ah, FAR_B)
+        c.fill(ax - 3, 14 + ah - 3, 9, 2, FAR_B)
+    # fenda do Vazio brilhando na montanha esquerda
+    fx = 66
+    for fy in range(12, 42):
+        fx += (hash2(fy, 11) % 3) - 1
+        c.put(fx, fy, ORB if fy % 3 else (206, 150, 255))
+        if fy % 5 == 0:
+            c.put(fx + 1, fy, ORB_D)
+    # fogueiras e janelas extras
+    for (wx, wy) in ((92, 70), (238, 74), (330, 58), (472, 66)):
+        c.put(wx, wy, WIN_LIT)
     smoke(c, 200, 62)
     smoke(c, 420, 54)
+    smoke(c, 96, 70, 40)
     c.save("far")
 
 
@@ -397,6 +441,155 @@ def vine(c, x0, y0, ln):
     for y in range(ln):
         sx = x0 + hash2(x0, y) % 2
         c.put(sx, y0 - y, MOSS if y % 2 == 0 else MOSS_LIT)
+        if y % 4 == 0:
+            c.put(sx + 1, y0 - y, MOSS_LIT)
+
+
+# Mármore das divindades — mais claro que a muralha, ainda na mesma rampa curta.
+MARBLE = (148, 140, 170)
+MARBLE_L = (196, 190, 214)
+MARBLE_D = (86, 80, 108)
+MARBLE_E = (220, 214, 232)
+
+
+def marble_at(x, y):
+    r = hash2(x // 2, y // 2) % 8
+    if r == 0:
+        return MARBLE_D
+    if r == 1:
+        return MARBLE_L
+    return MARBLE
+
+
+def moss_clump(c, x0, y0, w, h):
+    for y in range(h):
+        for x in range(w):
+            if hash2(x0 + x, y0 + y) % 5 == 0:
+                continue
+            c.put(x0 + x, y0 + y, MOSS_LIT if (x + y) % 3 == 0 else MOSS)
+
+
+def deity_head(c, x0, y0, w=18, h=14):
+    """Cabeça de estátua caída: órbitas vazias, rachadura, musgo na têmpora."""
+    for y in range(h):
+        inset = 0
+        if y < 2:
+            inset = 2 - y
+        if y > h - 4:
+            inset = (y - (h - 4)) * 2
+        for x in range(inset, w - inset):
+            col = marble_at(x0 + x, y0 + y)
+            if x <= 2:
+                col = MARBLE_D
+            elif x >= w - 3:
+                col = MARBLE_L
+            c.put(x0 + x, y0 + y, col)
+        c.put(x0 + inset, y0 + y, MARBLE_E)
+    eye_y = y0 + h // 2
+    c.fill(x0 + 4, eye_y, 3, 3, WIN_DARK)
+    c.fill(x0 + w - 8, eye_y, 3, 3, WIN_DARK)
+    c.put(x0 + 5, eye_y + 1, MARBLE_D)
+    for i in range(h - 2):
+        c.put(x0 + w // 2 - 1 + i // 3, y0 + h - 2 - i, INK)
+    c.fill(x0 + w // 2 - 1, y0 + 2, 2, 4, MARBLE_D)
+    moss_clump(c, x0 + 1, y0 + h - 3, 6, 3)
+    # fragmento da coroa quebrada ao lado
+    c.fill(x0 + w + 2, y0 + 1, 4, 3, MARBLE_D)
+    c.put(x0 + w + 3, y0 + 4, MARBLE)
+
+
+def fallen_torso(c, x0, y0):
+    """Corpo de divindade derrubado, manto rachado, braço separado."""
+    w, h = 52, 16
+    for y in range(h):
+        for x in range(w):
+            col = marble_at(x0 + x, y0 + y)
+            if y > h - 3:
+                col = MARBLE_L
+            if y < 2:
+                col = MARBLE_D
+            c.put(x0 + x, y0 + y, col)
+        c.put(x0, y0 + y, MARBLE_E)
+    for x in range(3, w - 2, 6):
+        c.put(x0 + x, y0 + 4, MARBLE_D)
+        c.put(x0 + x + 1, y0 + 5, INK)
+    # ombro partido
+    c.fill(x0 + w - 2, y0 + 3, 7, 5, MARBLE)
+    c.fill(x0 + w + 4, y0 + 1, 5, 3, MARBLE_D)
+    # braço solto na frente
+    c.fill(x0 - 8, y0, 7, 3, MARBLE)
+    c.put(x0 - 8, y0 + 1, MARBLE_L)
+    c.fill(x0 - 4, y0 + 3, 2, 2, MARBLE_D)
+    moss_clump(c, x0 + 4, y0, 8, 2)
+    moss_clump(c, x0 + 18, y0 + h - 2, 5, 2)
+
+
+def broken_pedestal(c, x0, y0):
+    """Pedestal com só os pés: a estátua foi levada pelo desabamento."""
+    c.fill(x0, y0, 16, 4, MARBLE_D)
+    c.fill(x0 + 2, y0 + 4, 12, 3, MARBLE)
+    c.fill(x0 + 3, y0 + 7, 4, 3, MARBLE_L)
+    c.fill(x0 + 9, y0 + 7, 4, 3, MARBLE_L)
+    c.put(x0 + 5, y0 + 9, MARBLE_E)
+    c.put(x0 + 11, y0 + 9, MARBLE_E)
+    for i in range(6):
+        c.put(x0 + 7, y0 + 4 + i, INK)
+    moss_clump(c, x0 + 1, y0 + 5, 4, 2)
+    # lasca de rosto no chão
+    c.fill(x0 + 18, y0, 6, 5, MARBLE)
+    c.fill(x0 + 20, y0 + 2, 2, 2, WIN_DARK)
+    c.put(x0 + 23, y0 + 4, MOSS)
+
+
+def relief_figure(c, x0, y0):
+    """Baixo-relevo de divindade na muralha: poucos pixels, leitura de longe."""
+    c.fill(x0 + 2, y0, 3, 2, MARBLE_D)
+    c.fill(x0 + 1, y0 + 2, 5, 6, MARBLE)
+    c.fill(x0, y0 + 4, 2, 3, MARBLE_L)
+    c.fill(x0 + 5, y0 + 4, 2, 3, MARBLE_L)
+    c.put(x0 + 3, y0 + 8, MARBLE_D)
+    c.put(x0 + 4, y0 + 9, MARBLE_D)
+    c.put(x0 + 2, y0 + 3, WIN_DARK)
+
+
+def rubble_blocks(c, x0, y0, n):
+    x = x0
+    for i in range(n):
+        bw = 3 + hash2(x0 + i, 2) % 4
+        bh = 2 + hash2(x0 + i, 3) % 3
+        by = y0 + hash2(x0 + i, 4) % 3
+        for yy in range(bh):
+            for xx in range(bw):
+                c.put(x + xx, by + yy, marble_at(x + xx, by + yy) if i % 2 == 0 else stone_shade(x + xx, by + yy))
+        if hash2(x, 8) % 2 == 0:
+            c.put(x, by + bh - 1, MOSS)
+            c.put(x + 1, by + bh - 1, MOSS_LIT)
+        x += bw + 1
+
+
+def settle_moss(c):
+    """Musgo em manchas nas quinas, não um verde contínuo na silhueta."""
+    src = c.img.load()
+    for iy in range(1, c.h - 1):
+        for ix in range(c.w):
+            if src[ix, iy][3] == 0 or src[ix, iy - 1][3] != 0:
+                continue
+            r, g, b, _ = src[ix, iy]
+            if r > 170 or g > 140:
+                continue
+            if hash2(ix // 5, iy // 3) % 4 != 0:
+                continue
+            src[ix, iy] = (MOSS_LIT if hash2(ix, iy) % 2 == 0 else MOSS) + (255,)
+            if hash2(ix, iy) % 3 == 0 and src[ix, iy + 1][3] > 0 and src[ix, iy + 1][0] < 170:
+                src[ix, iy + 1] = MOSS + (255,)
+
+
+def crack_wall(c, x0, y0, ln):
+    x, y = x0, y0
+    for i in range(ln):
+        c.put(x, y, INK)
+        x += 1 if hash2(x0, i) % 3 else 0
+        y += 1 if i % 2 == 0 else 0
 
 
 def build_city():
@@ -421,9 +614,27 @@ def build_city():
     tower(c, 574, 10, 24, 88, lit_window_y=1)
     banner(c, 584, 72)
     wall_arches(c, 600, 0, 40, 40)
+    # relevos das divindades na face da catedral e da torre
+    for rx in (232, 252, 292, 308):
+        relief_figure(c, rx, 28)
+    relief_figure(c, 182, 36)
+    relief_figure(c, 588, 40)
+    crack_wall(c, 246, 40, 18)
+    crack_wall(c, 360, 16, 14)
+    crack_wall(c, 120, 18, 10)
+    # escombros: corpo caído, cabeça partida, pedestal só com os pés
+    fallen_torso(c, 6, 2)
+    deity_head(c, 62, 8, 22, 18)
+    broken_pedestal(c, 188, 4)
+    rubble_blocks(c, 328, 2, 5)
+    deity_head(c, 336, 6, 36, 30)
+    rubble_blocks(c, 376, 2, 4)
+    deity_head(c, 492, 6, 24, 20)
+    rubble_blocks(c, 522, 2, 5)
     for i in range(0, c.w, 4):
         if chance(i, 5, 6):
-            vine(c, i, 12 + hash2(i, 9) % 30, 3 + hash2(i, 4) % 9)
+            vine(c, i, 12 + hash2(i, 9) % 30, 4 + hash2(i, 4) % 12)
+    settle_moss(c)
     c.save("city")
 
 
@@ -461,6 +672,20 @@ def build_pavement():
             c.put(x, 42, GP_MOSS)
         if chance(x, 92, 23):
             c.fill(x, 41, 2, 2, GP_LIT)
+    # símbolos, raiz e cristal — detalhes que o jogador encontra andando
+    for gx in (72, 248, 400):
+        disc(c, gx, 34, 5, GLYPH, hole=3)
+        c.put(gx, 34, CRYS)
+    for x in range(6, W - 6):
+        if hash2(x, 17) % 53 == 0:
+            for i in range(7):
+                c.put((x + i) % W, 33 + (i % 2), (46, 32, 24))
+                if i % 3 == 0:
+                    c.put((x + i) % W, 34, MOSS)
+    for cx in (150, 320, 470):
+        c.fill(cx, 36, 2, 5, CRYS_D)
+        c.put(cx, 41, CRYS_H)
+        c.put(cx - 1, 37, GP_MOSS)
     c.save("pavement")
 
 
@@ -792,6 +1017,28 @@ def build_fallen():
     c.save("fallen")
 
 
+# ============ PRIMEIRO PLANO (silhuetas com parallax invertido) ============
+def build_fore_thorns():
+    """Espinheiro retorcido para a camada frontal (usado por T1Scenery.ForeProp)."""
+    w, h = 96, 26
+    c = Canvas(w, h)
+    for x in range(w):
+        hh = 6 + int(5 * math.sin(x * 0.16) + 3 * math.sin(x * 0.045 + 2.0)) + hash2(x, 40) % 3
+        for y in range(max(2, hh)):
+            c.put(x, y, TRUNK)
+    for x in range(2, w - 2):
+        if chance(x, 41, 7):
+            ln = 5 + hash2(x, 42) % 9
+            dx = -1 if hash2(x, 43) % 2 else 1
+            px = x
+            for i in range(ln):
+                if i % 3 == 0:
+                    px += dx
+                c.put(px, 8 + i, TRUNK_L if i % 4 else TRUNK)
+    c.outline()
+    c.save("fore_thorns")
+
+
 # ==================== PLATAFORMAS DE RUÍNA ====================
 VINE_ROWS = 10
 TUFT_ROWS = 3
@@ -825,6 +1072,33 @@ def build_platform(width_units):
             ln = 2 + hash2(x, 56) % (VINE_ROWS - 3)
             for i in range(ln):
                 c.put(x, body_bottom - 1 - i, GP_MOSS if i % 2 == 0 else GP_MOSS_L)
+    # juntas de tijolo no corpo de pedra
+    for y in range(body_h - 1):
+        off = 0 if (y // 3) % 2 == 0 else 4
+        for x in range(2, w - 2):
+            if (x + off) % 8 == 0 and y % 3 != 2:
+                c.put(x, body_bottom + y, GP_DARK)
+    # rachaduras diagonais
+    for cx0 in (w // 4, (w * 2) // 3):
+        for i in range(body_h - 1):
+            c.put(cx0 + i // 2, body_bottom + i, GP_DARK)
+    # tufos de grama no topo
+    for x in range(3, w - 3):
+        if chance(x, 91, 6):
+            c.put(x, body_top + 1, GP_MOSS_L)
+            c.put(x, body_top + 2, GP_MOSS_L if chance(x, 92, 2) else GP_MOSS)
+            if chance(x, 93, 3):
+                c.put(x + 1, body_top + 1, GP_MOSS)
+    # folhas nas vinhas penduradas
+    for x in range(1, w - 1):
+        if chance(x, 55, 5) and chance(x, 57, 2):
+            ln = 2 + hash2(x, 56) % (VINE_ROWS - 3)
+            c.put(x + 1, body_bottom - ln + 1, GP_MOSS_L)
+    # runa antiga com brilho arcano
+    rx = max(6, w - 10)
+    c.put(rx, body_bottom + 2, ORB)
+    c.put(rx + 1, body_bottom + 3, ORB_D)
+    c.put(rx, body_bottom + 4, ORB_D)
     c.fill(1, body_bottom - 3, 3, 3, GP_DARK)
     c.fill(w - 5, body_bottom - 4, 4, 4, GP_DARK)
     c.outline()
@@ -947,10 +1221,281 @@ def write_metas():
         meta.write_text(META.format(guid=uuid.uuid4().hex))
 
 
+# ===================== CIDADE-TEMPLO ALIENÍGENA =====================
+# Bíblia: templo de uma raça que parecia divina. Pedra + círculo + cristal.
+# Não é castelo. Camadas nativas baixas (SNES), parallax no Unity.
+
+CRYS = (64, 214, 188)
+CRYS_D = (18, 78, 74)
+CRYS_H = (186, 255, 236)
+RUST = (128, 58, 32)
+RUST_D = (72, 32, 22)
+GLYPH = (176, 132, 64)
+
+
+def disc(c, cx, cy, r, col, hole=0):
+    for dy in range(-r, r + 1):
+        for dx in range(-r, r + 1):
+            d = math.hypot(dx, dy)
+            if hole < d <= r:
+                c.put(cx + dx, cy + dy, col)
+
+
+def stepped(c, x0, y0, w, h, steps):
+    """Pirâmide em degraus, topo quebrado."""
+    for s in range(steps):
+        inset = s * (w // (steps * 2))
+        sh = h // steps
+        for x in range(inset, w - inset):
+            top = sh - (hash2(x0 + x, s) % 2)
+            if s == steps - 1 and x > w * 0.6:
+                top = max(2, top // 2)
+            for y in range(top):
+                col = stone_shade(x0 + x, y0 + s * sh + y)
+                if x == inset:
+                    col = ST_DARK
+                elif x == inset + 1:
+                    col = ST_LIT
+                c.put(x0 + x, y0 + s * sh + y, col)
+            c.put(x0 + x, y0 + s * sh + top, ST_EDGE)
+    # círculo religioso no centro do corpo
+    disc(c, x0 + w // 2, y0 + h // 2, 7, ST_EDGE, hole=5)
+    disc(c, x0 + w // 2, y0 + h // 2, 3, GLYPH, hole=1)
+    c.put(x0 + w // 2, y0 + h // 2, CRYS)
+
+
+def god_face(c, x0, y0, s=1):
+    """Rosto não humano entalhado: olhos demais, boca em fenda."""
+    w, h = 14 * s, 16 * s
+    for y in range(h):
+        inset = abs(y - h // 2) // 3
+        for x in range(inset, w - inset):
+            c.put(x0 + x, y0 + y, MARBLE if y > 2 else MARBLE_D)
+    # três olhos
+    for ex in (3, 7, 11):
+        c.fill(x0 + ex * s, y0 + 9 * s, 2 * s, 2 * s, WIN_DARK)
+        c.put(x0 + ex * s, y0 + 10 * s, CRYS_D)
+    c.fill(x0 + 5 * s, y0 + 4 * s, 4 * s, 1, INK)
+    moss_clump(c, x0 + 1, y0 + h - 3, 5, 2)
+
+
+def multi_arm_colossus(c, x0, y0):
+    """Estátua colossal quebrada: tronco, vários braços, cabeça caída ao lado."""
+    # pedestal
+    c.fill(x0 + 6, y0, 22, 6, MARBLE_D)
+    moss_clump(c, x0 + 4, y0 + 4, 8, 3)
+    # torso
+    for y in range(28):
+        half = 8 - y // 10
+        for x in range(-half, half + 1):
+            col = MARBLE_L if x > half - 2 else MARBLE
+            if x < -half + 2:
+                col = MARBLE_D
+            c.put(x0 + 16 + x, y0 + 6 + y, col)
+    # braços extras, um quebrado no ar, um no chão
+    c.fill(x0 + 4, y0 + 22, 10, 3, MARBLE)
+    c.fill(x0 + 24, y0 + 24, 12, 3, MARBLE_L)
+    c.fill(x0 + 34, y0 + 8, 8, 3, MARBLE_D)  # braço caído
+    c.fill(x0, y0 + 16, 6, 2, MARBLE)
+    # cristal no peito — âncora de luz (x≈ x0+16, y≈ y0+20)
+    disc(c, x0 + 16, y0 + 20, 3, CRYS, hole=1)
+    c.put(x0 + 16, y0 + 20, CRYS_H)
+    # cabeça tombada
+    god_face(c, x0 + 30, y0 + 1)
+    # raiz atravessando o pedestal
+    for i in range(14):
+        c.put(x0 + 8 + i, y0 + 2 + (i % 3), MOSS if i % 2 == 0 else (46, 32, 24))
+
+
+def ring_gate(c, x0, y0):
+    """Portão circular partido. O vão escuro é a boca do templo."""
+    disc(c, x0, y0 + 28, 26, ST_BASE, hole=18)
+    disc(c, x0, y0 + 28, 18, WIN_DARK, hole=0)
+    # anel externo rachado: falta um quarto
+    for dy in range(-26, 27):
+        for dx in range(-26, 27):
+            d = math.hypot(dx, dy)
+            if 20 <= d <= 26 and not (dx > 8 and dy > 6):
+                col = ST_EDGE if int(d) == 26 else ST_LIT
+                if hash2(x0 + dx, y0 + dy) % 9 == 0:
+                    col = MOSS
+                c.put(x0 + dx, y0 + 28 + dy, col)
+    # símbolo no arco
+    disc(c, x0, y0 + 48, 4, GLYPH, hole=2)
+    # cristal no limiar — segunda âncora
+    c.fill(x0 - 2, y0 + 8, 4, 6, CRYS_D)
+    c.fill(x0 - 1, y0 + 10, 2, 3, CRYS_H)
+    # ferragem enferrujada na ombreira
+    c.fill(x0 - 22, y0 + 10, 3, 16, RUST_D)
+    c.fill(x0 - 22, y0 + 18, 8, 2, RUST)
+
+
+def buried_machine(c, x0, y0):
+    """Mecanismo enterrado na pedra: não é ficção científica limpa, é ruína."""
+    c.fill(x0, y0, 28, 8, ST_DARK)
+    for x in range(0, 28, 4):
+        c.fill(x0 + x, y0 + 2, 2, 5, RUST if x % 8 else RUST_D)
+    disc(c, x0 + 14, y0 + 6, 5, ST_EDGE, hole=3)
+    c.put(x0 + 14, y0 + 6, CRYS)
+    moss_clump(c, x0 + 2, y0 + 7, 6, 2)
+
+
+def alien_growth(c, x0, y0):
+    """Fungo baixo e cipó. Poucos pixels, leitura de longe."""
+    c.fill(x0, y0, 2, 7, (40, 28, 22))
+    for i in range(5):
+        c.put(x0 + 1 + (i % 2), y0 + 7 + i, MOSS_LIT if i % 2 == 0 else MOSS)
+    c.put(x0 + 3, y0 + 10, CRYS_D)
+    c.put(x0 - 1, y0 + 4, MOSS)
+
+
+def creature_hint(c, x0, y0):
+    """Bicho pequeno entre pedras — dois olhos, não um personagem."""
+    c.fill(x0, y0, 5, 2, (28, 36, 32))
+    c.put(x0 + 1, y0 + 2, CRYS_H)
+    c.put(x0 + 3, y0 + 2, CRYS_H)
+
+
+def build_sky_temple():
+    c = Canvas(480, 192)
+    for y in range(c.h):
+        g = 1 - y / (c.h - 1)
+        for x in range(c.w):
+            band = g * 5
+            i0 = int(band)
+            f = band - i0
+            step = i0 + (1 if (f > 0.5 and (x // 2 + y) % 2 == 0) else 0)
+            q = min(1.0, step / 5)
+            if q < 0.55:
+                t = q / 0.55
+                col = tuple(int(SKY_TOP[i] + (SKY_MID[i] - SKY_TOP[i]) * t) for i in range(3))
+            else:
+                t = (q - 0.55) / 0.45
+                col = tuple(int(SKY_MID[i] + (SKY_HOR[i] - SKY_MID[i]) * t) for i in range(3))
+            if y < 22:
+                e = (22 - y) / 22
+                if (x // 2) % 3 != 0:
+                    col = tuple(int(col[i] + (BLOOD[i] - col[i]) * e * 0.45) for i in range(3))
+            c.put(x, y, col)
+    # planeta baixo, à esquerda — disco com uma faixa, não um degradê
+    disc(c, 78, 36, 28, (24, 18, 40), hole=0)
+    for y in range(22, 40):
+        for x in range(52, 106):
+            if math.hypot(x - 78, y - 36) <= 28 and y % 4 < 2:
+                c.put(x, y, (46, 28, 58))
+    # lua partida no alto direito
+    disc(c, 350, 150, 14, MOON, hole=0)
+    disc(c, 358, 156, 7, SKY_MID, hole=0)
+    for y in range(130, c.h):
+        for x in range(c.w):
+            if chance(x, y, 1400):
+                c.put(x, y, MOON)
+    c.save("sky")
+
+
+def build_far_temple():
+    """Horizonte: metrópole em silhueta e uma estátua gigante quebrada."""
+    c = Canvas(640, 210)
+    SIL = (18, 16, 34)
+    SIL_L = (28, 24, 46)
+    for x in range(c.w):
+        hh = 18 + int(8 * math.sin(x * 0.02)) + hash2(x, 1) % 3
+        for y in range(hh):
+            c.put(x, y, FAR_A if y < hh - 4 else FAR_B)
+        if x % 14 == 0 and hh > 14:
+            c.put(x, 10, CRYS_D)
+            c.put(x, 11, CRYS_D)
+
+    def tower(x, w, h, broken):
+        c.fill(x, 16, w, h, SIL)
+        c.fill(x, 16, 2, h, SIL_L)
+        top = 16 + h
+        if broken:
+            for i in range(w):
+                c.put(x + i, top - (i % 4), SIL)
+        else:
+            disc(c, x + w // 2, top, max(4, w // 2), SIL, hole=0)
+
+    tower(24, 16, 100, True)
+    tower(52, 22, 150, False)
+    tower(88, 12, 80, True)
+    tower(520, 18, 130, True)
+    tower(556, 14, 96, False)
+
+    # estátua colossal — o corpo sobe da cidade e a cabeça está partida
+    bx, by = 250, 14
+    c.fill(bx, by, 78, 96, SIL)
+    c.fill(bx, by, 4, 96, SIL_L)
+    for y in range(50, 96):
+        cut = (y - 50) // 2
+        for x in range(78 - cut, 78):
+            c.put(bx + x, by + y, (0, 0, 0, 0))
+    disc(c, bx + 36, by + 118, 32, SIL, hole=0)
+    disc(c, bx + 58, by + 136, 14, (0, 0, 0, 0), hole=0)
+    c.fill(bx + 16, by + 112, 6, 5, (6, 6, 14))
+    c.fill(bx + 32, by + 118, 6, 5, (6, 6, 14))
+    c.fill(bx + 46, by + 112, 5, 5, (6, 6, 14))
+    # braço caído na encosta, separado do corpo
+    c.fill(150, 18, 90, 10, SIL)
+    c.fill(150, 26, 90, 2, SIL_L)
+    c.put(bx + 40, by + 70, CRYS)
+    c.save("far")
+
+
+def build_city_temple():
+    """Meio: cabeça enterrada, templo em degraus, portão circular."""
+    c = Canvas(640, 168)
+    for x in range(c.w):
+        hh = 7 + hash2(x // 5, 3) % 3
+        for y in range(hh):
+            c.put(x, y, stone_shade(x, y + 4))
+    # corpo enterrado — só o dorso aparece
+    for x in range(150):
+        hh = int(16 * math.sin(x / 150 * math.pi))
+        for y in range(hh):
+            col = MARBLE_D if y < 3 else MARBLE
+            if y == hh - 1:
+                col = MOSS if x % 4 == 0 else MARBLE_L
+            c.put(20 + x, y, col)
+    deity_head(c, 48, 8, 62, 50)
+    moss_clump(c, 46, 10, 14, 4)
+    # templo
+    stepped(c, 210, 6, 90, 64, 4)
+    god_face(c, 242, 28, 1)
+    crack_wall(c, 230, 20, 22)
+    # portão — cristal na base é a âncora (430, 22)
+    ring_gate(c, 470, 6)
+    alien_growth(c, 190, 8)
+    alien_growth(c, 330, 8)
+    alien_growth(c, 560, 10)
+    vine(c, 200, 28, 16)
+    vine(c, 520, 36, 18)
+    creature_hint(c, 160, 8)
+    creature_hint(c, 400, 7)
+    rubble_blocks(c, 360, 4, 4)
+    settle_moss(c)
+    c.save("city")
+
+
+def build_near_veil():
+    """Camada da frente: cipó, pedra e caco, com alpha. Passa na frente do herói."""
+    c = Canvas(640, 80)
+    for i, x in enumerate((12, 80, 150, 230, 310, 390, 470, 560)):
+        vine(c, x, 70, 18 + hash2(x, 1) % 16)
+        if i % 2 == 0:
+            rubble_blocks(c, x - 6, 2, 3)
+            moss_clump(c, x, 2, 6, 3)
+        else:
+            c.fill(x, 4, 3, 8, CRYS_D)
+            c.put(x + 1, 10, CRYS)
+    c.save("near")
+
+
 if __name__ == "__main__":
-    build_sky()
-    build_far()
-    build_city()
+    build_sky_temple()
+    build_far_temple()
+    build_city_temple()
+    build_near_veil()
     build_pavement()
     build_tree()
     build_statue()
@@ -963,6 +1508,7 @@ if __name__ == "__main__":
     build_bush()
     build_stones()
     build_fallen()
+    build_fore_thorns()
     for wu in (5.4, 4.2, 1.15):
         build_platform(wu)
     write_metas()

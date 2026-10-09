@@ -18,7 +18,7 @@ public class StageData : ScriptableObject
         var data = CreateInstance<StageData>();
         data.Id = "t1";
         data.DisplayName = "Ruínas da Borda";
-        data.HalfWidth = 34f;
+        data.HalfWidth = 160f;
         data.HalfHeight = 8f;
         data.GroundTop = -2.35f;
         data.GroundColor = new Color(0.05f, 0.07f, 0.08f);

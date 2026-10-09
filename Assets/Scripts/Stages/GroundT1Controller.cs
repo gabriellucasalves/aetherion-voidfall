@@ -20,7 +20,9 @@ public class GroundT1Controller : MonoBehaviour
     Image _lifeFill;
     Image _shieldFill;
     GameObject _shieldTrack;
-    bool _showSpecialCd;
+    Image _specialFill;
+    Text _specialText;
+    PlayerCombat _combat;
     bool _showWard;
     Text _waveBanner;
     float _waveBannerLeft;
@@ -60,6 +62,7 @@ public class GroundT1Controller : MonoBehaviour
         var hero = ResolveHero();
         BuildStage();
         _player = SpawnHero(hero);
+        _combat = _player != null ? _player.GetComponent<PlayerCombat>() : null;
         BindCamera();
         var rain = gameObject.AddComponent<RainField>();
         rain.Setup(Camera.main != null ? Camera.main.transform : _player.transform);
@@ -83,8 +86,9 @@ public class GroundT1Controller : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             TogglePause();
 
-        // CD do especial do arqueiro usa a barra reaproveitada do escudo.
-        if (_showSpecialCd || _showWard)
+        // Barra de carregamento do especial (todos os herois) tica com o tempo.
+        RefreshSpecialBar();
+        if (_showWard)
             RefreshHud();
     }
 
@@ -207,7 +211,9 @@ public class GroundT1Controller : MonoBehaviour
         }
 
         camera.orthographic = true;
-        camera.orthographicSize = 5.35f;
+        camera.orthographicSize = PixelPresentation.OrthoSize;
+        if (camera.GetComponent<PixelPresentation>() == null)
+            camera.gameObject.AddComponent<PixelPresentation>();
         camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = _stage.SkyColor;
         camera.transform.position = new Vector3(-20f, 0.6f, -10f);
@@ -279,35 +285,31 @@ public class GroundT1Controller : MonoBehaviour
         _shieldText = UiKit.Label(canvas.transform, "", 14, new Vector2(-300f, 364f), MenuTheme.SoftIvory, new Vector2(140f, 22f));
         _shieldText.alignment = TextAnchor.MiddleLeft;
 
+        // Barra de carregamento do ESPECIAL - dedicada, para os 3 herois.
+        var specialLabel = UiKit.Label(canvas.transform, "ESPECIAL", 14, new Vector2(-820f, 336f), MenuTheme.CelestialGold, new Vector2(110f, 22f));
+        specialLabel.alignment = TextAnchor.MiddleLeft;
+        _specialFill = UiKit.Bar(canvas.transform, "BarraEspecial", new Vector2(-560f, 336f), new Vector2(BarWidth, 16f), new Color(0.08f, 0.06f, 0.12f, 0.85f), SpecialColor(hero));
+        _specialText = UiKit.Label(canvas.transform, "", 14, new Vector2(-300f, 336f), MenuTheme.SoftIvory, new Vector2(160f, 22f));
+        _specialText.alignment = TextAnchor.MiddleLeft;
+
         bool showShield = hero != null && hero.Id == "guerreiro";
-        // Arqueiro: barra = CD do especial. Mago: barra = CAMPO (não ESCUDO).
-        _showSpecialCd = hero != null && hero.Id == "arqueiro";
+        // Arqueiro: sem barra de escudo (o especial ganhou barra dedicada acima).
         _showWard = hero != null && hero.Id == "mago";
         if (_shieldLabel != null)
         {
-            _shieldLabel.gameObject.SetActive(showShield || _showSpecialCd || _showWard);
+            _shieldLabel.gameObject.SetActive(showShield || _showWard);
             if (_showWard)
             {
                 _shieldLabel.text = "CAMPO";
                 _shieldLabel.color = new Color(0.55f, 0.78f, 1f);
             }
-            else if (_showSpecialCd)
-            {
-                _shieldLabel.text = "ESPECIAL";
-                _shieldLabel.color = new Color(0.55f, 0.92f, 0.65f);
-            }
         }
         if (_shieldTrack != null)
-            _shieldTrack.SetActive(showShield || _showSpecialCd || _showWard);
+            _shieldTrack.SetActive(showShield || _showWard);
         if (_shieldText != null)
-            _shieldText.gameObject.SetActive(showShield || _showSpecialCd || _showWard);
-        if (_shieldFill != null)
-        {
-            if (_showWard)
-                _shieldFill.color = new Color(0.45f, 0.7f, 1f);
-            else if (_showSpecialCd)
-                _shieldFill.color = new Color(0.45f, 0.88f, 0.58f);
-        }
+            _shieldText.gameObject.SetActive(showShield || _showWard);
+        if (_shieldFill != null && _showWard)
+            _shieldFill.color = new Color(0.45f, 0.7f, 1f);
 
         RefreshHud();
         UiKit.Label(canvas.transform, HintFor(hero), 16, new Vector2(0f, -480f), new Color(1f, 1f, 1f, 0.55f), new Vector2(1600f, 30f));
@@ -374,7 +376,7 @@ public class GroundT1Controller : MonoBehaviour
         if (_lifeText != null)
             _lifeText.text = Mathf.CeilToInt(life) + " / " + Mathf.CeilToInt(lifeMax);
 
-        if (shield != null && !_showSpecialCd && !_showWard)
+        if (shield != null && !_showWard)
         {
             UiKit.SetBar(_shieldFill, shield.Current / shield.Max, BarWidth);
             if (_shieldText != null)
@@ -397,16 +399,43 @@ public class GroundT1Controller : MonoBehaviour
             }
         }
 
-        if (_showSpecialCd)
+        RefreshSpecialBar();
+    }
+
+    // Barra dedicada: enche conforme o especial recarrega; pulsa quando pronto.
+    void RefreshSpecialBar()
+    {
+        if (_specialFill == null || _combat == null)
+            return;
+
+        float left = _combat.SpecialCooldownLeft;
+        float max = _combat.SpecialCooldownMax;
+        float ready = max > 0f ? 1f - Mathf.Clamp01(left / max) : 1f;
+        UiKit.SetBar(_specialFill, ready, BarWidth);
+
+        Color color = SpecialColor(_player != null ? _player.Hero : null);
+        if (left <= 0.05f)
         {
-            var combat = _player.GetComponent<PlayerCombat>();
-            float left = combat != null ? combat.SpecialCooldownLeft : 0f;
-            float max = combat != null ? combat.SpecialCooldownMax : PlayerCombat.ArcherSpecialCooldown;
-            float ready = max > 0f ? 1f - Mathf.Clamp01(left / max) : 1f;
-            UiKit.SetBar(_shieldFill, ready, BarWidth);
-            if (_shieldText != null)
-                _shieldText.text = left > 0.05f ? left.ToString("0.0") + "s" : "PRONTO";
+            float pulse = 0.75f + 0.25f * Mathf.Sin(Time.unscaledTime * 6f);
+            _specialFill.color = Color.Lerp(color, Color.white, 1f - pulse);
+            if (_specialText != null)
+                _specialText.text = "PRONTO (L/Q)";
         }
+        else
+        {
+            _specialFill.color = color;
+            if (_specialText != null)
+                _specialText.text = left.ToString("0.0") + "s";
+        }
+    }
+
+    static Color SpecialColor(CharacterData hero)
+    {
+        if (hero != null && hero.Id == "mago")
+            return new Color(0.72f, 0.45f, 1f);
+        if (hero != null && hero.Id == "arqueiro")
+            return new Color(0.45f, 0.88f, 0.58f);
+        return new Color(1f, 0.62f, 0.25f);
     }
 
     void OnPlayerDied(HealthSystem _)

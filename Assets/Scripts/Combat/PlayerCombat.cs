@@ -227,7 +227,7 @@ public class PlayerCombat : MonoBehaviour
             _shield.Absorb(WarriorSpecialShieldCost);
 
         _attackLeft = 0.40f; // GuerreiroVisual: placeholder nos frames de attack
-        _specialAnimLeft = 0.45f;
+        _specialAnimLeft = 0.70f; // cobre o cut-in (~0.71s) e deixa o especial mais legivel
         _specialCooldownLeft = WarriorSpecialCooldown;
         PixelBurst.Spawn(transform.position + (Vector3)facing * 1.1f + Vector3.up * 0.45f, wave.Color, 6);
     }
@@ -264,7 +264,7 @@ public class PlayerCombat : MonoBehaviour
 
         _attackLeft = 0.45f; // cast visual (MagoVisual)
         // Clip special 17–20 (~11 fps) + hold: cobre wind-up (0.18s) e pico da explosão VFX.
-        _specialAnimLeft = 0.70f;
+        _specialAnimLeft = 0.75f; // cut-in (~0.71s) + pico da explosao
         _specialCooldownLeft = MageSpecialCooldown; // CD próprio ~6.5s — independente do Orbe básico
         PixelBurst.Spawn(transform.position + Vector3.up * 0.8f, color, 6);
         PixelBurst.Spawn(transform.position + Vector3.up * 0.55f, new Color(0.7f, 0.45f, 1f), 4);
@@ -312,7 +312,7 @@ public class PlayerCombat : MonoBehaviour
 
         // Clip special {13,13,14,18} @ ~12 fps (~0.33s) + hold no leque.
         _attackLeft = 0.45f;
-        _specialAnimLeft = 0.55f;
+        _specialAnimLeft = 0.70f; // cobre o cut-in (~0.71s)
         _specialCooldownLeft = ArcherSpecialCooldown;
     }
 

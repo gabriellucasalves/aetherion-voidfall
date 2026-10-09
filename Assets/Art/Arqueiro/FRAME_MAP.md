@@ -11,7 +11,7 @@
 | Grade | **7 colunas × 3 linhas** = 21 frames |
 | Tamanho | 448×192 |
 | Leitura | índice linear L→R, cima→baixo (igual Guerreiro) |
-| PPU | 15 · pivot no pé |
+| PPU | 16 (`PixelArt.Ppu`) · pivot no pé |
 
 ## Animações
 

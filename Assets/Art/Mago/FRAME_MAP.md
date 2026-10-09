@@ -2,8 +2,13 @@
 
 **Arquivo runtime:** `Assets/Resources/Mago/sheet.png`  
 **Cópia de arte:** `Assets/Art/Mago/Mago_sheet.png`  
-**Aseprite:** `Assets/Art/Mago/Mago.aseprite`  
-**Gerador:** `Assets/Art/Mago/build_sheet.py` (ASCII parts → PNG, espelha Guerreiro)  
+**Conceito (Sprint M1):** `mago_conceito.png`  
+**Aseprite (fonte da verdade):** `Mago.aseprite` — desenhar idle na linha do chão (`guia_chao.png`, y=60)  
+**Foco de animação (conceito atual):**
+1. **Capa** — balanço secundário no idle/walk (painéis atrás do corpo)
+2. **Luz de poder no cajado** — cristal + partículas emanando (pulso no idle, mais forte no cast/special)
+3. Silhueta legível de mago: capuz vazio, robe, cinto/bolsa, botas no chão, cajado prata
+**Gerador legado:** `Assets/Art/Mago/build_sheet.py`  
 **Import:** `import_frames.lua` + `tag_anims.lua`
 
 | | |
@@ -19,13 +24,14 @@
 |--------|------|--------------|--------|
 | 0–3 | idle | idle | Bob + pulso do cristal |
 | 4–9 | walk | walk | 6 passos, staff tilt |
-| 10–12 | jump | jump | sobe / ápice / cai |
+| 10–12 | jump | jump | poses reais: impulso (pernas recolhidas + rastro), ápice (capa p/ cima), queda (botas esticadas) |
 | 13–16 | cast | cast | Staff thrust + orbe (`IsAttacking`) |
 | 17–20 | special | special | Arcane nova / crystal flare (`IsCastingSpecial`) |
 | 21–22 | hurt | hurt | robe vermelha |
 | 23 | silhueta | — | referência de leitura |
 | 24 | paleta | — | 16 swatches |
-| 25–27 | spare | — | variantes idle |
+| 25–26 | land | — | aterrissagem: squash + recover (MagoVisual, ~0.16s) |
+| 27 | spare | — | variante idle |
 
 ## Paleta (dark fantasy, ~12–16 cores)
 

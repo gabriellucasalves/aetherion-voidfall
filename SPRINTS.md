@@ -406,6 +406,41 @@ Arte em paralelo está marcada como **[ARTE]**. Ela não bloqueia o fechamento s
 
 ---
 
+### Sprint Arte — Mago pixel (em curso)
+
+**Objetivo:** o Mago alcançar o **mesmo nível de detalhe do Guerreiro**, usando o conceito
+`Assets/Art/Mago/mago_conceito.png` (capuz vazio, manto acolchoado, cajado + cristal com aura).
+
+**Jogador sente:** na seleção e em T1 o Mago parece um herói sólido (não peças flutuando),
+com robe contínua, volume e glow do cristal.
+
+**Referência de qualidade:** Guerreiro (chibi 64×64, outline `k`, filtro Point, silhueta legível).
+
+**Ordem (uma sprint por vez — não pular)**
+
+1. **Sprint M1 — Desenhar no Aseprite (idle no chão)** ← *atual*
+   - Fonte da verdade: **Aseprite**, não o `build_sheet.py` ASCII
+   - Arquivo: `Assets/Art/Mago/Mago.aseprite` · conceito: `mago_conceito.png` · guia: `guia_chao.png` (linha y=60)
+   - Desenhar idle 64×64 com **base da robe/pés na linha do chão** (como o Guerreiro)
+   - Exportar frames → `Resources/Mago/sheet.png` (filtro Point)
+   - Critério: na Play Mode o Mago **não flutua**; silhueta contínua e detalhada como o Guerreiro
+2. **Sprint M2 — Walk + jump** (no Aseprite, tags `walk` / `jump`)
+3. **Sprint M3 — Cast + especial** (tags `cast` / `special`)
+4. **Sprint M4 — Campo de magia em volta do corpo**
+5. **Sprint M5 — Ligar / polir Unity + WebGL**
+   - Sync MagoVisual, seleção, deploy
+
+**Aceite M1 (esta sprint)**
+
+- [ ] Idle desenhado à mão no Aseprite (não placeholder ASCII)
+- [ ] Pés/base da robe na linha do chão — sem flutuar em T1
+- [ ] Capuz = vazio escuro (sem rosto), volume próximo do `mago_conceito.png`
+- [ ] Filtro Point; sheet 7×4 / 64×64 intacto para `MagoVisual`
+
+**Proibido nesta trilha:** redesenhar Arqueiro, mudar kit/números de combate, nave, boss.
+
+---
+
 ### Sprint 4 — Terra 1 de verdade (ondas + fundo)
 
 **Objetivo:** T1 vira fase, não arena infinita.
