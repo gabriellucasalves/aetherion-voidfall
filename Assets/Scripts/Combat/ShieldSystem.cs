@@ -19,6 +19,15 @@ public class ShieldSystem : MonoBehaviour
         Changed?.Invoke(this);
     }
 
+    public void Refill()
+    {
+        if (Max <= 0f)
+            return;
+        Current = Max;
+        _regenDelay = 0f;
+        Changed?.Invoke(this);
+    }
+
     public float Absorb(float amount)
     {
         if (amount <= 0f || IsBroken)

@@ -24,9 +24,21 @@ public class EnemyController : MonoBehaviour
     float _phaseLeft;
     float _faceDir = 1f;
 
+    float _stunLeft;
+    bool _frozen;
+    float _storedDamage;
+    float _savedGravity = 1f;
+    int _vitalMarks;
+
     public HealthSystem Health => _health;
     public EnemyData Data => _data;
     public bool IsWindingUp => _phase == Phase.Windup;
+    public bool IsFrozen => _frozen;
+    public float StoredDamage => _storedDamage;
+    public int VitalMarks => _vitalMarks;
+
+    public static event System.Action<EnemyController, float> AnyDamaged;
+    public static event System.Action<EnemyController> AnyDied;
 
     public void Setup(EnemyData data, Transform target, StageData stage)
     {
@@ -43,6 +55,23 @@ public class EnemyController : MonoBehaviour
     {
         if (_target == null || _data == null || _health == null || _health.IsDead || _body == null)
             return;
+
+        if (_frozen)
+        {
+            _body.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        if (_stunLeft > 0f)
+        {
+            _stunLeft -= Time.fixedDeltaTime;
+            var slide = _body.linearVelocity;
+            slide.x = Mathf.MoveTowards(slide.x, 0f, 8f * Time.fixedDeltaTime);
+            _body.linearVelocity = slide;
+            Clamp();
+            Face(_faceDir);
+            return;
+        }
 
         float dx = _target.position.x - transform.position.x;
         float dir = dx >= 0f ? 1f : -1f;
@@ -207,16 +236,84 @@ public class EnemyController : MonoBehaviour
     // ghoul toma 40% a mais (frágil), zumbi toma 35% a menos (tanque)
     public void ReceiveDamage(float amount)
     {
+        if (_health == null || _health.IsDead || amount <= 0f)
+            return;
+
+        // Dano durante o tempo parado do Mago entra só quando o gelo solta.
+        if (_frozen)
+        {
+            _storedDamage += amount;
+            return;
+        }
+
+        float before = _health.Current;
+        float multiplier = _data != null ? _data.DamageTaken : 1f;
+        DamageSystem.Apply(_health, amount * multiplier);
+        if (_health != null && _health.Current < before)
+            AnyDamaged?.Invoke(this, amount);
+    }
+
+    public void SetFrozen(bool frozen)
+    {
+        if (_frozen == frozen || _health == null || _health.IsDead)
+            return;
+
+        _frozen = frozen;
+        if (_body != null)
+        {
+            if (frozen)
+            {
+                _savedGravity = _body.gravityScale;
+                _body.linearVelocity = Vector2.zero;
+                _body.gravityScale = 0f;
+            }
+            else
+            {
+                _body.gravityScale = _savedGravity <= 0f ? 1f : _savedGravity;
+                _body.linearVelocity = Vector2.zero;
+            }
+        }
+
+        if (!frozen && _storedDamage > 0f)
+        {
+            float stored = _storedDamage;
+            _storedDamage = 0f;
+            ReceiveDamage(stored);
+        }
+    }
+
+    public void Knockback(Vector2 velocity, float stunSeconds)
+    {
         if (_health == null || _health.IsDead)
             return;
 
-        float multiplier = _data != null ? _data.DamageTaken : 1f;
-        DamageSystem.Apply(_health, amount * multiplier);
+        _stunLeft = Mathf.Max(_stunLeft, stunSeconds);
+        if (Mathf.Abs(velocity.x) > 0.01f)
+            _faceDir = Mathf.Sign(velocity.x);
+        if (_body != null)
+            _body.linearVelocity = velocity;
+    }
+
+    public void AddVitalMark()
+    {
+        _vitalMarks++;
+        SupremeFx.SpawnMark(transform, _vitalMarks);
+    }
+
+    public void ClearVitalMarks()
+    {
+        _vitalMarks = 0;
+        var marks = GetComponentsInChildren<SupremeMark>();
+        for (int i = 0; i < marks.Length; i++)
+        {
+            if (marks[i] != null)
+                Destroy(marks[i].gameObject);
+        }
     }
 
     void OnTriggerStay2D(Collider2D other)
     {
-        if (_data == null || _target == null || Time.time < _touchReady)
+        if (_frozen || _data == null || _target == null || Time.time < _touchReady)
             return;
 
         var player = other.GetComponent<PlayerController>();
@@ -231,6 +328,7 @@ public class EnemyController : MonoBehaviour
 
     void OnDied(HealthSystem _)
     {
+        AnyDied?.Invoke(this);
         var stage = FindFirstObjectByType<GroundT1Controller>();
         if (stage != null)
             stage.RegisterKill();

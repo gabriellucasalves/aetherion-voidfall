@@ -16,10 +16,12 @@ Menu → história → escolha do herói → Terra 1 (ruínas de Aetherion).
 - Espaço / W — pular
 - Mouse esquerdo ou J — atacar
 - Mouse direito / K / S — escudo (guerreiro)
+- L / Q — especial da classe
+- E — especial supremo (barra de Ressonância cheia)
 - Shift — dash
 - ESC — pausa
 
-No celular aparecem botões virtuais (analógico, pular, atacar, escudo, dash).
+No celular aparecem botões virtuais (analógico, pular, atacar, escudo, especial, dash). O botão SUPREMO só aparece quando a Ressonância enche.
 
 ## Time
 
@@ -31,6 +33,25 @@ No celular aparecem botões virtuais (analógico, pular, atacar, escudo, dash).
 | Thiago Costa Renovato | [ThiagoRenovato](https://github.com/ThiagoRenovato) | write |
 | Isabela Rosa Dos Santos Gontijo | [batmavis](https://github.com/batmavis) | write |
 | Wesley Thiago Matias Xavier | [wesshub](https://github.com/wesshub) | write |
+
+## Pixel art — tools (Etapas 2–10)
+
+Docs: `Assets/Documentation/` (`CharacterPixelArtAudit.md`, `CharacterStyleGuide.md`, `MagoRedesignSpec.md`, `PixelArtTools.md`, `GuiaAsepriteCenariosNaves.md`).
+
+| Ferramenta | Como abrir |
+| --- | --- |
+| Template Aseprite | `Tools/Aseprite/CreateCharacterTemplate.lua` → no Aseprite: **File → Scripts** (copie o `.lua` para a pasta Scripts) |
+| Template de cenário | `Tools/Aseprite/CreateSceneryTemplate.lua` → parallax, props, plataformas, tileset e fundo de espaço (tamanhos e paleta do T1) |
+| Template de nave | `Tools/Aseprite/CreateShipTemplate.lua` → células 32 / 64 / 128, 17 frames com tags |
+| Exportar para o Unity | `Tools/Aseprite/ExportForUnity.lua` → PNG + JSON sem as camadas `GUIDE` |
+| Import Tool | Unity: **Tools → Pixel Art → Import Tool** |
+| Character Validator | Unity: **Tools → Pixel Art → Character Validator** |
+| Character Comparison | Unity: **Tools → Pixel Art → Character Comparison** |
+| Proportion Debug | Componente `CharacterProportionDebug` no herói (Scene View) |
+
+Contrato de runtime (não mudar tamanho global à toa): **PPU 15**, pivot `(0.5, 3/64)`, **Point**, GO pixel `y = -0.5`. Referência estrutural: **Guerreiro**.
+
+Cenários e naves: copie os `.lua` de `Tools/Aseprite/` para a pasta Scripts do Aseprite (**File → Scripts → Open Scripts Folder**, depois **Rescan**). O passo a passo (paleta do T1, onde salvar o PNG, PPU 16 no cenário e PPU 15 com pivô no centro na nave) está em `Assets/Documentation/GuiaAsepriteCenariosNaves.md`. Os três scripts novos também aceitam `--script-param` para rodar sem interface.
 
 ## Build WebGL (Unity 6)
 

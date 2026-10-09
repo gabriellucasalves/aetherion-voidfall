@@ -117,6 +117,8 @@ public class PlayerCombat : MonoBehaviour
         {
             Vector3 impact = transform.position + new Vector3(facing.x * 0.7f, 0.9f, 0f);
             PixelBurst.Spawn(impact, new Color(0.45f, 0.72f, 1f), 5);
+            if (leftover <= 0.01f)
+                GetComponent<ResonanceMeter>()?.Add(ResonanceMeter.PerPerfectBlock);
         }
         return blocked;
     }
@@ -329,6 +331,11 @@ public class PlayerCombat : MonoBehaviour
         PixelBurst.Spawn(transform.position, new Color(0.95f, 0.72f, 0.28f), 5);
     }
 
+    public void RechargeDash()
+    {
+        _dashCooldown = 0f;
+    }
+
     void FireArrow(Vector2 direction, Vector3 localOffset, float damage, Color color, float muzzleDelay = -1f)
     {
         // Arrow: sprite ponta+haste+pena, rotação na direção, PixelBurst no impacto.
@@ -418,6 +425,7 @@ public class PlayerCombat : MonoBehaviour
     static bool WantsSpecial()
     {
         // Teclado: L ou Q. Mobile: botão de especial (ConsumeSpecialDown).
+        // E fica reservado ao Especial Supremo (SpecialController).
         if (MobileControls.IsVisible)
             return MobileControls.ConsumeSpecialDown();
         return Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Q);
