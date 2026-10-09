@@ -36,7 +36,7 @@ public static class WarriorBarrage
 
         DamageBox(center, box * 1.15f, strength * 1.1f, facing, 1.5f);
         PixelBurst.Spawn(center, new Color(0.85f, 0.18f, 0.12f), 8);
-        PixelBurst.Spawn(center + Vector3.up * 0.3f, Gold, 4);
+        PixelBurst.Spawn(center + Vector2.up * 0.3f, Gold, 4);
         SupremeFx.Popup(owner.position + Vector3.up * 1.7f, "MURALHAAA… RUBRA!", Gold);
 
         var shield = owner.GetComponent<ShieldSystem>();
