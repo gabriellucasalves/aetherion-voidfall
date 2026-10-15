@@ -86,6 +86,14 @@ public class PixelPresentation : MonoBehaviour
         if (_screenRoot != null)
             return;
         _screenRoot = new GameObject("PixelPresentationScreen");
+
+        // Câmera de backbuffer vazia (cullingMask=0): evita o aviso 'No cameras rendering' no Editor da Unity
+        var dummyCam = _screenRoot.AddComponent<Camera>();
+        dummyCam.clearFlags = CameraClearFlags.SolidColor;
+        dummyCam.backgroundColor = Color.black;
+        dummyCam.cullingMask = 0;
+        dummyCam.depth = -100;
+
         var canvas = _screenRoot.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = -1000;
