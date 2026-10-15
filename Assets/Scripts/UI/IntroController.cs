@@ -11,7 +11,7 @@ public class IntroController : MonoBehaviour
         "Até que algo despertou além das estrelas.",
         "O Véu foi destruído.",
         "E o Vazio atravessou.",
-        "Aetherion está caindo.\nSuas torres viraram ruínas. Seus mortos não descansam.",
+        "Aetherion ainda está de pé — por pouco.\nTemplos ao sol, fontes e jardins: a cidade antes da queda.",
         "Mas ainda existem aqueles dispostos a lutar."
     };
 

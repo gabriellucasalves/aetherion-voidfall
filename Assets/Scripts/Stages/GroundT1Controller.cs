@@ -68,8 +68,7 @@ public class GroundT1Controller : MonoBehaviour
         _player = SpawnHero(hero);
         _combat = _player != null ? _player.GetComponent<PlayerCombat>() : null;
         BindCamera();
-        var rain = gameObject.AddComponent<RainField>();
-        rain.Setup(Camera.main != null ? Camera.main.transform : _player.transform);
+        // Fase diurna: sem chuva nesta fase
         BuildHud(hero);
         _spawner = gameObject.AddComponent<SimpleEnemySpawner>();
         _spawner.Setup(_player.transform, _stage);
@@ -166,7 +165,7 @@ public class GroundT1Controller : MonoBehaviour
 
     void BuildBackdrop()
     {
-        T1Scenery.Build(_stage);
+        GoldenAgeScenery.Build(_stage);
     }
 
     void BuildPlayfield()
@@ -174,11 +173,6 @@ public class GroundT1Controller : MonoBehaviour
         float groundHeight = 3.4f;
         float groundY = _stage.GroundTop - groundHeight * 0.5f;
         Solid("Chao", new Vector3(0f, groundY, 0f), new Vector2(_stage.HalfWidth * 2f + 6f, groundHeight), _stage.GroundColor, -8);
-
-        Platform(-16.5f, 2.05f, 5.4f);
-        Platform(-3.4f, 3.4f, 4.2f);
-        Stair(8.2f, 5, 1.15f, 0.52f);
-        Platform(22.5f, 3.9f, 4.2f);
     }
 
     void Platform(float x, float heightFromGround, float width)
@@ -224,7 +218,7 @@ public class GroundT1Controller : MonoBehaviour
             camera.gameObject.AddComponent<PixelPresentation>();
         camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = _stage.SkyColor;
-        camera.transform.position = new Vector3(-20f, 0.6f, -10f);
+        camera.transform.position = new Vector3(-31f, 0.6f, -10f);
         if (camera.GetComponent<CameraFollow>() == null)
             camera.gameObject.AddComponent<CameraFollow>();
     }
@@ -232,7 +226,7 @@ public class GroundT1Controller : MonoBehaviour
     PlayerController SpawnHero(CharacterData hero)
     {
         var go = new GameObject(hero != null ? hero.DisplayName : "Heroi");
-        go.transform.position = new Vector3(-22f, _stage.GroundTop + 0.7f, 0f);
+        go.transform.position = new Vector3(-31f, _stage.GroundTop + 0.7f, 0f);
 
         var body = go.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Dynamic;
@@ -343,6 +337,8 @@ public class GroundT1Controller : MonoBehaviour
 
         _waveBanner = UiKit.Label(canvas.transform, "", 32, new Vector2(0f, 290f), MenuTheme.CelestialGold, new Vector2(1000f, 48f));
         _waveBanner.gameObject.SetActive(false);
+
+        BuildPhaseTitleCard(canvas.transform);
 
         _pausePanel = UiKit.Panel(canvas.transform, "Pausa", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.62f)).gameObject;
         UiKit.Panel(_pausePanel.transform, "Caixa", new Vector2(520f, 280f), Vector2.zero, MenuTheme.Panel);
@@ -594,9 +590,79 @@ public class GroundT1Controller : MonoBehaviour
 
     static void Solid(string name, Vector3 position, Vector2 size, Color color, int order)
     {
-        // blocos de tijolo de pedra na paleta do fundo (cor mantida só como fallback)
-        var go = T1Scenery.TiledBlock(name, position, size, order);
+        // Colisor do chão sólido mantido; visual de tijolo escuro escondido
+        var go = new GameObject(name);
+        go.transform.position = position;
         var collider = go.AddComponent<BoxCollider2D>();
         collider.size = size;
+    }
+
+    void BuildPhaseTitleCard(Transform canvas)
+    {
+        var card = new GameObject("PhaseTitleCard");
+        card.transform.SetParent(canvas, false);
+
+        var cg = card.AddComponent<CanvasGroup>();
+        cg.blocksRaycasts = false;
+        cg.interactable = false;
+
+        var panel = UiKit.Panel(card.transform, "FundoCard", new Vector2(760f, 220f), new Vector2(0f, 20f), new Color(0.04f, 0.06f, 0.10f, 0.76f));
+        panel.raycastTarget = false;
+
+        var trimTop = UiKit.Panel(panel.transform, "TrimTop", new Vector2(760f, 3f), new Vector2(0f, 110f), new Color(0.93f, 0.78f, 0.38f, 0.85f));
+        trimTop.raycastTarget = false;
+
+        var trimBottom = UiKit.Panel(panel.transform, "TrimBottom", new Vector2(760f, 3f), new Vector2(0f, -110f), new Color(0.93f, 0.78f, 0.38f, 0.85f));
+        trimBottom.raycastTarget = false;
+
+        string indexText = _stage != null && !string.IsNullOrEmpty(_stage.PhaseIndex) ? _stage.PhaseIndex : "FASE I";
+        string titleText = _stage != null && !string.IsNullOrEmpty(_stage.PhaseTitle) ? _stage.PhaseTitle : "AETHERION";
+        string subText = _stage != null && !string.IsNullOrEmpty(_stage.PhaseSubtitle) ? _stage.PhaseSubtitle : "ANTES DA QUEDA";
+
+        var lblIndex = UiKit.Label(panel.transform, indexText.ToUpper(), 20, new Vector2(0f, 58f), MenuTheme.CelestialGold, new Vector2(700f, 32f));
+        lblIndex.raycastTarget = false;
+
+        var lblTitle = UiKit.Label(panel.transform, titleText.ToUpper(), 44, new Vector2(0f, 8f), MenuTheme.SoftIvory, new Vector2(700f, 54f));
+        lblTitle.raycastTarget = false;
+
+        var lblSub = UiKit.Label(panel.transform, subText.ToUpper(), 22, new Vector2(0f, -48f), MenuTheme.CelestialGold, new Vector2(700f, 34f));
+        lblSub.raycastTarget = false;
+
+        card.AddComponent<PhaseTitleCardFader>();
+    }
+}
+
+public class PhaseTitleCardFader : MonoBehaviour
+{
+    CanvasGroup _group;
+    float _timer;
+    const float HoldDuration = 3.8f;
+    const float TotalDuration = 5.0f;
+
+    void Awake()
+    {
+        _group = GetComponent<CanvasGroup>();
+        if (_group != null)
+        {
+            _group.blocksRaycasts = false;
+            _group.interactable = false;
+        }
+    }
+
+    void Update()
+    {
+        _timer += Time.deltaTime;
+        if (_timer >= TotalDuration)
+        {
+            gameObject.SetActive(false);
+            Destroy(gameObject);
+            return;
+        }
+
+        if (_timer > HoldDuration && _group != null)
+        {
+            float t = (_timer - HoldDuration) / (TotalDuration - HoldDuration);
+            _group.alpha = Mathf.Lerp(1f, 0f, t);
+        }
     }
 }

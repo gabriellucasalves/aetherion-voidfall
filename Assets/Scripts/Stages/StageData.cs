@@ -5,6 +5,9 @@ public class StageData : ScriptableObject
 {
     public string Id;
     public string DisplayName;
+    public string PhaseIndex;
+    public string PhaseTitle;
+    public string PhaseSubtitle;
     public float HalfWidth = 34f;
     public float HalfHeight = 8f;
     public float GroundTop = -2.35f;
@@ -17,14 +20,17 @@ public class StageData : ScriptableObject
     {
         var data = CreateInstance<StageData>();
         data.Id = "t1";
-        data.DisplayName = "Ruínas da Borda";
-        data.HalfWidth = 160f;
+        data.PhaseIndex = "Fase I";
+        data.PhaseTitle = "Aetherion";
+        data.PhaseSubtitle = "Antes da Queda";
+        data.DisplayName = "Fase I — Antes da Queda";
+        data.HalfWidth = 36f;
         data.HalfHeight = 8f;
         data.GroundTop = -2.35f;
-        data.GroundColor = new Color(0.05f, 0.07f, 0.08f);
-        data.SkyColor = new Color(0.04f, 0.06f, 0.1f);
-        data.RuinColor = new Color(0.16f, 0.2f, 0.24f);
-        data.AccentColor = new Color(0.42f, 0.52f, 0.58f);
+        data.GroundColor = new Color(0.85f, 0.82f, 0.74f);
+        data.SkyColor = new Color(0.48f, 0.73f, 0.93f);
+        data.RuinColor = new Color(0.92f, 0.90f, 0.85f);
+        data.AccentColor = new Color(0.95f, 0.85f, 0.45f);
         return data;
     }
 }
