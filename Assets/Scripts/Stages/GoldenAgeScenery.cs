@@ -20,6 +20,7 @@ public static class GoldenAgeScenery
         BuildGroundVisual(stage);
         BuildCityDecor(stage);
         BuildPlatforms(stage);
+        AetherionAtmosphere.Attach(stage);
     }
 
     // =========================================================================
