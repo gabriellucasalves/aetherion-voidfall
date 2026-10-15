@@ -38,3 +38,4 @@ CrashReports/
 .DS_Store
 .vscode/
 .vercel
+.env*
