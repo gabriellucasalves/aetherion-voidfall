@@ -115,5 +115,64 @@ public static class AetherionPaletteBuilder
             }
         };
     }
+
+    [MenuItem("Aetherion/Configurar Tilemaps na Cena (Ground_T1)")]
+    public static void SetupSceneTilemaps()
+    {
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().path != "Assets/Scenes/Ground_T1.unity")
+        {
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Scenes/Ground_T1.unity");
+        }
+
+        var gridGo = GameObject.Find("Grid_Cenario");
+        if (gridGo == null)
+        {
+            gridGo = new GameObject("Grid_Cenario");
+            var grid = gridGo.AddComponent<Grid>();
+            grid.cellSize = new Vector3(1f, 1f, 0f);
+        }
+
+        // 1. Tilemap do Chão Sólido
+        var chaoGo = GameObject.Find("Tilemap_Chao");
+        if (chaoGo == null)
+        {
+            chaoGo = new GameObject("Tilemap_Chao");
+            chaoGo.transform.SetParent(gridGo.transform, false);
+            chaoGo.AddComponent<Tilemap>();
+            var tr = chaoGo.AddComponent<TilemapRenderer>();
+            tr.sortingOrder = -6;
+
+            var col = chaoGo.AddComponent<TilemapCollider2D>();
+            col.usedByComposite = true;
+            var rb = chaoGo.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Static;
+            chaoGo.AddComponent<CompositeCollider2D>();
+        }
+
+        // 2. Tilemap das Plataformas One-Way
+        var platGo = GameObject.Find("Tilemap_Plataformas");
+        if (platGo == null)
+        {
+            platGo = new GameObject("Tilemap_Plataformas");
+            platGo.transform.SetParent(gridGo.transform, false);
+            platGo.AddComponent<Tilemap>();
+            var tr = platGo.AddComponent<TilemapRenderer>();
+            tr.sortingOrder = 6;
+
+            var col = platGo.AddComponent<TilemapCollider2D>();
+            col.usedByComposite = true;
+            var rb = platGo.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Static;
+            var comp = platGo.AddComponent<CompositeCollider2D>();
+            comp.usedByEffector = true;
+            var eff = platGo.AddComponent<PlatformEffector2D>();
+            eff.useOneWay = true;
+            eff.surfaceArc = 165f;
+        }
+
+        Selection.activeGameObject = chaoGo;
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+        Debug.Log("<color=#54d6ff><b>[Aetherion]</b></color> Grid e Tilemaps configurados com colisores em Ground_T1!");
+    }
 }
 #endif
