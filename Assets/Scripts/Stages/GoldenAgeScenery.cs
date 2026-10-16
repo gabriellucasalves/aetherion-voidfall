@@ -29,49 +29,14 @@ public static class GoldenAgeScenery
 
     static void BuildLayers(StageData stage)
     {
-        // Camada 1: Céu diurno com sol, anéis celestes e raios volumétricos (fator ~0.98, T1Backdrop, sorting -60)
+        // Fundo Panorâmico 16-bit unificado e contínuo:
+        // Sol diurno com raios volumétricos, planetas com anéis, picos esmeralda,
+        // acrópole com feixe divino e floresta alienígena com cogumelos gigantes.
         var skySprite = Load("sky");
         if (skySprite != null)
         {
-            var skyGo = PixelArt.Place("CeuDourado", skySprite, Vector3.zero, -60, 0f);
-            skyGo.AddComponent<T1Backdrop>().Setup(0.98f, 0.98f, 1.2f);
-        }
-
-        // Camada 2: Nuvens cúmulos 16-bit com deriva suave (fator ~0.90, sorting -55)
-        var cloudSprite = Load("clouds");
-        if (cloudSprite != null)
-        {
-            var cloudGo = PixelArt.Place("NuvensSoltas", cloudSprite, new Vector3(0f, 2.2f, 0f), -55, 0f);
-            cloudGo.AddComponent<GoldenAgeDriftLayer>().Setup(0.90f, 0.45f);
-        }
-
-        // Camada 3: Montanhas esmeralda com pico do templo e agulhas em espiral (fator ~0.76, sorting -48)
-        var mountainSprite = Load("mountains");
-        if (mountainSprite != null)
-        {
-            float mw = mountainSprite.rect.width / Ppu;
-            for (int i = -1; i <= 1; i++)
-            {
-                PixelArt.Place("Montanhas_" + i, mountainSprite, new Vector3(i * (mw - 0.2f), stage.GroundTop - 0.2f, 0f), -48, 0.76f);
-            }
-        }
-
-        // Camada 4: Floresta alienígena densa com cogumelos gigantes roxos/ciano (fator ~0.52, sorting -40)
-        var forestSprite = Load("forest");
-        if (forestSprite != null)
-        {
-            float fw = forestSprite.rect.width / Ppu;
-            for (int i = -1; i <= 1; i++)
-            {
-                PixelArt.Place("Floresta_" + i, forestSprite, new Vector3(i * (fw - 0.2f), stage.GroundTop - 0.2f, 0f), -40, 0.52f);
-            }
-        }
-
-        // Camada 5: Colunata distante entre as copas das árvores (fator ~0.30, sorting -30)
-        var colonnadeSprite = Load("colonnade");
-        if (colonnadeSprite != null)
-        {
-            PixelArt.Place("ColunataDistante", colonnadeSprite, new Vector3(0f, stage.GroundTop - 0.1f, 0f), -30, 0.30f);
+            var skyGo = PixelArt.Place("CeuDourado", skySprite, new Vector3(0f, stage.GroundTop + 4.2f, 0f), -60, 0f);
+            skyGo.AddComponent<T1Backdrop>().Setup(0.96f, 0.96f, 3.2f);
         }
     }
 
@@ -211,23 +176,19 @@ public static class GoldenAgeScenery
     {
         var platRoot = new GameObject("Plataformas");
 
-        // 1. Escada oeste de 5 degraus a partir de x = -29.2, largura 1.32, espaçamento 1.32 * 0.82
+        // 1. Escada oeste de 5 degraus a partir de x = -29.2 (colisores one-way alinhados com os degraus do templo)
         float stairStepWidth = 1.32f;
         float stairSpacing = stairStepWidth * 0.82f;
         float[] westStairHeights = { 0.55f, 1.03f, 1.51f, 1.99f, 2.47f };
-        var stepSprite = Load("stair_step");
-        float stepVisualHeight = 14f / Ppu;
 
         for (int i = 0; i < westStairHeights.Length; i++)
         {
             float x = -29.2f + i * stairSpacing;
-            BuildOneWayPlatform("DegrauOeste_" + i, x, westStairHeights[i], stairStepWidth, stage.GroundTop, stepSprite, stepVisualHeight, platRoot.transform);
+            BuildOneWayPlatform("DegrauOeste_" + i, x, westStairHeights[i], stairStepWidth, stage.GroundTop, null, 0f, platRoot.transform);
         }
 
-        // 2. Laje em x = -23.05, altura 2.50, largura 3.3
-        var lajeSprite = Load("laje");
-        float lajeVisualHeight = 14f / Ppu;
-        BuildOneWayPlatform("LajeTemploOeste", -23.05f, 2.50f, 3.3f, stage.GroundTop, lajeSprite, lajeVisualHeight, platRoot.transform);
+        // 2. Laje em x = -23.05, altura 2.50, largura 3.3 (colisor da entrada do templo)
+        BuildOneWayPlatform("LajeTemploOeste", -23.05f, 2.50f, 3.3f, stage.GroundTop, null, 0f, platRoot.transform);
 
         // 3. Quatro runas quadradas de 1x1 encostadas, começando em x = -20.9, mesma altura 2.50
         // Selo em losango dourado (Runa de Aetherion) em alto-relevo e hera pendente
@@ -267,11 +228,11 @@ public static class GoldenAgeScenery
         for (int i = 0; i < eastStairHeights.Length; i++)
         {
             float x = 14.0f + i * stairSpacing;
-            BuildOneWayPlatform("DegrauLeste_" + i, x, eastStairHeights[i], stairStepWidth, stage.GroundTop, stepSprite, stepVisualHeight, platRoot.transform);
+            BuildOneWayPlatform("DegrauLeste_" + i, x, eastStairHeights[i], stairStepWidth, stage.GroundTop, null, 0f, platRoot.transform);
         }
 
         // 8. Terraço em x = 19.9, altura 2.48, largura 5
-        BuildOneWayPlatform("TerracoLeste", 19.9f, 2.48f, 5.0f, stage.GroundTop, lajeSprite, lajeVisualHeight, platRoot.transform);
+        BuildOneWayPlatform("TerracoLeste", 19.9f, 2.48f, 5.0f, stage.GroundTop, null, 0f, platRoot.transform);
 
         // 9. Ilha final em x = 25.85, altura 3.95, largura 3.3
         BuildOneWayPlatform("IlhaFinal", 25.85f, 3.95f, 3.3f, stage.GroundTop, lowIslandSprite, lowIslandH, platRoot.transform);

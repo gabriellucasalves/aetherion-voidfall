@@ -6,6 +6,7 @@ using UnityEngine;
 
 public static class WebGLBuilder
 {
+    [MenuItem("Aetherion/📦 Gerar Build WebGL para Vercel")]
     public static void Build()
     {
         PlayerSettings.WebGL.decompressionFallback = true;
@@ -29,12 +30,14 @@ public static class WebGLBuilder
         if (report.summary.result != BuildResult.Succeeded)
         {
             Debug.LogError("WebGL build falhou: " + report.summary.result);
-            EditorApplication.Exit(1);
+            if (Application.isBatchMode)
+                EditorApplication.Exit(1);
             return;
         }
 
-        Debug.Log("WebGL build ok em webgl/  (" + report.summary.totalSize + " bytes)");
-        EditorApplication.Exit(0);
+        Debug.Log("<color=#54d6ff><b>[WebGL]</b></color> Build concluído com sucesso em webgl/ (" + report.summary.totalSize + " bytes)!");
+        if (Application.isBatchMode)
+            EditorApplication.Exit(0);
     }
 }
 #endif
