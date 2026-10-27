@@ -353,12 +353,134 @@ def cloud_canvas(spec, seed):
     return c
 
 
+# ---------------------------------------------------------------- V4.1
+# Rampa de volume: creme no topo → pêssego no meio → sombra inferior lavanda.
+CLOUD_TONES_41 = ["Meio_Tom_Sombra_Fria", "Nuvem_Sombra_Profunda", "Nuvem_Sombra_Lavanda",
+                  "Nuvem_Ambar_Medio", "Nuvem_Creme_Solar", "Nuvem_Luz_Pura"]
+CLOUD_THRESH_41 = [0.10, 0.30, 0.45, 0.62, 0.82]   # limites entre os tons 0..5
+DITHER_BAND = 0.015
+
+# Lóbulos dirigidos (x, y, r) — silhuetas distintas para cada nuvem:
+# a = torre empilhada à esquerda com cauda longa; b = duas corcovas pesadas à
+# direita com cauda para a esquerda; c = faixa baixa e fina; d = tufo curto.
 CLOUDS = {
-    "clouds_a": dict(size=(168, 52), base=46, rmax=19, lobes=0, tails=[(84, 140)]),
-    "clouds_b": dict(size=(184, 60), base=54, rmax=22, lobes=0, tails=[(92, 156)]),
-    "clouds_c": dict(size=(72, 22), base=19, rmax=8, lobes=0, tails=[(36, 56)]),
-    "clouds_d": dict(size=(48, 16), base=14, rmax=6, lobes=0, tails=[(24, 36)]),
+    "clouds_a": dict(size=(176, 60), base=54, seeds=[
+        (26, 44, 10), (42, 38, 14), (60, 32, 16), (80, 36, 14), (98, 42, 11), (115, 46, 9),
+        (131, 48, 7), (145, 50, 5.5), (157, 51, 4), (44, 22, 10), (62, 15, 12), (79, 22, 9),
+        (54, 9, 6)], tails=[]),
+    "clouds_b": dict(size=(200, 72), base=66, seeds=[
+        (24, 60, 5), (38, 57, 7), (54, 52, 10), (74, 46, 13), (96, 42, 15), (118, 46, 14),
+        (140, 40, 17), (162, 45, 14), (182, 53, 9), (94, 26, 11), (114, 26, 9), (142, 20, 13),
+        (160, 28, 9), (130, 12, 7), (150, 8, 6)], tails=[]),
+    "clouds_c": dict(size=(88, 26), base=22, seeds=[
+        (8, 20, 3.5), (18, 18, 5), (30, 15, 7.5), (42, 17, 5.5), (52, 18, 4.5), (63, 18, 5.5),
+        (75, 20, 3.5), (28, 8, 5), (37, 10, 3.5), (61, 11, 3)], tails=[]),
+    "clouds_d": dict(size=(56, 20), base=17, seeds=[
+        (11, 14, 4), (21, 11, 6), (33, 10, 6.5), (44, 13, 4.5), (27, 5, 4)], tails=[]),
 }
+
+
+def render_cloud_41(w, h, seeds, base_y, seed, tails=()):
+    """Volume empilhado: normais por lóbulo (lóbulos baixos à frente), ventre
+    lavanda largo e dither em xadrez só numa faixa estreita entre tons."""
+    rng = np.random.default_rng(seed)
+    puffs = [dict(x=x, y=y, r=r, lvl=0) for x, y, r in seeds]
+    for p in list(puffs):
+        for _ in range(3 if p["r"] > 8 else 1):
+            ang = -math.pi / 2 + rng.uniform(-1.25, 1.1)
+            r = rng.uniform(2.0, max(2.4, p["r"] * 0.42))
+            d = p["r"] - r * rng.uniform(0.2, 0.45)
+            puffs.append(dict(x=p["x"] + math.cos(ang) * d, y=p["y"] + math.sin(ang) * d, r=r, lvl=1))
+    yy, xx = np.mgrid[0:h, 0:w].astype(float)
+    wx = xx + 0.45 * noise_2d(h, w, 5, rng)
+    wy = yy + 0.3 * noise_2d(h, w, 5, rng)
+    H = np.full((h, w), -1e9)
+    NX, NY, NZ = np.zeros((h, w)), np.zeros((h, w)), np.zeros((h, w))
+    OWN, ZO = np.full((h, w), -1), np.zeros((h, w))
+    ymin = min(p["y"] for p in puffs)
+    for i, p in enumerate(puffs):
+        z = 0.6 * (p["y"] - ymin) + 0.6 * p["lvl"]
+        dx, dy = wx - p["x"], (wy - p["y"]) / 0.9
+        d2 = (dx * dx + dy * dy) / p["r"] ** 2
+        zc = np.sqrt(np.clip(1 - d2, 0, 1)) * p["r"] + z
+        win = (d2 < 1) & (zc > H)
+        H[win] = zc[win]
+        NX[win], NY[win] = (dx / p["r"])[win], (dy / p["r"])[win]
+        NZ[win] = np.sqrt(np.clip(1 - d2, 0, 1))[win]
+        OWN[win], ZO[win] = i, z
+    mask = H > -1e8
+    mask[base_y + 1:] = False
+    above = np.maximum.accumulate(mask, 0)
+    left = np.maximum.accumulate(mask, 1)
+    right = np.maximum.accumulate(mask[:, ::-1], 1)[:, ::-1]
+    cave = above & left & right & ~mask
+    cave[base_y + 1:] = False
+    NX[cave], NY[cave], NZ[cave] = 0, 0.5, 0.86
+    mask |= cave
+    for cx, ln in tails:
+        for t, wd in enumerate([int(ln * 0.85), int(ln * 0.6), int(ln * 0.35)]):
+            x0 = int(cx - wd / 2 + rng.integers(-4, 5))
+            row = base_y - t
+            seg = slice(max(0, x0), min(w, x0 + wd))
+            newm = ~mask[row, seg]
+            mask[row, seg] = True
+            NY[row, seg] = np.where(newm, 0.85, NY[row, seg])
+            NZ[row, seg] = np.where(newm, 0.5, NZ[row, seg])
+    Hm = np.where(mask, H, 0.0)
+    ao = np.clip((box_blur(Hm, 3) - Hm) / 5, 0, 1) * mask
+    top = yy[mask].min()
+    v = np.clip((yy - top) / max(1, base_y - top), 0, 1)
+    lam = np.clip(NX * LIGHT[0] + NY * LIGHT[1] + NZ * LIGHT[2], 0, 1)
+    lam = (lam + 0.2) / 1.2
+    val = 0.36 * lam + 0.56 * (1 - v) ** 1.1 + 0.10 - 0.18 * ao
+    # Ventre: faixa lavanda de espessura variável (bandas não repetitivas).
+    band = 5 + np.round(noise_2d(h, w, 9, rng) * 2.5 + 1)
+    belly = mask & (yy >= base_y - band)
+    val = np.where(belly, np.minimum(val, 0.42 - 0.10 * np.clip((yy - base_y + band) / band, 0, 1)), val)
+    tone = np.zeros((h, w), int)
+    for t, th in enumerate(CLOUD_THRESH_41, 1):
+        tone[val > th] = t
+    # Dither de transição: só na faixa estreita em volta de cada limite.
+    dith = np.zeros((h, w), bool)
+    chk = (yy.astype(int) + xx.astype(int)) % 2 == 0
+    for t, th in enumerate(CLOUD_THRESH_41, 1):
+        near = mask & (np.abs(val - th) < DITHER_BAND) & ~belly
+        lower = near & (tone == t) & chk
+        tone[lower] = t - 1
+        dith |= lower
+    up_own = np.vstack([np.full((1, w), -1), OWN[:-1]])
+    up_z = np.vstack([np.zeros((1, w)), ZO[:-1]])
+    crest = mask & (OWN >= 0) & (up_own >= 0) & (up_own != OWN) & (ZO > up_z + 2) & (lam > 0.62) & ~belly
+    tone[crest & (tone == 4)] = 5
+    tone[crest & (tone == 3)] = 4
+    p = np.pad(mask, 1)
+    edge_top = mask & ~p[:-2, 1:-1]
+    tone[edge_top & (tone >= 3) & (NX < 0.25)] = 5
+    tone = np.where(mask, tone, -1)
+    tone = orphans_to_neighbors(tone)
+    dith &= tone >= 0
+    gold = edge_top & (tone == 5) & (NX < -0.35)
+    gi = np.argwhere(gold)
+    pick = gi[rng.choice(len(gi), size=min(len(gi), 4), replace=False)] if len(gi) else []
+    return tone, pick, dith
+
+
+def cloud_canvas_41(spec, seed):
+    w, h = spec["size"]
+    tone, gold, dith = render_cloud_41(w, h, spec["seeds"], spec["base"], seed, spec.get("tails", ()))
+    c = Canvas(w, h)
+    c.put("BASE", tone >= 0, CLOUD_TONES_41[3])
+    for t in (0, 1, 2):
+        c.put("SHADOW", (tone == t) & ~dith, CLOUD_TONES_41[t])
+    c.put("HIGHLIGHT", (tone == 4) & ~dith, CLOUD_TONES_41[4])
+    c.put("HIGHLIGHT", (tone == 5) & ~dith, CLOUD_TONES_41[5])
+    for t in range(6):
+        c.put("DETAIL", dith & (tone == t), CLOUD_TONES_41[t])
+    fx = np.zeros((h, w), bool)
+    for y, x in gold:
+        fx[y, x] = True
+    c.put("FX", fx, "Fronde_Ouro_Palido")
+    return c
 
 
 # ================================================================ FAR
@@ -746,7 +868,7 @@ def paint_water(c, x0, x1, top, bottom, rng, glow_x):
     c.occlude(shore)
     c.put("BASE", shore, "Solo_Areia_Media")
     c.put("MOSS", shore & (noise_2d(c.h, c.w, 3, rng) > 0.2), "Folha_Jade_Medio")
-    return m
+    return m, shore
 
 
 def paint_crystal(c, cx, base_y):
@@ -786,14 +908,115 @@ def paint_bushes(c, xs, base_y, rng):
         c.put("SHADOW", m & ((c.xx - x) > r * 0.4), "Folha_Sombra_Profunda")
 
 
+def visible(c, mask, colors):
+    flat = c.flat()
+    return mask & np.isin(flat, [IDX[n] for n in colors])
+
+
+def paint_tuft(c, x, y, rng, h=None):
+    """Tufo de grama em leque (3–5 lâminas), base escura, ponta clara à esquerda."""
+    blades = [(-2, 2), (-1, 4), (0, 3), (1, 5), (2, 2)][int(rng.integers(0, 2)):]
+    if h is not None:
+        blades = [(dx, max(1, min(bh, h))) for dx, bh in blades]
+    for dx, bh in blades:
+        for k in range(bh):
+            px, py = x + dx + (1 if (k > 2 and dx > 0) else 0), y - k
+            if 0 <= px < c.w and 0 <= py < c.h:
+                col = "Folha_Verde_Sombra" if k == 0 else (
+                    "Folha_Verde_Luz" if (k == bh - 1 and dx <= 0) else "Folha_Jade_Medio")
+                for n in LAYERS:
+                    c.layers[n][py, px] = -1
+                c.layers["MOSS"][py, px] = IDX[col]
+    return x, y - max(bh for _, bh in blades)
+
+
+def refine_mid_41(c, masks, seed=4141):
+    """Retoque V4.1: musgo nas ruínas, flora na água, borda de luz na mata."""
+    rng = np.random.default_rng(seed)
+    p = lambda m: np.pad(m, 1)
+    # 1) Mata: borda superior iluminada só onde a mata ainda aparece.
+    tl = masks["treeline"]
+    rim = visible(c, tl & ~p(tl)[:-2, 1:-1], ["Folha_Verde_Sombra", "Folha_Jade_Medio",
+                                                 "Folha_Sombra_Profunda"])
+    c.put("HIGHLIGHT", rim, "Folha_Jade_Medio")
+    sparkle = rim & (noise_2d(c.h, c.w, 2, rng) > 0.62)
+    c.put("HIGHLIGHT", sparkle, "Folha_Verde_Luz")
+    # 2) Musgo nas ruínas: faces de cima + manchas no lado iluminado + hera pendente.
+    stone_cols = ["Solo_Terra_Argila", "Solo_Areia_Media", "Solo_Terra_Sombra", "Solo_Rocha_Base"]
+    for key in ("arch", "stele_a", "stele_b"):
+        m = visible(c, masks[key], stone_cols + ["Folha_Jade_Medio", "Folha_Verde_Sombra"])
+        top = m & ~p(masks[key])[:-2, 1:-1]
+        under = np.vstack([np.zeros((1, c.w), bool), top[:-1]]) & m
+        c.put("MOSS", under, "Folha_Verde_Sombra")
+        c.put("MOSS", top, "Folha_Jade_Medio")
+        c.put("MOSS", top & (noise_2d(c.h, c.w, 2, rng) > 0.3), "Folha_Verde_Luz")
+        patch = m & (noise_2d(c.h, c.w, 3, rng) > 0.5) & (c.xx < np.median(c.xx[m]) if m.any() else m)
+        c.put("MOSS", patch, "Folha_Verde_Sombra")
+        c.put("MOSS", patch & (noise_2d(c.h, c.w, 2, rng) > 0.4), "Folha_Jade_Medio")
+        ys, xs = np.where(top)
+        for i in rng.choice(len(xs), size=min(len(xs), 5 if key == "arch" else 2), replace=False) if len(xs) else []:
+            ln = int(rng.integers(3, 9))
+            for k in range(1, ln):
+                yy, xx = ys[i] + k, xs[i] + (k // 4)
+                if yy < c.h and m[yy, xx]:
+                    c.layers["MOSS"][yy, xx] = IDX["Folha_Verde_Sombra" if k % 3 else "Folha_Jade_Medio"]
+    # 3) Margem da lagoa: tufos, flores minúsculas e juncos nas pontas.
+    water = masks["water"]
+    shore_top = visible(c, ~water & np.vstack([water[1:], np.zeros((1, c.w), bool)]) | masks["shore"],
+                        ["Solo_Areia_Media", "Folha_Jade_Medio", "Folha_Verde_Sombra"])
+    shore_top &= ~p(masks["shore"] | water)[:-2, 1:-1]
+    ys, xs = np.where(shore_top)
+    order = np.argsort(xs)
+    last = -99
+    flowers = ["Flor_Rosa_Luz", "Luz_Ouro_Runico", "Marmore_Luz_Solar", "Flor_Rosa_Luz"]
+    nf = 0
+    for i in order:
+        if xs[i] - last < int(rng.integers(5, 10)):
+            continue
+        last = xs[i]
+        tx, ty = paint_tuft(c, int(xs[i]), int(ys[i]), rng)
+        if rng.random() < 0.35:
+            c.layers["FX"][max(0, ty), tx] = IDX[flowers[nf % len(flowers)]]
+            nf += 1
+    wx = np.where(water.any(0))[0]
+    for side, xs_reed in (("L", wx.min() + np.array([2, 5, 7])), ("R", wx.max() - np.array([3, 6]))):
+        for x in xs_reed:
+            col = water[:, x]
+            y0 = int(np.argmax(col)) + 1 if col.any() else 0
+            hgt = int(rng.integers(7, 12))
+            for k in range(hgt):
+                c.layers["MOSS"][y0 - k, x] = IDX["Folha_Verde_Sombra" if k < hgt - 2 else "Fronde_Ocre_Sombra"]
+            c.layers["MOSS"][y0 - hgt + 1, x + 1] = IDX["Fronde_Ocre_Sombra"]
+    # 4) Vitórias-régias: poucas, longe do reflexo do cristal.
+    for lx, ly, fl in ((wx.min() + 22, 134, True), (wx.min() + 40, 137, False), (wx.max() - 26, 135, True)):
+        pad = (np.abs(c.xx - lx) <= 2) & (c.yy == ly) | (np.abs(c.xx - lx) <= 1) & (c.yy == ly + 1)
+        pad &= water
+        c.put("MOSS", pad & (c.yy == ly), "Folha_Jade_Medio")
+        c.put("MOSS", pad & (c.yy == ly + 1), "Folha_Verde_Sombra")
+        if fl:
+            c.layers["FX"][ly - 1, lx - 1] = IDX["Flor_Rosa_Luz"]
+    # 5) Tufos no chão da mata entre os objetos (silhueta limpa contra o fundo).
+    floor_top = visible(c, masks["floor"] & ~p(masks["floor"])[:-2, 1:-1],
+                        ["Folha_Sombra_Profunda", "Folha_Verde_Sombra"])
+    ys, xs = np.where(floor_top)
+    last = -99
+    for i in np.argsort(xs):
+        if xs[i] - last < int(rng.integers(9, 18)):
+            continue
+        last = xs[i]
+        paint_tuft(c, int(xs[i]), int(ys[i]), rng, h=3)
+
+
 def paint_city(seed=1717):
     rng = np.random.default_rng(seed)
     c = Canvas(CITY_W, CITY_H)
     ground = 150
-    # Mata intermediária contínua (fundo da camada) — fecha a base atrás de tudo.
-    paint_treeline(c, 134, rng, "Montanha_Luz_Atmosfera", "Montanha_Media_Distante",
-                   "Montanha_Sombra_Fria", "Montanha_Profunda_Contorno", 8, 15)
+    masks = {}
+    # Mata intermediária contínua (fundo da camada) — verdes, separada da far azulada.
+    masks["treeline"] = paint_treeline(c, 134, rng, "Folha_Jade_Medio", "Folha_Verde_Sombra",
+                                       "Folha_Sombra_Profunda", "Folha_Oclusao_Extrema", 8, 15)
     floor = (c.yy >= 138)
+    masks["floor"] = floor
     c.occlude(floor)
     c.put("BASE", floor, "Folha_Sombra_Profunda")
     c.put("MOSS", floor & (c.yy < 142) & (noise_2d(c.h, c.w, 3, rng) > 0), "Folha_Verde_Sombra")
@@ -802,16 +1025,17 @@ def paint_city(seed=1717):
     paint_parasol(c, 168, ground, 138, [(4, 0, 48, 15), (-30, 36, 30, 10), (30, 50, 28, 9), (-10, 74, 22, 7)],
                   rng, lean=10)
     paint_parasol(c, 262, ground, 96, [(0, 0, 40, 13), (18, 28, 20, 8)], rng, lean=-6)
-    paint_stone(c, 212, ground - 4, 13, 34, rng)
-    paint_stone(c, 432, ground - 6, 11, 26, rng)
-    paint_arch(c, 384, ground - 2, rng)
-    paint_water(c, 228, 356, 126, 141, rng, glow_x=300)
+    masks["stele_a"] = paint_stone(c, 212, ground - 4, 13, 34, rng)
+    masks["stele_b"] = paint_stone(c, 432, ground - 6, 11, 26, rng)
+    masks["arch"] = paint_arch(c, 384, ground - 2, rng)
+    masks["water"], masks["shore"] = paint_water(c, 228, 356, 126, 141, rng, glow_x=300)
     paint_crystal(c, 300, 125)
     paint_weeping(c, 520, ground, rng)
     paint_boulder(c, 600, ground - 2, 18, 13, rng)
     paint_boulder(c, 96, ground - 2, 14, 10, rng)
     paint_boulder(c, 444, ground - 4, 10, 7, rng)
     paint_bushes(c, [8, 120, 196, 248, 410, 470, 574, 632], ground - 4, rng)
+    refine_mid_41(c, masks)
     return c
 
 
@@ -837,7 +1061,7 @@ def main():
     report = {}
     save(paint_sky(), "sky", out, report)
     for i, (name, spec) in enumerate(CLOUDS.items()):
-        save(cloud_canvas(spec, 31 + i), name, out, report)
+        save(cloud_canvas_41(spec, 31 + i), name, out, report)
     save(paint_far(), "far", out, report)
     save(paint_city(), "city", out, report)
     (out / "relatorio_pintura.json").write_text(json.dumps(report, indent=2, ensure_ascii=False))

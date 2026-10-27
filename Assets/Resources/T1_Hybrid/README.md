@@ -1,11 +1,11 @@
-# Resources/T1_Hybrid — fundo da Fase I (Refino V4)
+# Resources/T1_Hybrid — fundo da Fase I (Refino V4 + retoque V4.1)
 
 | Arquivo | Tamanho | Origem | Paralaxe X / Y | Ordem |
 |---|---|---|---|---|
 | `sky.png` | 480×192, opaco | **Nativo V4** (`sky_v4.aseprite`): creme/dourado → lavanda → cerúleo, sem nuvens | 0,95 / 0,95 (`T1Backdrop`) | −50 |
-| `clouds_a..d.png` | 168×52, 184×60, 72×22, 48×16 | **Nativo V4**: creme/âmbar/lavanda, base fria, ouro pontual | 0,88–0,92 | −48 |
+| `clouds_a..d.png` | 176×60, 200×72, 88×26, 56×20 | **Retoque V4.1**: volume (topo creme → peach → ventre lavanda), silhuetas distintas, ouro pontual | 0,88–0,92 | −48 |
 | `far.png` | 512×130, RGBA | **Nativo V4**: montanhas ciano-lavanda com dither + Cidadela Celeste | 0,90 / 0,12 | −36 |
-| `city.png` | 640×176, RGBA | **Nativo V4**: Parasóis, Weeping Hero com orbs, arco, estelas, água Aether + cristal | 0,80 / 0,10 | −30 |
+| `city.png` | 640×176, RGBA | **Retoque V4.1**: Parasóis, Weeping Hero com orbs, arco e estelas com musgo, mata verde, água Aether com tufos/flores/juncos/vitórias-régias + cristal | 0,80 / 0,10 | −30 |
 | `ground.png` | 512×64, RGBA | **PLACEHOLDER** (downscale de IA) — sprint de plataformas da frente | mundo | −6 |
 
 Contrato: PPU 16, filtro Point, sem compressão, sem mipmaps, pivô na base (0,5; 0).

@@ -21,10 +21,10 @@ public static class T1HybridScenery
     // Nuvens independentes do céu (opcionais): arquivo, X do centro, Y da base, paralaxe.
     static readonly (string file, float x, float y, float factor)[] Clouds =
     {
-        ("clouds_a", -8f, 3.7f, 0.92f),
-        ("clouds_c", -1.5f, 5.3f, 0.90f),
-        ("clouds_d", 4f, 6f, 0.88f),
-        ("clouds_b", 8.5f, 3.1f, 0.90f),
+        ("clouds_a", -8f, 2.8f, 0.92f),
+        ("clouds_c", -4.5f, 5.2f, 0.90f),
+        ("clouds_d", 4f, 5.4f, 0.88f),
+        ("clouds_b", 8.5f, 2.3f, 0.90f),
     };
 
     public static bool Enabled
