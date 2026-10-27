@@ -18,6 +18,15 @@ public static class T1HybridScenery
     // Superfície de caminhada do ground.png fica 9 px abaixo do topo do tile.
     const float GroundSurfacePx = 9f;
 
+    // Nuvens independentes do céu (opcionais): arquivo, X do centro, Y da base, paralaxe.
+    static readonly (string file, float x, float y, float factor)[] Clouds =
+    {
+        ("clouds_a", -8f, 3.7f, 0.92f),
+        ("clouds_c", -1.5f, 5.3f, 0.90f),
+        ("clouds_d", 4f, 6f, 0.88f),
+        ("clouds_b", 8.5f, 3.1f, 0.90f),
+    };
+
     public static bool Enabled
     {
         get
@@ -61,6 +70,15 @@ public static class T1HybridScenery
         // Céu: acompanha quase toda a câmera (sempre cobre o topo da tela).
         var skyGo = Place("Ceu", sky, Vector3.zero, -50, root.transform);
         skyGo.AddComponent<T1Backdrop>().Setup(0.95f, 0.95f, -3.0f - 0.95f * restCamY);
+
+        foreach (var cloud in Clouds)
+        {
+            var sprite = Load(cloud.file);
+            if (sprite == null)
+                continue;
+            Place("Nuvem_" + cloud.file, sprite, new Vector3(cloud.x, cloud.y, 0f), -48, root.transform)
+                .AddComponent<T1HybridLayer>().Setup(cloud.factor, cloud.factor, restCamY);
+        }
 
         Place("MontanhasCidadela", far, new Vector3(0f, -1.9f, 0f), -36, root.transform)
             .AddComponent<T1HybridLayer>().Setup(0.9f, 0.12f, restCamY);

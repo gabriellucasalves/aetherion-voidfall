@@ -1,23 +1,26 @@
-# Fundo híbrido da Fase I — céu V3 + layout V2
+# Fundo da Fase I — híbrido V3+V2 → Refino V4
 
-Direção criativa aprovada em 26/10/2026: céu do Gate B.1 V3 (creme/dourado no alto,
-lavanda nas sombras) com o layout do conceito V2 (guarda-sol, salgueiro-chorão,
-ruínas/estátua, água Aether, Cidadela Celeste ao fundo, plataformas de grama legíveis).
+Direção criativa: céu do Gate B.1 V3 (creme/dourado + lavanda) com o layout V2
+(Parasol, Weeping Hero, ruínas/estátua, água Aether, Cidadela Celeste ao fundo).
+O Refino V4 (`ESPECIFICACAO_ASEPRITE_FUNDO_V4.md`) substitui os placeholders de
+céu/far/city por pintura nativa 1×.
 
 ## Arquivos
 
-- `REFERENCIA_IA_fundo_fase_hibrido_v3ceu_v2layout.png` — **referência de IA, só direção
-  visual.** Não é sprite, não vai para `Assets/`. O downscale dela **não** é arte final.
-- `ESPECIFICACAO_ASEPRITE_FUNDO_HIBRIDO.md` — contrato de camadas, paleta e critérios de aceite.
-- Templates nativos (vazios, para pintura): `Tools/Aseprite/fundo_hibrido_v3_v2/templates/`.
-- Placeholders no jogo: `Assets/Resources/T1_Hybrid/` (ver o README de lá).
+- `REFERENCIA_IA_fundo_fase_hibrido_v3ceu_v2layout.png`, `REFERENCIA_IA_fundo_fase_refino_v4.jpg`:
+  **referências de IA, só direção visual.** Não são sprites e não entram em `Assets/`.
+- `ESPECIFICACAO_ASEPRITE_FUNDO_HIBRIDO.md`, `ESPECIFICACAO_ASEPRITE_FUNDO_V4.md`: contratos.
+- Templates vazios: `Tools/Aseprite/fundo_hibrido_v3_v2/templates/`.
+- Pinturas V4: `Tools/Aseprite/fundo_refino_v4/aseprite/`.
+- No jogo: `Assets/Resources/T1_Hybrid/` (ver o README de lá).
 
 ## Estado
 
-| Camada | Placeholder (downscale IA) | Pintura nativa Aseprite |
-|---|---|---|
-| sky 480×192 | sim | pendente |
-| far 512×130 | sim | pendente |
-| city 640×176 | sim | pendente |
-| ground 512×64 | sim | pendente |
-| props / nuvens soltas | não (embutidos na city/sky) | pendente |
+| Camada | Estado |
+|---|---|
+| sky 480×192 | nativo V4 |
+| clouds_a..d | nativo V4 (sprites separados do céu) |
+| far 512×130 | nativo V4 |
+| city 640×176 | nativo V4 |
+| props soltos | não criados (Weeping, Parasol, arco, estelas e cristal estão na city) |
+| ground 512×64 | placeholder IA — sprint de plataformas da frente |
