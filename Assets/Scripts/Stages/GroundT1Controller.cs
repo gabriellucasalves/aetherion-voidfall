@@ -166,6 +166,8 @@ public class GroundT1Controller : MonoBehaviour
     void BuildBackdrop()
     {
         GoldenAgeScenery.Build(_stage);
+        if (T1HybridScenery.Enabled)
+            T1HybridScenery.Apply(_stage);
     }
 
     void BuildPlayfield()
