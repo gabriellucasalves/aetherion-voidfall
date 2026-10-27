@@ -165,6 +165,7 @@ public class GroundT1Controller : MonoBehaviour
 
     void BuildBackdrop()
     {
+        T1FrontLevel.Reset();
         GoldenAgeScenery.Build(_stage);
         if (T1HybridScenery.Enabled)
             T1HybridScenery.Apply(_stage);
@@ -172,6 +173,10 @@ public class GroundT1Controller : MonoBehaviour
 
     void BuildPlayfield()
     {
+        // Fundo híbrido com o kit da frente: chão em segmentos já montado pelo T1FrontLevel.
+        if (T1FrontLevel.Built)
+            return;
+
         float groundHeight = 3.4f;
         float groundY = _stage.GroundTop - groundHeight * 0.5f;
         Solid("Chao", new Vector3(0f, groundY, 0f), new Vector2(_stage.HalfWidth * 2f + 6f, groundHeight), _stage.GroundColor, -8);

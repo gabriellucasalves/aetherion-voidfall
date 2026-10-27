@@ -30,4 +30,15 @@ public class HealthSystem : MonoBehaviour
         if (IsDead)
             Died?.Invoke(this);
     }
+
+    // Queda no abismo: morte mesmo com invulnerabilidade (i-frames, escudo).
+    public void Kill()
+    {
+        if (IsDead)
+            return;
+
+        Current = 0f;
+        Changed?.Invoke(this);
+        Died?.Invoke(this);
+    }
 }

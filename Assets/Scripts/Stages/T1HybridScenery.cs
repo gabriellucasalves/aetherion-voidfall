@@ -2,8 +2,8 @@ using UnityEngine;
 
 // Fundo híbrido da Fase I: céu Gate B.1 V3 + layout do conceito V2
 // (guarda-sol, salgueiro, ruínas, água Aether, Cidadela Celeste ao fundo).
-// Substitui só o céu, os planos distantes, a decoração frontal e o chão VISUAL do
-// GoldenAgeScenery; plataformas, colisores, câmera e gameplay continuam iguais.
+// Substitui o céu, os planos distantes e a decoração frontal do GoldenAgeScenery;
+// a frente jogável (chão com gaps, ilhas e zona de queda) vem do T1FrontLevel.
 // Arte em Resources/T1_Hybrid (contrato T1: PPU 16, Point, pivô na base).
 public static class T1HybridScenery
 {
@@ -15,8 +15,8 @@ public static class T1HybridScenery
     // Raízes criadas pelo GoldenAgeScenery que o híbrido troca.
     static readonly string[] ReplacedRoots = { "CeuDourado", "ChaoVisual", "CenarioFrente" };
 
-    // Superfície de caminhada do ground.png fica 9 px abaixo do topo do tile.
-    const float GroundSurfacePx = 9f;
+    // Superfície de caminhada do ground.png fica 8 px abaixo do topo do tile.
+    const float GroundSurfacePx = 8f;
 
     // Nuvens independentes do céu (opcionais): arquivo, X do centro, Y da base, paralaxe.
     static readonly (string file, float x, float y, float factor)[] Clouds =
@@ -85,11 +85,12 @@ public static class T1HybridScenery
         Place("FlorestaRuinas", city, new Vector3(0f, -3.7f, 0f), -30, root.transform)
             .AddComponent<T1HybridLayer>().Setup(0.8f, 0.1f, restCamY);
 
-        BuildGround(stage, ground, root.transform);
+        if (!T1FrontLevel.Build(stage, root.transform))
+            BuildGround(stage, ground, root.transform);
         return true;
     }
 
-    // Faixa de grama/terra tileável: cópias alternadas espelhadas, sem emenda visível.
+    // Reserva sem o kit completo: faixa contínua de grama/terra (cópias espelhadas alternadas).
     static void BuildGround(StageData stage, Sprite tile, Transform parent)
     {
         float tileW = tile.rect.width / Ppu;
