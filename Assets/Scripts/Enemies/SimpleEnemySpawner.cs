@@ -128,6 +128,7 @@ public class SimpleEnemySpawner : MonoBehaviour
         float side = Random.value < 0.5f ? -1f : 1f;
         float x = _player.position.x + side * Random.Range(9f, 15f);
         x = Mathf.Clamp(x, -_stage.HalfWidth + 1.2f, _stage.HalfWidth - 1.2f);
+        x = T1FrontLevel.SnapToGround(x);
         // posição = pés do inimigo (sprite tem pivô no pé)
         float y = _stage.GroundTop + (Random.value < 0.32f ? 4.4f : 0.1f);
 
