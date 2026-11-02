@@ -35,12 +35,14 @@ Viewport: ~384×216. Preview 3×/4× nearest-neighbor.
 
 ## 4. Critérios de aceite arte (fundo)
 
-- [ ] Céu independente das nuvens; topo creme/dourado + mid lavanda (não ciano chapado)
-- [ ] Cidadela legível no horizonte sem competir com mid
-- [ ] Weeping + Parasol com silhuetas distintas
-- [ ] Sem templo branco dominante
-- [ ] Orbs amarelos / cristal Aether pontuais (sem flood de glow)
-- [ ] Indexado à paleta GPL; Point; PPU 16
+- [x] Céu independente das nuvens; topo creme/dourado + mid lavanda (não ciano chapado)
+- [x] Cidadela legível no horizonte sem competir com mid
+- [x] Weeping + Parasol com silhuetas distintas
+- [x] Sem templo branco dominante
+- [x] Orbs amarelos / cristal Aether pontuais (sem flood de glow)
+- [x] Indexado à paleta GPL; Point; PPU 16
+
+> Aceite marcado em 2026-11-02: export flat via `ExportForUnity.lua` → `Assets/Resources/T1_Hybrid/` (sky/far/city/clouds_*). Plataformas/ground intocados nesta etapa. Ref. direção: `fundo_fase_refino_v4.jpg` (sem downscale).
 
 ## 5. Próximo após pintura
 
