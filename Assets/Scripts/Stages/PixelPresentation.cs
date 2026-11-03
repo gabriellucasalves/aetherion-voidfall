@@ -1,16 +1,29 @@
 using UnityEngine;
 
 /// <summary>
-/// Framebuffer fixo 384×216 com escala inteira e filtro Point.
+/// Framebuffer interno 768×432 com escala inteira e filtro Point (sem mipmaps, sem MSAA).
+/// OrthoSize fica em 6.75 — o framing do design legado de 216 px a PPU 16 — e não
+/// deriva de InternalHeight. Dobrar só a altura do RT com a fórmula antiga
+/// (H / (Ppu * 2)) levaria OrthoSize a 13.5, a câmera mostraria o dobro do mundo
+/// e o Guerreiro encolheria na tela. Com o desacoplamento, cada texel de arte
+/// ocupa 2×2 px no framebuffer (nearest) e o level mantém o mesmo enquadramento.
 /// O follow da câmera permanece no mesmo GameObject.
 /// </summary>
 [DefaultExecutionOrder(-100)]
 public class PixelPresentation : MonoBehaviour
 {
-    public const int InternalWidth = 384;
-    public const int InternalHeight = 216;
+    public const int InternalWidth = 768;
+    public const int InternalHeight = 432;
 
-    public static float OrthoSize => InternalHeight / (PixelArt.Ppu * 2f);
+    /// <summary>
+    /// Altura de design do framing original. Não substituir por <see cref="InternalHeight"/>.
+    /// </summary>
+    const int LegacyDesignHeight = 216;
+
+    /// <summary>
+    /// Metade da altura de mundo visível. 216 / (PixelArt.Ppu * 2) = 6.75 com PPU 16.
+    /// </summary>
+    public static float OrthoSize => LegacyDesignHeight / (PixelArt.Ppu * 2f);
 
     Camera _world;
     RenderTexture _target;
@@ -27,7 +40,8 @@ public class PixelPresentation : MonoBehaviour
             filterMode = FilterMode.Point,
             wrapMode = TextureWrapMode.Clamp,
             useMipMap = false,
-            autoGenerateMips = false
+            autoGenerateMips = false,
+            antiAliasing = 1
         };
         _target.Create();
         _world.targetTexture = _target;
