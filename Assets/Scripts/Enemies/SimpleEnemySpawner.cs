@@ -11,8 +11,8 @@ public class SimpleEnemySpawner : MonoBehaviour
     Collider2D _playerCollider;
     StageData _stage;
     EnemyData _skeleton;
-    EnemyData _ghoul;
-    EnemyData _zombie;
+    EnemyData _beast;
+    EnemyData _golem;
     float _timer;
     bool _locked;
     bool _finished;
@@ -31,9 +31,9 @@ public class SimpleEnemySpawner : MonoBehaviour
         _player = player;
         _playerCollider = player.GetComponent<Collider2D>();
         _stage = stage;
-        _skeleton = EnemyData.CreateSkeleton();
-        _ghoul = EnemyData.CreateGhoul();
-        _zombie = EnemyData.CreateZombie();
+        _skeleton = EnemyData.CreateAlienSkeleton();
+        _beast = EnemyData.CreateBeast();
+        _golem = EnemyData.CreateSlateGolem();
         _waveDelay = 1.4f; // respiro antes da primeira onda
     }
 
@@ -77,11 +77,11 @@ public class SimpleEnemySpawner : MonoBehaviour
         if (CountAlive() >= MaxAlive)
             return;
 
-        Spawn(_waveType);
-        _toSpawn--;
+        if (Spawn(_waveType))
+            _toSpawn--;
     }
 
-    // demo: 3 ondas fixas — esqueletos → ghouls → zumbis (15 cada)
+    // Três ondas: Esqueleto Alien → Bicho → Golem de Ardósia (7 cada).
     void StartWave()
     {
         if (_wave >= DemoWaveCount)
@@ -95,9 +95,9 @@ public class SimpleEnemySpawner : MonoBehaviour
         if (cycle == 0)
             _waveType = _skeleton;
         else if (cycle == 1)
-            _waveType = _ghoul;
+            _waveType = _beast;
         else
-            _waveType = _zombie;
+            _waveType = _golem;
 
         _toSpawn = EnemiesPerWave;
 
@@ -115,7 +115,7 @@ public class SimpleEnemySpawner : MonoBehaviour
         _locked = true;
         var stage = FindFirstObjectByType<GroundT1Controller>();
         if (stage != null)
-            stage.OnDemoComplete();
+            stage.OpenExitPortal();
     }
 
     int CountAlive()
@@ -123,16 +123,26 @@ public class SimpleEnemySpawner : MonoBehaviour
         return FindObjectsByType<EnemyController>(FindObjectsSortMode.None).Length;
     }
 
-    void Spawn(EnemyData data)
+    bool Spawn(EnemyData data)
     {
-        float side = Random.value < 0.5f ? -1f : 1f;
-        float x = _player.position.x + side * Random.Range(9f, 15f);
-        x = Mathf.Clamp(x, -_stage.HalfWidth + 1.2f, _stage.HalfWidth - 1.2f);
-        // posição = pés do inimigo (sprite tem pivô no pé)
-        float y = _stage.GroundTop + (Random.value < 0.32f ? 4.4f : 0.1f);
+        // Nunca gera no ar: testa largura, espaço livre e apoio físico antes de consumir a vaga.
+        for (int attempt = 0; attempt < 24; attempt++)
+        {
+            float side = Random.value < 0.5f ? -1f : 1f;
+            float x = Mathf.Clamp(_player.position.x + side * Random.Range(6f, 13f),
+                -_stage.HalfWidth + 1.2f, _stage.HalfWidth - 1.2f);
+            if (!EnemyTraversal.TrySpawnPoint(x, _stage, data.Size, out var feet)) continue;
+            SpawnAt(data, _player, _stage, feet, _playerCollider);
+            return true;
+        }
+        return false;
+    }
 
+    public static EnemyController SpawnAt(EnemyData data, Transform player, StageData stage,
+        Vector2 feet, Collider2D playerCollider = null)
+    {
         var go = new GameObject(data.DisplayName);
-        go.transform.position = new Vector3(x, y, 0f);
+        go.transform.position = new Vector3(feet.x, feet.y, 0f);
 
         var body = go.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Dynamic;
@@ -152,10 +162,15 @@ public class SimpleEnemySpawner : MonoBehaviour
         touch.size = data.Size + new Vector2(0.2f, 0.2f);
         touch.offset = solid.offset;
 
-        if (_playerCollider != null)
-            Physics2D.IgnoreCollision(solid, _playerCollider, true);
+        if (playerCollider != null)
+            Physics2D.IgnoreCollision(solid, playerCollider, true);
 
-        go.AddComponent<EnemyController>().Setup(data, _player, _stage);
+        var controller = go.AddComponent<EnemyController>();
+        controller.Setup(data, player, stage);
+        foreach (var other in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
+            if (other != controller)
+                foreach (var collider in other.GetComponents<Collider2D>())
+                    if (!collider.isTrigger) Physics2D.IgnoreCollision(solid, collider, true);
 
         // pixel art; se a sheet faltar, cai no quadrado antigo
         if (!InimigoVisual.Attach(go, data.Id))
@@ -167,5 +182,6 @@ public class SimpleEnemySpawner : MonoBehaviour
             renderer.color = data.Color;
             renderer.sortingOrder = 8;
         }
+        return controller;
     }
 }

@@ -208,7 +208,7 @@ public class MobileControls : MonoBehaviour
         // Supremo só aparece com a Ressonância cheia (SetSupremeVisible, chamado pelo HUD).
         var supreme = IconButton(parent, "Supremo", StarSprite(), new Vector2(1f, 0f), new Vector2(-700f, 430f), 200f,
             new Color(0.42f, 0.26f, 0.05f, 0.94f));
-        var caption = UiKit.Label(supreme.transform, "SUPREMO", 16, new Vector2(0f, -78f), new Color(1f, 0.84f, 0.25f), new Vector2(180f, 28f));
+        var caption = UiKit.Label(supreme.transform, "ESPECIAL", 16, new Vector2(0f, -78f), new Color(1f, 0.84f, 0.25f), new Vector2(180f, 28f));
         caption.raycastTarget = false;
         Hold(supreme, () => _supremePressed = true, () => { });
         _supremeRoot = supreme.gameObject;

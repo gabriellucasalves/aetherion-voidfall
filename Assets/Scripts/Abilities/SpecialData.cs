@@ -53,10 +53,10 @@ public class SpecialData : ScriptableObject
         }
         else
         {
-            data.Id = "muralha_rubra";
-            data.DisplayName = "JURAMENTO DA MURALHA RUBRA";
+            data.Id = "feixe_infernal";
+            data.DisplayName = "FEIXE INFERNAL";
             data.Callout = "O VAZIO\nNÃO PASSA!";
-            data.FinalShout = "MURALHAAA… RUBRA!";
+            data.FinalShout = "FEIXE INFERNAL!";
             data.BustFrame = 17;
             data.PanelDark = new Color(0.20f, 0.03f, 0.04f, 0.96f);
             data.PanelLight = new Color(0.55f, 0.08f, 0.06f, 0.5f);

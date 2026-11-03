@@ -91,11 +91,9 @@ public class InimigoVisual : MonoBehaviour
         }
         else if (_controller != null && _controller.IsWindingUp)
         {
-            // telegraph: zumbi prestes a explodir pisca vermelho bem rápido;
-            // os outros piscam laranja enquanto armam o golpe
-            bool exploding = _controller.Data != null && _controller.Data.AttackKind == "explode";
-            float speed = exploding ? 24f : 14f;
-            var flash = exploding ? new Color(1f, 0.3f, 0.24f) : new Color(1f, 0.62f, 0.4f);
+            bool charging = _controller.Data != null && _controller.Data.AttackKind == "charge";
+            float speed = charging ? 10f : 7f;
+            var flash = charging ? new Color(1f, 0.66f, 0.28f) : new Color(0.55f, 1f, 0.95f);
             bool on = (int)(Time.time * speed) % 2 == 0;
             _renderer.color = on ? flash : Color.white;
         }

@@ -1,16 +1,13 @@
 using UnityEngine;
 
-// IA dos inimigos T1. Todos perseguem o jogador; cada classe ataca de um jeito:
-//   esqueleto -> "axe": arremessa machado giratório reto de média distância;
-//   ghoul     -> "acid": cospe bola ácida em arco;
-//   zumbi     -> "explode": chega perto, pisca vermelho 0.5s e explode em área.
-// Cada um também tem resistência própria (EnemyData.DamageTaken).
+// F1: distância (osso Aether), salto/garras e tanque com investida. Sem explosão.
 public class EnemyController : MonoBehaviour
 {
     enum Phase
     {
         Chase,
         Windup,
+        Active,
         Recover
     }
 
@@ -18,6 +15,8 @@ public class EnemyController : MonoBehaviour
     Transform _target;
     StageData _stage;
     Rigidbody2D _body;
+    EnemyTraversal _traversal;
+    bool _struckPlayer;
     HealthSystem _health;
     float _touchReady;
     Phase _phase = Phase.Chase;
@@ -46,6 +45,7 @@ public class EnemyController : MonoBehaviour
         _target = target;
         _stage = stage;
         _body = GetComponent<Rigidbody2D>();
+        _traversal = gameObject.AddComponent<EnemyTraversal>();
         _health = gameObject.AddComponent<HealthSystem>();
         _health.Configure(data.MaxHealth);
         _health.Died += OnDied;
@@ -89,6 +89,9 @@ public class EnemyController : MonoBehaviour
                 if (_phaseLeft <= 0f)
                     Strike();
                 break;
+            case Phase.Active:
+                ActiveStrike();
+                break;
             case Phase.Recover:
                 Halt();
                 _phaseLeft -= Time.fixedDeltaTime;
@@ -103,31 +106,38 @@ public class EnemyController : MonoBehaviour
 
     void Chase(float dir, float adx, float ady)
     {
-        bool sameLevel = ady < 1.6f;
-        if (_data.AttackKind == "explode")
+        bool climb = _target.position.y - transform.position.y > 1.3f;
+        if (_data.AttackKind == "bone")
         {
-            // kamikaze: só arma a explosão colado no jogador, no mesmo nível
-            if (sameLevel && adx < _data.AttackRange)
+            if (adx >= 3.2f && adx <= _data.AttackRange && ady < 3f && HasLineOfSight())
             {
                 BeginWindup(dir);
                 return;
             }
+            // Ranged recua quando pressionado e avança quando fora do alcance.
+            float move = adx < 3.2f && !climb ? -dir : dir;
+            _traversal.Move(move, _data.MoveSpeed, climb);
         }
         else
         {
-            // machado e bola ácida: atira de média distância; funciona até
-            // com o jogador em cima de uma plataforma
-            if (adx > 2.2f && adx < _data.AttackRange && ady < 3.2f)
+            if (_traversal.Grounded && adx < _data.AttackRange && ady < 1.5f && HasLineOfSight())
             {
                 BeginWindup(dir);
                 return;
             }
+            _traversal.Move(dir, _data.MoveSpeed, climb);
         }
+    }
 
-        float move = adx < 0.08f ? 0f : dir;
-        var velocity = _body.linearVelocity;
-        velocity.x = move * _data.MoveSpeed;
-        _body.linearVelocity = velocity;
+    bool HasLineOfSight()
+    {
+        Vector2 from = transform.position + Vector3.up * (_data.Size.y * 0.65f);
+        var targetCollider = _target.GetComponent<Collider2D>();
+        Vector2 to = targetCollider != null ? targetCollider.bounds.center : _target.position;
+        var delta = to - from;
+        foreach (var hit in Physics2D.RaycastAll(from, delta.normalized, delta.magnitude))
+            if (EnemyTraversal.IsSurface(hit.collider)) return false;
+        return true;
     }
 
     void BeginWindup(float dir)
@@ -135,53 +145,62 @@ public class EnemyController : MonoBehaviour
         _faceDir = dir;
         _phase = Phase.Windup;
         _phaseLeft = _data.AttackWindup;
+        _struckPlayer = false;
         Halt();
     }
 
     void Strike()
     {
-        if (_data.AttackKind == "explode")
+        if (_data.AttackKind == "bone")
         {
-            Explode();
+            var mouth = transform.position + new Vector3(_faceDir * 0.55f, _data.Size.y * 0.65f, 0f);
+            AetherBone.Launch(mouth, _target, _data.AttackDamage);
+            Recover();
             return;
         }
+        _phase = Phase.Active;
+        _phaseLeft = _data.AttackKind == "charge" ? 0.6f : 0.45f;
+        if (_data.AttackKind == "claws")
+            _traversal.Launch(_faceDir * 5.5f, 8f);
+    }
 
-        // projéteis saem da "boca" na direção do jogador
-        var mouth = transform.position + new Vector3(_faceDir * 0.45f, 1.15f, 0f);
-        if (_data.AttackKind == "axe")
-            AxeProjectile.Throw(mouth, _target, _data.AttackDamage);
-        else
-            AcidBall.Lob(mouth, _target, _data.AttackDamage);
+    void ActiveStrike()
+    {
+        _phaseLeft -= Time.fixedDeltaTime;
+        bool charge = _data.AttackKind == "charge";
+        if (_phaseLeft <= 0f || (charge && !_traversal.SafeAhead(_faceDir, 0.7f)))
+        {
+            Recover();
+            return;
+        }
+        if (charge)
+        {
+            var v = _body.linearVelocity;
+            v.x = _faceDir * 8f;
+            _body.linearVelocity = v;
+        }
+        var center = transform.position + new Vector3(_faceDir * (_data.Size.x * 0.5f + 0.25f), _data.Size.y * 0.5f, 0f);
+        foreach (var c in Physics2D.OverlapBoxAll(center, new Vector2(1f, _data.Size.y * 0.8f), 0f))
+        {
+            if (!_struckPlayer && c.GetComponentInParent<PlayerController>() != null)
+            {
+                _struckPlayer = true;
+                _touchReady = Time.time + _data.TouchCooldown;
+                HitPlayer(_data.AttackDamage);
+            }
+        }
+    }
 
-        PixelBurst.Spawn(mouth, _data.Color, 3);
+    void Recover()
+    {
+        Halt();
         _phase = Phase.Recover;
         _phaseLeft = Mathf.Max(0.1f, _data.AttackRecover);
     }
 
-    void Explode()
-    {
-        var center = transform.position + Vector3.up * 0.8f;
-
-        // dano em área se o jogador estiver no raio do estouro
-        var playerCenter = (Vector2)_target.position + Vector2.up * 0.6f;
-        if (Vector2.Distance(playerCenter, center) < 2.1f)
-            HitPlayer(_data.AttackDamage);
-
-        // estouro: núcleo laranja de fogo + respingos de carne corrompida
-        PixelBurst.Spawn(center, new Color(1f, 0.62f, 0.2f), 10);
-        PixelBurst.Spawn(center + Vector3.up * 0.5f, new Color(1f, 0.85f, 0.4f), 6);
-        PixelBurst.Spawn(center + Vector3.left * 0.7f, new Color(0.45f, 0.62f, 0.28f), 6);
-        PixelBurst.Spawn(center + Vector3.right * 0.7f, new Color(0.45f, 0.62f, 0.28f), 6);
-
-        // o zumbi se destrói na explosão (conta como abate e avança a onda)
-        DamageSystem.Apply(_health, 99999f);
-    }
-
     void Halt()
     {
-        var velocity = _body.linearVelocity;
-        velocity.x = 0f;
-        _body.linearVelocity = velocity;
+        _traversal.Stop();
     }
 
     void Clamp()
@@ -233,7 +252,7 @@ public class EnemyController : MonoBehaviour
     }
 
     // todo dano do jogador nos inimigos passa por aqui pra aplicar a resistência:
-    // ghoul toma 40% a mais (frágil), zumbi toma 35% a menos (tanque)
+    // O Golem de Ardósia recebe 35% a menos; nunca se autodestrói.
     public void ReceiveDamage(float amount)
     {
         if (_health == null || _health.IsDead || amount <= 0f)
@@ -313,7 +332,7 @@ public class EnemyController : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D other)
     {
-        if (_frozen || _data == null || _target == null || Time.time < _touchReady)
+        if (_frozen || _stunLeft > 0f || _phase != Phase.Chase || _data == null || _target == null || Time.time < _touchReady)
             return;
 
         var player = other.GetComponent<PlayerController>();
