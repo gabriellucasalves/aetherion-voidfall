@@ -592,7 +592,7 @@ public class GroundT1Controller : MonoBehaviour
             return "A/D andar   ·   ESPAÇO pular   ·   clique / J orbe reto   ·   S/K/direito campo   ·   L/Q Núcleo Arcano   ·   E supremo   ·   ESC pausa";
         if (hero != null && hero.Id == "arqueiro")
             return "A/D andar   ·   ESPAÇO pular   ·   clique / J flecha   ·   SHIFT dash   ·   L/Q rajada   ·   E supremo   ·   ESC pausa";
-        return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q onda   ·   E supremo   ·   S / K / direito bloqueia   ·   ESC pausa";
+        return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q/E Feixe Infernal (barra cheia)   ·   S / K / direito bloqueia   ·   ESC pausa";
     }
 
     static GameObject CreateQuad(string name, Vector3 position, Vector2 size, Color color, int order)

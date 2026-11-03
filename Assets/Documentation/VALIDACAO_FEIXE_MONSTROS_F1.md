@@ -24,6 +24,8 @@ Boot → seleção → Ground_T1; Guerreiro em ambos os facings e no ar; mobile;
 
 ## WebGL e publicação
 
-Build pelo WebGLBuilder.Build do projeto, com cenas habilitadas e compressão gzip/fallback existentes. Não é necessário merge para gerar e publicar o estado local desta branch. Estado efetivo do build e do deploy será registrado na PR após a execução; não assumir sucesso por este documento.
+Build pelo WebGLBuilder.Build do projeto, com cenas habilitadas e compressão gzip/fallback existentes. Não é necessário merge para gerar e publicar o estado local desta branch. Build Unity WebGL concluído com sucesso (18.092.422 bytes na primeira compilação). O navegador carregou o build local e percorreu Boot → menu → introdução → seleção do Guerreiro → Ground_T1, sem mensagens de erro no console. Captura e console em docs/qa/feixe-f1. O build final incorpora também a dica de controles Feixe Infernal em PT-BR.
+
+Deploy ainda não realizado: CLI 65.9.0 autenticada como gabriellucasalves; gabriellucassilva81 retorna "The specified scope does not exist". A única equipe listada é a Hobby antiga e o projeto acessível tem domínio aetherion-voidfall.vercel.app. Foi solicitada conexão à conta correta, sem alterar o destino autorizado.
 
 O destino autorizado é a conta pessoal gabriellucassilva81 / aetherion-voidfall-gules. Nunca publicar na equipe Hobby antiga nem mudar a conta/projeto silenciosamente.
