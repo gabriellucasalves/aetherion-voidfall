@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// Especial Supremo (tecla E / botão SUPREMO). Não substitui o especial de L/Q.
+// E/mobile: Guerreiro usa o mesmo Feixe de L/Q; outros heróis preservam seus Supremos.
 public class SpecialController : MonoBehaviour
 {
     public static bool IsCinematic { get; private set; }
@@ -18,13 +18,15 @@ public class SpecialController : MonoBehaviour
     bool _finished = true;
     bool _completed;
 
-    public float CooldownLeft => Mathf.Max(0f, _cooldownLeft);
+    public float CooldownLeft => _hero != null && _hero.Id == "guerreiro" && _combat != null
+        ? _combat.SpecialCooldownLeft : Mathf.Max(0f, _cooldownLeft);
     public SpecialData Data => _data;
     public ResonanceMeter Meter => _meter;
 
     public bool Ready =>
         !IsCinematic
-        && _cooldownLeft <= 0f
+        && CooldownLeft <= 0f
+        && (_hero == null || _hero.Id != "guerreiro" || (_combat != null && !_combat.IsBlocking))
         && _meter != null
         && _meter.IsFull
         && (_health == null || !_health.IsDead);
@@ -88,6 +90,12 @@ public class SpecialController : MonoBehaviour
         if (!Ready)
             return;
 
+        if (_hero != null && _hero.Id == "guerreiro")
+        {
+            if (WantsSupreme())
+                _combat.TryFireWarriorSpecial();
+            return;
+        }
         if (WantsSupreme() && _meter.TrySpend())
             StartCoroutine(Run());
     }
@@ -148,7 +156,7 @@ public class SpecialController : MonoBehaviour
             else if (_hero != null && _hero.Id == "arqueiro")
                 yield return HunterStars.Run(transform, _hero, _player, _combat);
             else
-                yield return WarriorBarrage.Run(transform, _hero, _player);
+                yield break;
 
             _completed = _health == null || !_health.IsDead;
         }

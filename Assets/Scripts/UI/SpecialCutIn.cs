@@ -29,6 +29,8 @@ public class SpecialCutIn : MonoBehaviour
 
     public static void Attach(Transform parent, CharacterData hero)
     {
+        if (hero != null && hero.Id == "guerreiro")
+            return;
         if (parent == null || hero == null || string.IsNullOrEmpty(hero.Id))
             return;
 

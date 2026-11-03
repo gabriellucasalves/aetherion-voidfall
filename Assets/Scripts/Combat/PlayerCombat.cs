@@ -23,9 +23,9 @@ public class PlayerCombat : MonoBehaviour
     public const float MageSpecialRadius = 3.4f;
     public const float MageSpecialDamageScale = 0.95f;
 
-    // Especial do Guerreiro (Lâmina / Onda de Energia) — CD próprio, separado do Corte.
+    // Feixe Infernal: L/Q/E consomem a mesma barra ESPECIAL; Corte permanece independente.
     public const float WarriorSpecialCooldown = 6f;
-    public const float WarriorSpecialShieldCost = 10f;
+
 
     // Especial do Arqueiro (Rajada em leque) — CD próprio, espelha o padrão do Mago.
     public const float ArcherSpecialCooldown = 6.5f;
@@ -36,7 +36,8 @@ public class PlayerCombat : MonoBehaviour
     public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldownLeft);
     public float SpecialCooldownMax =>
         IsArcher ? ArcherSpecialCooldown : (IsMage ? MageSpecialCooldown : WarriorSpecialCooldown);
-    public bool SpecialReady => _specialCooldownLeft <= 0f;
+    public bool SpecialReady => _specialCooldownLeft <= 0f && (!IsWarrior ||
+        (GetComponent<ResonanceMeter>() != null && GetComponent<ResonanceMeter>().IsFull));
     public bool IsCastingSpecial => _specialAnimLeft > 0f;
     public bool IsSpecialAttacking => _specialAnimLeft > 0f;
     public ShieldSystem Shield => _shield;
@@ -168,7 +169,7 @@ public class PlayerCombat : MonoBehaviour
 
             // Especial tem CD próprio — não fica bloqueado pelo CD do Corte.
             if (_specialCooldownLeft <= 0f && WantsSpecial())
-                FireWarriorSpecial();
+                TryFireWarriorSpecial();
 
             if (WantsAttack() && _cooldownLeft <= 0f)
                 FireWarrior();
@@ -216,22 +217,18 @@ public class PlayerCombat : MonoBehaviour
         ArmCooldown();
     }
 
-    void FireWarriorSpecial()
+    public bool TryFireWarriorSpecial()
     {
-        // Lâmina / Onda de Energia: projétil horizontal na facing. Distinto do Corte melee.
-        var wave = AbilityData.CreateOndaEspada();
+        var meter = GetComponent<ResonanceMeter>();
+        if (!IsWarrior || _locked || IsBlocking || _specialCooldownLeft > 0f ||
+            Time.timeScale <= 0f || (_health != null && _health.IsDead) || meter == null || !meter.TrySpend())
+            return false;
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
-        float damage = _hero.Strength * wave.DamageScale;
-        SwordWave.Launch(transform, facing, wave, damage);
-
-        // Custo leve de escudo (opcional) — não impede o especial se o escudo estiver baixo/quebrado.
-        if (_shield != null && !_shield.IsBroken)
-            _shield.Absorb(WarriorSpecialShieldCost);
-
-        _attackLeft = 0.40f; // GuerreiroVisual: placeholder nos frames de attack
-        _specialAnimLeft = 0.70f; // cobre o cut-in (~0.71s) e deixa o especial mais legivel
+        InfernalBeam.Launch(transform, facing, _hero.Strength * InfernalBeam.DamageScale);
+        _attackLeft = InfernalBeam.Startup + InfernalBeam.ActiveDuration;
+        _specialAnimLeft = _attackLeft;
         _specialCooldownLeft = WarriorSpecialCooldown;
-        PixelBurst.Spawn(transform.position + (Vector3)facing * 1.1f + Vector3.up * 0.45f, wave.Color, 6);
+        return true;
     }
 
     void FireMage()

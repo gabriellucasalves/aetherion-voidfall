@@ -109,6 +109,15 @@ public class GroundT1Controller : MonoBehaviour
         _waveBannerLeft = 2.4f;
     }
 
+    public void OpenExitPortal()
+    {
+        if (_dead || _demoDone || FindFirstObjectByType<F1ExitPortal>() != null) return;
+        F1ExitPortal.Spawn(this, new Vector2(32.5f, _stage.GroundTop));
+        _waveBanner.text = "PORTAL ABERTO À DIREITA — ATRAVESSE PARA CONCLUIR";
+        _waveBanner.gameObject.SetActive(true);
+        _waveBannerLeft = 6f;
+    }
+
     public void OnDemoComplete()
     {
         if (_dead || _demoDone)
@@ -324,7 +333,9 @@ public class GroundT1Controller : MonoBehaviour
         if (_shieldFill != null && _showWard)
             _shieldFill.color = new Color(0.45f, 0.7f, 1f);
 
-        UiKit.Label(canvas.transform, "RESSONÂNCIA", 14, new Vector2(-870f, 308f), ResonanceGold, new Vector2(160f, 22f)).alignment = TextAnchor.MiddleLeft;
+        var resonanceLabel = UiKit.Label(canvas.transform, "RESSONÂNCIA", 14, new Vector2(-870f, 308f), ResonanceGold, new Vector2(160f, 22f));
+        resonanceLabel.alignment = TextAnchor.MiddleLeft;
+        resonanceLabel.gameObject.SetActive(!showShield);
         _resonanceFill = UiKit.Bar(
             canvas.transform,
             "BarraRessonancia",
@@ -334,6 +345,11 @@ public class GroundT1Controller : MonoBehaviour
             ResonanceGold);
         _resonanceText = UiKit.Label(canvas.transform, "", 14, new Vector2(-250f, 308f), MenuTheme.SoftIvory, new Vector2(180f, 22f));
         _resonanceText.alignment = TextAnchor.MiddleLeft;
+        if (showShield)
+        {
+            _resonanceFill.transform.parent.gameObject.SetActive(false);
+            _resonanceText.gameObject.SetActive(false);
+        }
 
         _special = _player != null ? _player.GetComponent<SpecialController>() : null;
         RefreshHud();
@@ -439,22 +455,24 @@ public class GroundT1Controller : MonoBehaviour
 
         float left = _combat.SpecialCooldownLeft;
         float max = _combat.SpecialCooldownMax;
-        float ready = max > 0f ? 1f - Mathf.Clamp01(left / max) : 1f;
+        var meter = _player != null ? _player.GetComponent<ResonanceMeter>() : null;
+        float ready = _combat.IsWarrior ? (meter != null ? meter.Normalized : 0f)
+            : (max > 0f ? 1f - Mathf.Clamp01(left / max) : 1f);
         UiKit.SetBar(_specialFill, ready, BarWidth);
 
         Color color = SpecialColor(_player != null ? _player.Hero : null);
-        if (left <= 0.05f)
+        if (left <= 0.05f && _combat.SpecialReady)
         {
             float pulse = 0.75f + 0.25f * Mathf.Sin(Time.unscaledTime * 6f);
             _specialFill.color = Color.Lerp(color, Color.white, 1f - pulse);
             if (_specialText != null)
-                _specialText.text = "PRONTO (L/Q)";
+                _specialText.text = _combat.IsWarrior ? "PRONTO (L/Q/E)" : "PRONTO (L/Q)";
         }
         else
         {
             _specialFill.color = color;
             if (_specialText != null)
-                _specialText.text = left.ToString("0.0") + "s";
+                _specialText.text = left > 0.05f ? left.ToString("0.0") + "s" : Mathf.CeilToInt(ready * 100f) + " / 100";
         }
     }
 
@@ -565,7 +583,7 @@ public class GroundT1Controller : MonoBehaviour
             if (hero != null && hero.Id == "mago")
                 return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / campo / especial   |   SUPREMO quando a barra encher";
             if (hero != null && hero.Id == "guerreiro")
-                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: corte / escudo / especial   |   SUPREMO quando a barra encher";
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: corte / escudo / Feixe Infernal   |   ESPECIAL quando a barra encher";
             if (hero != null && hero.Id == "arqueiro")
                 return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: flecha / especial / dash   |   SUPREMO quando a barra encher";
             return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo";
