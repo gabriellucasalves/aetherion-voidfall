@@ -10,4 +10,4 @@ Unity 6000.5.9f1: 46 verificações existentes passaram em Play Mode (Ground_T1 
 
 Riscos visuais aceitos no prompt da Direção: Cidadela pequena ainda pode precisar de retoque Aseprite; rim light algorítmico pode marcar folhas e lago; montanhas lavanda podem destoar do horizonte ciano. O changelog recebido é mantido como registro anterior à integração: seu título MOCKUP descreve a origem, não a validação executada nesta branch.
 
-WebGL será gerado pelo WebGLBuilder.Build existente, sem mudar o pipeline. Publicação no projeto pessoal aetherion-voidfall, domínio aetherion-voidfall-gules.vercel.app. A conta Hobby antiga não é destino desta publicação. Sem merge em main.
+WebGL gerado com sucesso pelo WebGLBuilder.Build existente: 18.180.404 bytes, sem mudar o pipeline. Conferidos 256 arquivos de código, cenas, configuração e recursos preservados, idênticos à base; backups far/city também idênticos aos originais. Publicação no projeto pessoal aetherion-voidfall, domínio aetherion-voidfall-gules.vercel.app. A conta Hobby antiga não é destino desta publicação. Sem merge em main.
