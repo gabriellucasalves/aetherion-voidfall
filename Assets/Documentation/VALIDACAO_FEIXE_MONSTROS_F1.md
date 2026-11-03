@@ -16,7 +16,7 @@ Executar com a Unity fechada neste checkout:
 
 Os testes de percurso exercitam EnemyTraversal diretamente com o controlador de ataque desativado para separar navegação de combate; os testes dos papéis executam a IA completa. Resultados: docs/qa/feixe-f1/editor-playmode-results.txt. Código de QA excluído de players por UNITY_EDITOR.
 
-Na primeira execução, o teste ranged nasceu dentro de um gap e falhou por obstrução do terreno; corrigido o arranjo para o trecho contínuo, sem contornar a colisão do projétil. A execução final passou. Houve ArgumentOutOfRangeException no bootstrap/indexação do Editor, sem stack de script do projeto; registrar separadamente dos resultados dos testes.
+Na primeira execução, o teste ranged nasceu dentro de um gap e falhou por obstrução do terreno; corrigido o arranjo para o trecho contínuo, sem contornar a colisão do projétil. A execução final passou. Houve ArgumentOutOfRangeException durante a inicialização do Editor, próxima ao início da indexação e sem stack de script do projeto. A origem não foi identificada; registrar separadamente dos resultados dos testes.
 
 ## Playtest humano ainda necessário
 
@@ -24,7 +24,7 @@ Boot → seleção → Ground_T1; Guerreiro em ambos os facings e no ar; mobile;
 
 ## WebGL e publicação
 
-Build pelo WebGLBuilder.Build do projeto, com cenas habilitadas e compressão gzip/fallback existentes. Não é necessário merge para gerar e publicar o estado local desta branch. Build Unity WebGL concluído com sucesso (18.092.422 bytes na primeira compilação). O navegador carregou o build local e percorreu Boot → menu → introdução → seleção do Guerreiro → Ground_T1, sem mensagens de erro no console. Captura e console em docs/qa/feixe-f1. O build final incorpora também a dica de controles Feixe Infernal em PT-BR.
+Build pelo WebGLBuilder.Build do projeto, com cenas habilitadas e compressão gzip/fallback existentes. Não é necessário merge para gerar e publicar o estado local desta branch. Build Unity WebGL concluído com sucesso (18.079.924 bytes na compilação final). O navegador carregou o build local e percorreu Boot → menu → introdução → seleção do Guerreiro → Ground_T1, sem mensagens de erro no console. Captura e console em docs/qa/feixe-f1. O build final incorpora também a dica de controles Feixe Infernal em PT-BR.
 
 Deploy ainda não realizado: CLI 65.9.0 autenticada como gabriellucasalves; gabriellucassilva81 retorna "The specified scope does not exist". A única equipe listada é a Hobby antiga e o projeto acessível tem domínio aetherion-voidfall.vercel.app. Foi solicitada conexão à conta correta, sem alterar o destino autorizado.
 
