@@ -1,0 +1,14 @@
+Unity 6000.5.9f1
+WebGLBuilder.Build: sucesso
+Build final: 18079924 bytes
+46 checks Play Mode: PASS
+Browser: Boot -> menu -> introdução -> seleção Guerreiro -> Ground_T1
+Console navegador: 0 erros
+Preview GitHub/Vercel: Ready, protegido por login
+Produção solicitada: pendente de acesso à conta correta
+
+SHA-256 dos arquivos do build:
+f5c6b8bb7cdf8ff59c795d11a8b6647e08ce74b7d10b82db0a7f2f1ad09f2ba4  webgl/Build/webgl.data.unityweb
+5955193590559fddc32655a6956538eedb675a2d3aef76b53365e36901175b6c  webgl/Build/webgl.framework.js.unityweb
+0320377174ecebbb8353ccf6d1d77d4814369c67f9fd456c09971703c8383ecb  webgl/Build/webgl.loader.js
+1fac1b8118a568c59a1cb25b288cbd66132f5e38af596c04b7958fe75792b3ce  webgl/Build/webgl.wasm.unityweb
