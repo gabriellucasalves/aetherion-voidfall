@@ -1,0 +1,20 @@
+{
+  "far.png": {
+    "old_sha256": "dc8ee6ea100a30090a0fd86ba0ed63d7d1ff027cefe98bb43894e74a34a2fa78",
+    "cinematic_v3_sha256": "617b5d4877d4181a0ac653808ea10726c8d5f11b680e0f4494f4f463d5779601",
+    "size": [
+      512,
+      130
+    ],
+    "mode": "RGBA"
+  },
+  "city.png": {
+    "old_sha256": "f828819d0f9c6f5ff0735b5b76b22e0cc6453ea06828b002a64ac1c7ef614087",
+    "cinematic_v3_sha256": "d863d6d5ad323acdbffd1e99df416df8321e204db46254d253894761b002d7d9",
+    "size": [
+      640,
+      176
+    ],
+    "mode": "RGBA"
+  }
+}

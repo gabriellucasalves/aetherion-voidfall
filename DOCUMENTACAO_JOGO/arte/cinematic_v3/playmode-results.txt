@@ -1,0 +1,46 @@
+PASS Ground_T1 híbrido inicia em Play Mode
+PASS Feixe rejeita barra vazia
+PASS Feixe consome 100% de ESPECIAL
+PASS Feixe sem custo de escudo, cutscene ou alteração de tempo
+PASS Não duplica disparo durante cooldown
+PASS Startup não causa dano
+PASS Dano frontal do Feixe
+PASS Feixe não atinge atrás, plataforma acima ou fora de alcance
+PASS Um hit por inimigo, mesmo com dois colisores
+PASS Feixe encerra após janela ativa
+PASS Facing esquerdo respeitado
+PASS Esqueleto Alien tem sheet nativa
+PASS Esqueleto Alien spawn com apoio em ilha alta
+PASS Esqueleto Alien rejeita spawn em gap
+PASS Esqueleto Alien atravessa gap -26..-24
+PASS Esqueleto Alien atravessa gap -17..-14
+PASS Esqueleto Alien atravessa gap -7..-4
+PASS Esqueleto Alien atravessa gap 13..16
+PASS Esqueleto Alien atravessa gap 24..27
+PASS Esqueleto Alien sobe pelas ilhas 2,0 e 3,75
+PASS Bicho tem sheet nativa
+PASS Bicho spawn com apoio em ilha alta
+PASS Bicho rejeita spawn em gap
+PASS Bicho atravessa gap -26..-24
+PASS Bicho atravessa gap -17..-14
+PASS Bicho atravessa gap -7..-4
+PASS Bicho atravessa gap 13..16
+PASS Bicho atravessa gap 24..27
+PASS Bicho sobe pelas ilhas 2,0 e 3,75
+PASS Golem de Ardósia tem sheet nativa
+PASS Golem de Ardósia spawn com apoio em ilha alta
+PASS Golem de Ardósia rejeita spawn em gap
+PASS Golem de Ardósia atravessa gap -26..-24
+PASS Golem de Ardósia atravessa gap -17..-14
+PASS Golem de Ardósia atravessa gap -7..-4
+PASS Golem de Ardósia atravessa gap 13..16
+PASS Golem de Ardósia atravessa gap 24..27
+PASS Golem de Ardósia sobe pelas ilhas 2,0 e 3,75
+PASS Esqueleto Alien dispara osso Aether
+PASS Esqueleto Alien recua para manter distância
+PASS Bicho executa salto de ataque
+PASS Golem telegrafa parado antes da investida
+PASS Golem investe sem explodir nem se autodestruir
+PASS Golem mantém altura base do Guerreiro, com largura maior
+PASS Portal abre sem encerrar a fase imediatamente
+PASS Atravessar portal conclui Fase I
