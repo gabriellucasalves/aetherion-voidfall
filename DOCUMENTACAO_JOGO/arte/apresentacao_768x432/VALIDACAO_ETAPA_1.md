@@ -16,4 +16,14 @@ O Fit inteiro existente foi preservado. Em um canvas 1920×1080: scale=2, imagem
 
 Cada texel dos assets de PPU 16 ocupa 2×2 pixels no RT novo. A Etapa 1 não adiciona detalhes aos sprites existentes. A densificação artística nativa pertence à Etapa 2 e continua necessária para aumentar detalhe sem apenas ampliar a grade atual; preservar medidas de mundo nesse trabalho futuro. Sem Bilinear e sem simplificação gráfica procedural como substituição de arte.
 
-WebGLBuilder.Build do Feixe concluiu com sucesso: 18.133.607 bytes. Destino autorizado: projeto pessoal aetherion-voidfall, conta gabriellucassilva81-8983, https://aetherion-voidfall-gules.vercel.app . Estado e evidências da publicação serão registrados após a verificação.
+WebGLBuilder.Build do Feixe concluiu com sucesso: 18.133.607 bytes. Destino autorizado: projeto pessoal aetherion-voidfall, conta gabriellucassilva81-8983, https://aetherion-voidfall-gules.vercel.app . Publicação concluída conforme registro abaixo.
+
+## Produção verificada
+
+URL: https://aetherion-voidfall-gules.vercel.app/ . Estado READY. Deployment dpl_CMkzkwXPzEE5GvDVEw5RdwttNG9e, conta pessoal gabriellucassilva81-8983, projeto prj_BjRWPsfINvsxLR7ixioA1AVhrbWM. Origem do build publicado: 81e0a99. Build Vercel: 5 segundos.
+
+O deployment foi testado antes da promoção do mesmo artefato ao domínio. Após promover: HTTP 200, quatro SHA-256 do WebGL iguais ao build local, MIME e gzip corretos (production-hashes.json). Uma primeira tentativa de baixar o WASM para conferência encontrou timeout de rede; a repetição passou, sem alteração do build.
+
+No domínio de produção: Boot → menu → introdução → seleção do Guerreiro → Ground_T1, movimento e salto pelo primeiro gap com controles normais. Console do navegador: zero erros. Capturas reais em pr15-producao-768x432.png e pr15-producao-percurso.png; console em pr15-producao-console.txt.
+
+Em canvas Full HD com devicePixelRatio=1, a captura confirmou o mundo entre X=192 e X=1727 (1536 px). As barras do Fit estão presentes e o HUD continua na escala anterior, conforme o escopo da PR. Etapa 1 técnica executada; aumentar detalhe da arte continua sendo trabalho da Etapa 2. Nenhum asset foi densificado ou suavizado nesta entrega. Nenhum merge em main e nenhum deploy manual na conta Hobby antiga.

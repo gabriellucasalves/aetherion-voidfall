@@ -1,0 +1,26 @@
+[
+  {
+    "file": "webgl.data.unityweb",
+    "sha256_matches": true,
+    "content_type": "application/octet-stream",
+    "content_encoding": "gzip"
+  },
+  {
+    "file": "webgl.framework.js.unityweb",
+    "sha256_matches": true,
+    "content_type": "application/javascript",
+    "content_encoding": "gzip"
+  },
+  {
+    "file": "webgl.loader.js",
+    "sha256_matches": true,
+    "content_type": "application/javascript; charset=utf-8",
+    "content_encoding": null
+  },
+  {
+    "file": "webgl.wasm.unityweb",
+    "sha256_matches": true,
+    "content_type": "application/wasm",
+    "content_encoding": "gzip"
+  }
+]
