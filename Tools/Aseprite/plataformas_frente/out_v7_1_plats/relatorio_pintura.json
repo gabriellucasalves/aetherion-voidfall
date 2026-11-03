@@ -1,0 +1,252 @@
+{
+  "ground": {
+    "size": [
+      256,
+      64
+    ],
+    "layers": [
+      "out_v7_1_plats/ground__BASE.png",
+      "out_v7_1_plats/ground__SHADOW.png",
+      "out_v7_1_plats/ground__DETAIL.png",
+      "out_v7_1_plats/ground__HIGHLIGHT.png",
+      "out_v7_1_plats/ground__MOSS.png",
+      "out_v7_1_plats/ground__FX.png"
+    ],
+    "colors": [
+      "Basalto_Oclusao_Contorno",
+      "Basalto_Sombra_Fria",
+      "Flor_Magenta_Viva",
+      "Flor_Rosa_Luz",
+      "Fungo_Purpura_Medio",
+      "Fungo_Purpura_Sombra",
+      "Luz_Ouro_Runico",
+      "Marmore_Luz_Solar",
+      "Meio_Tom_Sombra_Fria",
+      "Montanha_Luz_Atmosfera",
+      "Montanha_Sombra_Fria",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda",
+      "Oclusao_Universal_Preto",
+      "Pedra_Ardosia_Luz",
+      "Pedra_Ardosia_Sombra",
+      "Sombra_Ambiente_Lavanda"
+    ],
+    "opaque": 14713,
+    "total": 16384
+  },
+  "ground_edge_l": {
+    "size": [
+      24,
+      64
+    ],
+    "layers": [
+      "out_v7_1_plats/ground_edge_l__BASE.png",
+      "out_v7_1_plats/ground_edge_l__SHADOW.png",
+      "out_v7_1_plats/ground_edge_l__DETAIL.png",
+      "out_v7_1_plats/ground_edge_l__HIGHLIGHT.png",
+      "out_v7_1_plats/ground_edge_l__MOSS.png",
+      "out_v7_1_plats/ground_edge_l__FX.png"
+    ],
+    "colors": [
+      "Basalto_Oclusao_Contorno",
+      "Flor_Magenta_Viva",
+      "Flor_Rosa_Luz",
+      "Fungo_Purpura_Medio",
+      "Fungo_Purpura_Sombra",
+      "Luz_Ouro_Runico",
+      "Meio_Tom_Sombra_Fria",
+      "Montanha_Luz_Atmosfera",
+      "Montanha_Sombra_Fria",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda",
+      "Oclusao_Universal_Preto",
+      "Pedra_Ardosia_Luz",
+      "Sombra_Ambiente_Lavanda"
+    ],
+    "opaque": 1031,
+    "total": 1536
+  },
+  "ground_edge_r": {
+    "size": [
+      24,
+      64
+    ],
+    "layers": [
+      "out_v7_1_plats/ground_edge_r__BASE.png",
+      "out_v7_1_plats/ground_edge_r__SHADOW.png",
+      "out_v7_1_plats/ground_edge_r__DETAIL.png",
+      "out_v7_1_plats/ground_edge_r__HIGHLIGHT.png",
+      "out_v7_1_plats/ground_edge_r__MOSS.png",
+      "out_v7_1_plats/ground_edge_r__FX.png"
+    ],
+    "colors": [
+      "Basalto_Oclusao_Contorno",
+      "Flor_Magenta_Viva",
+      "Flor_Rosa_Luz",
+      "Fungo_Purpura_Medio",
+      "Fungo_Purpura_Sombra",
+      "Luz_Ouro_Runico",
+      "Meio_Tom_Sombra_Fria",
+      "Montanha_Luz_Atmosfera",
+      "Montanha_Sombra_Fria",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda",
+      "Oclusao_Universal_Preto",
+      "Pedra_Ardosia_Luz",
+      "Sombra_Ambiente_Lavanda"
+    ],
+    "opaque": 1060,
+    "total": 1536
+  },
+  "pit": {
+    "size": [
+      32,
+      64
+    ],
+    "layers": [
+      "out_v7_1_plats/pit__BASE.png",
+      "out_v7_1_plats/pit__SHADOW.png",
+      "out_v7_1_plats/pit__DETAIL.png",
+      "out_v7_1_plats/pit__HIGHLIGHT.png",
+      "out_v7_1_plats/pit__MOSS.png",
+      "out_v7_1_plats/pit__FX.png"
+    ],
+    "colors": [
+      "Aether_Turquesa_Profundo",
+      "Meio_Tom_Sombra_Fria",
+      "Montanha_Sombra_Fria",
+      "Oclusao_Universal_Preto",
+      "Sombra_Ambiente_Lavanda"
+    ],
+    "opaque": 1664,
+    "total": 2048
+  },
+  "plat_s": {
+    "size": [
+      48,
+      26
+    ],
+    "layers": [
+      "out_v7_1_plats/plat_s__BASE.png",
+      "out_v7_1_plats/plat_s__SHADOW.png",
+      "out_v7_1_plats/plat_s__DETAIL.png",
+      "out_v7_1_plats/plat_s__HIGHLIGHT.png",
+      "out_v7_1_plats/plat_s__MOSS.png",
+      "out_v7_1_plats/plat_s__FX.png"
+    ],
+    "colors": [
+      "Aether_Ciano_Vivo",
+      "Aether_Turquesa_Profundo",
+      "Basalto_Oclusao_Contorno",
+      "Flor_Magenta_Viva",
+      "Flor_Rosa_Luz",
+      "Fungo_Purpura_Medio",
+      "Fungo_Purpura_Sombra",
+      "Luz_Ouro_Runico",
+      "Meio_Tom_Sombra_Fria",
+      "Montanha_Luz_Atmosfera",
+      "Montanha_Sombra_Fria",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda",
+      "Oclusao_Universal_Preto",
+      "Pedra_Ardosia_Luz",
+      "Sombra_Ambiente_Lavanda"
+    ],
+    "opaque": 762,
+    "total": 1248
+  },
+  "plat_m": {
+    "size": [
+      80,
+      30
+    ],
+    "layers": [
+      "out_v7_1_plats/plat_m__BASE.png",
+      "out_v7_1_plats/plat_m__SHADOW.png",
+      "out_v7_1_plats/plat_m__DETAIL.png",
+      "out_v7_1_plats/plat_m__HIGHLIGHT.png",
+      "out_v7_1_plats/plat_m__MOSS.png",
+      "out_v7_1_plats/plat_m__FX.png"
+    ],
+    "colors": [
+      "Aether_Ciano_Vivo",
+      "Aether_Turquesa_Profundo",
+      "Basalto_Oclusao_Contorno",
+      "Basalto_Sombra_Fria",
+      "Flor_Magenta_Viva",
+      "Flor_Rosa_Luz",
+      "Fungo_Purpura_Medio",
+      "Fungo_Purpura_Sombra",
+      "Luz_Ouro_Runico",
+      "Meio_Tom_Sombra_Fria",
+      "Montanha_Luz_Atmosfera",
+      "Montanha_Sombra_Fria",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda",
+      "Oclusao_Universal_Preto",
+      "Pedra_Ardosia_Luz",
+      "Pedra_Ardosia_Sombra",
+      "Sombra_Ambiente_Lavanda"
+    ],
+    "opaque": 1554,
+    "total": 2400
+  },
+  "plat_l": {
+    "size": [
+      112,
+      34
+    ],
+    "layers": [
+      "out_v7_1_plats/plat_l__BASE.png",
+      "out_v7_1_plats/plat_l__SHADOW.png",
+      "out_v7_1_plats/plat_l__DETAIL.png",
+      "out_v7_1_plats/plat_l__HIGHLIGHT.png",
+      "out_v7_1_plats/plat_l__MOSS.png",
+      "out_v7_1_plats/plat_l__FX.png"
+    ],
+    "colors": [
+      "Aether_Ciano_Vivo",
+      "Aether_Turquesa_Profundo",
+      "Basalto_Oclusao_Contorno",
+      "Basalto_Sombra_Fria",
+      "Flor_Magenta_Viva",
+      "Flor_Rosa_Luz",
+      "Fungo_Purpura_Medio",
+      "Fungo_Purpura_Sombra",
+      "Luz_Ouro_Runico",
+      "Meio_Tom_Sombra_Fria",
+      "Montanha_Luz_Atmosfera",
+      "Montanha_Sombra_Fria",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda",
+      "Oclusao_Universal_Preto",
+      "Pedra_Ardosia_Luz",
+      "Pedra_Ardosia_Sombra",
+      "Sombra_Ambiente_Lavanda"
+    ],
+    "opaque": 2392,
+    "total": 3808
+  },
+  "_contrato": {
+    "ground_surf_row": 8,
+    "plat_surf_row": 4,
+    "plat_solid_cols": "2..w-3",
+    "edge_overlap_px": 8,
+    "remap": {
+      "Folha_Jade_Medio": "Montanha_Sombra_Fria",
+      "Folha_Verde_Luz": "Nuvem_Sombra_Lavanda",
+      "Folha_Esmeralda_Viva": "Montanha_Luz_Atmosfera",
+      "Folha_Verde_Sombra": "Meio_Tom_Sombra_Fria",
+      "Folha_Sombra_Profunda": "Sombra_Ambiente_Lavanda",
+      "Solo_Terra_Argila": "Nuvem_Sombra_Profunda",
+      "Solo_Areia_Media": "Pedra_Ardosia_Luz",
+      "Solo_Terra_Sombra": "Meio_Tom_Sombra_Fria",
+      "Solo_Rocha_Base": "Sombra_Ambiente_Lavanda",
+      "Solo_Subsolo_Profundo": "Basalto_Oclusao_Contorno",
+      "Casca_Contorno_Escuro": "Oclusao_Universal_Preto",
+      "Casca_Tronco_Sombra": "Fungo_Purpura_Sombra",
+      "Casca_Fenda_Profunda": "Sombra_Ambiente_Lavanda",
+      "Pedra_Ardosia_Sombra": "Pedra_Ardosia_Sombra"
+    }
+  }
+}

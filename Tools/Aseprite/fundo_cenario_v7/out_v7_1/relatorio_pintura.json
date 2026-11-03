@@ -1,0 +1,217 @@
+{
+  "sky": {
+    "size": [
+      480,
+      192
+    ],
+    "layers": [
+      "out_v7_1/sky__BASE.png",
+      "out_v7_1/sky__SHADOW.png",
+      "out_v7_1/sky__DETAIL.png",
+      "out_v7_1/sky__HIGHLIGHT.png",
+      "out_v7_1/sky__MOSS.png",
+      "out_v7_1/sky__FX.png"
+    ],
+    "colors": [
+      "Ceu_Aura_Luminosa",
+      "Ceu_Ciano_Claro",
+      "Fronde_Marfim_Luz",
+      "Fronde_Ouro_Palido",
+      "Luz_Ouro_Runico",
+      "Marmore_Reflexo_Medio",
+      "Nevoa_Turquesa_Distante",
+      "Nuvem_Ambar_Medio",
+      "Nuvem_Creme_Solar",
+      "Nuvem_Luz_Pura",
+      "Nuvem_Sombra_Lavanda"
+    ],
+    "opaque": 92160,
+    "total": 92160
+  },
+  "clouds_a": {
+    "size": [
+      176,
+      60
+    ],
+    "layers": [
+      "out_v7_1/clouds_a__BASE.png",
+      "out_v7_1/clouds_a__SHADOW.png",
+      "out_v7_1/clouds_a__DETAIL.png",
+      "out_v7_1/clouds_a__HIGHLIGHT.png",
+      "out_v7_1/clouds_a__MOSS.png",
+      "out_v7_1/clouds_a__FX.png"
+    ],
+    "colors": [
+      "Fronde_Ouro_Palido",
+      "Meio_Tom_Sombra_Fria",
+      "Nuvem_Ambar_Medio",
+      "Nuvem_Creme_Solar",
+      "Nuvem_Luz_Pura",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda"
+    ],
+    "opaque": 3780,
+    "total": 10560
+  },
+  "clouds_b": {
+    "size": [
+      200,
+      72
+    ],
+    "layers": [
+      "out_v7_1/clouds_b__BASE.png",
+      "out_v7_1/clouds_b__SHADOW.png",
+      "out_v7_1/clouds_b__DETAIL.png",
+      "out_v7_1/clouds_b__HIGHLIGHT.png",
+      "out_v7_1/clouds_b__MOSS.png",
+      "out_v7_1/clouds_b__FX.png"
+    ],
+    "colors": [
+      "Fronde_Ouro_Palido",
+      "Meio_Tom_Sombra_Fria",
+      "Nuvem_Ambar_Medio",
+      "Nuvem_Creme_Solar",
+      "Nuvem_Luz_Pura",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda"
+    ],
+    "opaque": 5569,
+    "total": 14400
+  },
+  "clouds_c": {
+    "size": [
+      88,
+      26
+    ],
+    "layers": [
+      "out_v7_1/clouds_c__BASE.png",
+      "out_v7_1/clouds_c__SHADOW.png",
+      "out_v7_1/clouds_c__DETAIL.png",
+      "out_v7_1/clouds_c__HIGHLIGHT.png",
+      "out_v7_1/clouds_c__MOSS.png",
+      "out_v7_1/clouds_c__FX.png"
+    ],
+    "colors": [
+      "Fronde_Ouro_Palido",
+      "Meio_Tom_Sombra_Fria",
+      "Nuvem_Ambar_Medio",
+      "Nuvem_Creme_Solar",
+      "Nuvem_Luz_Pura",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda"
+    ],
+    "opaque": 753,
+    "total": 2288
+  },
+  "clouds_d": {
+    "size": [
+      56,
+      20
+    ],
+    "layers": [
+      "out_v7_1/clouds_d__BASE.png",
+      "out_v7_1/clouds_d__SHADOW.png",
+      "out_v7_1/clouds_d__DETAIL.png",
+      "out_v7_1/clouds_d__HIGHLIGHT.png",
+      "out_v7_1/clouds_d__MOSS.png",
+      "out_v7_1/clouds_d__FX.png"
+    ],
+    "colors": [
+      "Fronde_Ouro_Palido",
+      "Meio_Tom_Sombra_Fria",
+      "Nuvem_Ambar_Medio",
+      "Nuvem_Creme_Solar",
+      "Nuvem_Luz_Pura",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda"
+    ],
+    "opaque": 433,
+    "total": 1120
+  },
+  "far": {
+    "size": [
+      512,
+      130
+    ],
+    "layers": [
+      "out_v7_1/far__BASE.png",
+      "out_v7_1/far__SHADOW.png",
+      "out_v7_1/far__DETAIL.png",
+      "out_v7_1/far__HIGHLIGHT.png",
+      "out_v7_1/far__MOSS.png",
+      "out_v7_1/far__FX.png"
+    ],
+    "colors": [
+      "Aether_Ciano_Brilho",
+      "Basalto_Oclusao_Contorno",
+      "Basalto_Sombra_Fria",
+      "Fronde_Ouro_Palido",
+      "Fungo_Oclusao_Escura",
+      "Fungo_Purpura_Sombra",
+      "Luz_Ouro_Runico",
+      "Marmore_Luz_Solar",
+      "Marmore_Reflexo_Medio",
+      "Meio_Tom_Sombra_Fria",
+      "Montanha_Luz_Atmosfera",
+      "Montanha_Media_Distante",
+      "Montanha_Profunda_Contorno",
+      "Montanha_Sombra_Fria",
+      "Nevoa_Turquesa_Distante",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda",
+      "Pedra_Ardosia_Luz",
+      "Pedra_Ardosia_Sombra",
+      "Sombra_Ambiente_Lavanda"
+    ],
+    "opaque": 23656,
+    "total": 66560
+  },
+  "city": {
+    "size": [
+      640,
+      176
+    ],
+    "layers": [
+      "out_v7_1/city__BASE.png",
+      "out_v7_1/city__SHADOW.png",
+      "out_v7_1/city__DETAIL.png",
+      "out_v7_1/city__HIGHLIGHT.png",
+      "out_v7_1/city__MOSS.png",
+      "out_v7_1/city__FX.png"
+    ],
+    "colors": [
+      "Aether_Ciano_Brilho",
+      "Aether_Ciano_Vivo",
+      "Aether_Turquesa_Profundo",
+      "Basalto_Sombra_Fria",
+      "Ceu_Aura_Luminosa",
+      "Ceu_Azul_Vibrante",
+      "Ceu_Ciano_Claro",
+      "Flor_Magenta_Viva",
+      "Flor_Rosa_Luz",
+      "Folha_Jade_Medio",
+      "Folha_Oclusao_Extrema",
+      "Folha_Sombra_Profunda",
+      "Folha_Verde_Luz",
+      "Folha_Verde_Sombra",
+      "Fronde_Ouro_Palido",
+      "Fungo_Oclusao_Escura",
+      "Fungo_Purpura_Medio",
+      "Fungo_Purpura_Sombra",
+      "Luz_Ouro_Runico",
+      "Marmore_Luz_Solar",
+      "Marmore_Reflexo_Medio",
+      "Meio_Tom_Sombra_Fria",
+      "Nuvem_Creme_Solar",
+      "Nuvem_Luz_Pura",
+      "Nuvem_Sombra_Lavanda",
+      "Nuvem_Sombra_Profunda",
+      "Pedra_Ardosia_Luz",
+      "Pedra_Ardosia_Sombra",
+      "Solo_Areia_Media",
+      "Sombra_Ambiente_Lavanda"
+    ],
+    "opaque": 37334,
+    "total": 112640
+  }
+}
