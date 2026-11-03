@@ -28,6 +28,8 @@ Build pelo WebGLBuilder.Build do projeto, com cenas habilitadas e compressão gz
 
 A PR #14 disparou automaticamente um preview pela integração GitHub/Vercel no projeto smashhhh/aetherion-voidfall, com status Ready. O endereço de preview exige login Vercel (302 para SSO): https://aetherion-voidfall-git-codex-feixe-infernal-mon-41df03-smashhhh.vercel.app . Isso não confirma publicação no domínio pessoal solicitado.
 
-Publicação manual no domínio solicitado ainda pendente: CLI 65.9.0 autenticada como gabriellucasalves; gabriellucassilva81 retorna "The specified scope does not exist". A única equipe listada é a Hobby antiga e o projeto acessível tem domínio aetherion-voidfall.vercel.app. Foi solicitada conexão à conta correta, sem alterar o destino autorizado.
+Produção concluída em 2026-11-03: https://aetherion-voidfall-gules.vercel.app . Conta verificada gabriellucassilva81-8983; projeto aetherion-voidfall (prj_BjRWPsfINvsxLR7ixioA1AVhrbWM). Deployment dpl_J9nrN68CVxPU9RnXTJYWkTsCyv4m, origem local 23effa4, alvo production, build Vercel de 6 s. Publicação inicialmente sem atribuir domínio, verificação dos quatro SHA-256, depois promoção do mesmo deployment. Não houve merge da PR.
+
+Verificação após promoção: domínio HTTP 200; quatro arquivos do build idênticos ao WebGL local, gzip e MIME de WASM corretos. Navegador percorreu Boot → menu → introdução → seleção do Guerreiro → Ground_T1 no domínio de produção, com zero erros de console. Evidências: docs/qa/feixe-f1/production-hashes.json, webgl-f1-producao.png e webgl-f1-producao-console.txt. A autenticação da conta pessoal foi feita separadamente, sem substituir a sessão antiga.
 
 O destino autorizado é a conta pessoal gabriellucassilva81 / aetherion-voidfall-gules. Nunca publicar na equipe Hobby antiga nem mudar a conta/projeto silenciosamente.
