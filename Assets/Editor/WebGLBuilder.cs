@@ -12,6 +12,10 @@ public static class WebGLBuilder
         PlayerSettings.WebGL.decompressionFallback = true;
         PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
         PlayerSettings.runInBackground = true;
+        // O pack carrega conteúdo em runtime. O stripping nativo da Unity 6000.5
+        // remove MonoScript (class ID 115) e gera erros no navegador.
+        // Conserva as classes nativas nesta build; não altera a apresentação.
+        PlayerSettings.stripEngineCode = false;
 
         var scenes = EditorBuildSettings.scenes
             .Where(scene => scene.enabled)

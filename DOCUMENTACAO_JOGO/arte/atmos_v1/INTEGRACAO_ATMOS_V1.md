@@ -54,3 +54,7 @@ Lista e estatística de arquivos: diff-arquivos.txt. Diff textual da implementa�
 ## Conferência posterior — pack ativo, fallback off
 
 DefaultEnabled=true e AllowLegacyFallback=false. Os 18 PNGs conferidos como Sprite, Point, PPU 32, sem mipmaps e sem compressão. Nova execução real em Play Mode passou nos 46 checks. Captura do início sem personagens e sem HUD: qa/fallback-off/inicio-sem-personagem.png; RT nativa 768×432. Comparação contra preview.png: erro RGB médio 0,19/0,17/0,18 em 255. Assets originais preservados. Menu Aetherion → Atmos V1 → Abrir início em Play Mode habilita explicitamente a preferência do Editor e abre Ground_T1. Após esta conferência, a Direção solicitou novo WebGL e deploy pessoal. Build reconstruído de Aetherion_Atmos_V1 com fallback automático desligado; publicação registrada no bloco seguinte.
+
+## Correção do build WebGL após desligar fallback
+
+O primeiro rebuild abriu a fase, mas o Console do navegador registrou “Could not produce class with ID 115” (MonoScript). Esse deployment não foi promovido. WebGLBuilder agora define PlayerSettings.stripEngineCode=false, preservando as classes nativas; managed stripping permanece inalterado. Rebuild concluído: 21.541.023 bytes. Sem alteração de arte, câmera ou pipeline gráfico. Referências Unity: https://docs.unity3d.com/es/2020.1/Manual/webgl-building.html e https://docs.unity.com/en-us/engine/6000.0/script-reference/unityeditor/playersettings/stripenginecode .

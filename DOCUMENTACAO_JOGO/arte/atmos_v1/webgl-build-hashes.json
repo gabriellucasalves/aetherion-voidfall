@@ -1,22 +1,22 @@
 [
   {
     "file": "webgl.data.unityweb",
-    "sha256": "adc41c88ae465cfd0ffd260d6ef6fbb21db7da1b233da231448256d657412208",
-    "bytes": 4112908
+    "sha256": "08c8ae1b8870daadf9612e3265b888fb85f87ea536c677d8c3bae376ac518d1a",
+    "bytes": 4222482
   },
   {
     "file": "webgl.framework.js.unityweb",
-    "sha256": "4a986641ef221ee46a7668e175e527ab3676d544fb1f967d1ad89bae9aa3380b",
-    "bytes": 80658
+    "sha256": "6f135d41aaf8e5e9ccd8df1cd8d17a9906b76c3b820dd29efbbfa9c8abe8aade",
+    "bytes": 86803
   },
   {
     "file": "webgl.loader.js",
-    "sha256": "cac69fd7837cbb601e41bcbf1189c33002d04f6d4cdfca3940a5044d7b37890c",
+    "sha256": "7f126b0438244fab64d0a76f41ef28bc4d5e580fa4e33b431e5082c69c22240c",
     "bytes": 47867
   },
   {
     "file": "webgl.wasm.unityweb",
-    "sha256": "8ae7c5b8255550d5368739b52d64eb5ddaa7dbd7dc041a1612d6b5b3908a12e0",
-    "bytes": 6343361
+    "sha256": "3a6edacdf77214175aece3226b231f31d6bd06d2dc745dfb78a906235b6944f9",
+    "bytes": 8081994
   }
 ]
