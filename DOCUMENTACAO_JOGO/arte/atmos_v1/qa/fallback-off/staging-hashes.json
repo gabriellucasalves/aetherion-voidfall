@@ -1,0 +1,29 @@
+{
+  "url": "https://aetherion-voidfall-9msvm253m-gabriellucassilva81-8983.vercel.app",
+  "files": [
+    {
+      "file": "webgl.data.unityweb",
+      "sha256": "08c8ae1b8870daadf9612e3265b888fb85f87ea536c677d8c3bae376ac518d1a",
+      "bytes": 4222482,
+      "http": 200
+    },
+    {
+      "file": "webgl.framework.js.unityweb",
+      "sha256": "6f135d41aaf8e5e9ccd8df1cd8d17a9906b76c3b820dd29efbbfa9c8abe8aade",
+      "bytes": 86803,
+      "http": 200
+    },
+    {
+      "file": "webgl.loader.js",
+      "sha256": "7f126b0438244fab64d0a76f41ef28bc4d5e580fa4e33b431e5082c69c22240c",
+      "bytes": 47867,
+      "http": 200
+    },
+    {
+      "file": "webgl.wasm.unityweb",
+      "sha256": "3a6edacdf77214175aece3226b231f31d6bd06d2dc745dfb78a906235b6944f9",
+      "bytes": 8081994,
+      "http": 200
+    }
+  ]
+}

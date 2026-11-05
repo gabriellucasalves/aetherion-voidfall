@@ -58,3 +58,14 @@ DefaultEnabled=true e AllowLegacyFallback=false. Os 18 PNGs conferidos como Spri
 ## Correção do build WebGL após desligar fallback
 
 O primeiro rebuild abriu a fase, mas o Console do navegador registrou “Could not produce class with ID 115” (MonoScript). Esse deployment não foi promovido. WebGLBuilder agora define PlayerSettings.stripEngineCode=false, preservando as classes nativas; managed stripping permanece inalterado. Rebuild concluído: 21.541.023 bytes. Sem alteração de arte, câmera ou pipeline gráfico. Referências Unity: https://docs.unity3d.com/es/2020.1/Manual/webgl-building.html e https://docs.unity.com/en-us/engine/6000.0/script-reference/unityeditor/playersettings/stripenginecode .
+
+## Publicação final com fallback desligado — 05/11/2026
+
+- URL: https://aetherion-voidfall-gules.vercel.app/
+- Conta pessoal gabriellucassilva81-8983; projeto prj_BjRWPsfINvsxLR7ixioA1AVhrbWM.
+- Build do commit 6d7a0cd; deployment dpl_3SbHKRcrdyB41A98LaMcXiyWsMm3 Ready e promovido depois do teste em staging.
+- URL imutável: https://aetherion-voidfall-9msvm253m-gabriellucassilva81-8983.vercel.app/
+- Staging e domínio público: quatro arquivos do build com HTTP 200 e SHA256 idêntico ao local, registros em qa/fallback-off/staging-hashes.json e production-hashes.json.
+- Navegação menu → introdução → seleção → Ground_T1 no domínio público, com Guerreiro, cenário Atmos e HUD visíveis. Captura real: qa/fallback-off/webgl-producao-browser.png.
+- Console do navegador: zero erros; um aviso da Unity sobre futura remoção da sincronização manual de persistentDataPath. Registros em qa/fallback-off/webgl-producao-console.txt e webgl-warning.txt.
+- Fallback automático antigo desligado no build. Arte original e apresentação 768×432 Point preservadas. Sem merge em main.
