@@ -1,0 +1,45 @@
+PASS Atmos ativo sem terreno legado
+PASS Apresentação 768x432 Point Ortho 6.75 preservada
+PASS 72 unidades, somente dois gaps e três plataformas
+PASS Sem chão invisível no gap -28.5
+PASS Sem chão invisível no gap -21.625
+PASS Extensão final sólida preserva acesso ao portal
+PASS Raízes e chão clássico ausentes
+PASS Import nativo: layer_p1
+PASS Import nativo: layer_p2
+PASS Import nativo: overlay_p2b_fog
+PASS Import nativo: layer_p3
+PASS Import nativo: overlay_p3b_veil
+PASS Import nativo: layer_p4
+PASS Import nativo: layer_p5
+PASS Import nativo: ground
+PASS Import nativo: plat_s
+PASS Import nativo: plat_m
+PASS Import nativo: plat_l
+PASS Import nativo: sky
+PASS Import nativo: far
+PASS Import nativo: mid
+PASS Import nativo: ruins
+PASS Import nativo: playfield_p5
+PASS Import nativo: preview
+PASS Import nativo: preview_x2
+PASS P1-P4 e dois overlays independentes
+PASS Snap 1/32 e cobertura horizontal das três cópias
+PASS Pés alinhados ao chão (até um pixel)
+PASS Salto atravessa gap -28.5
+PASS Salto atravessa gap -21.625
+PASS A alcançável do chão e pouso alinhado
+PASS B alcançável a partir de A
+PASS C alcançável a partir de B
+PASS Face inferior de one-way não renova apoio
+PASS Esqueleto Alien rejeita spawn no gap
+PASS Esqueleto Alien aceita extensão sólida
+PASS Esqueleto Alien alcança C navegando pelas ilhas
+PASS Bicho rejeita spawn no gap
+PASS Bicho aceita extensão sólida
+PASS Bicho alcança C navegando pelas ilhas
+PASS Golem de Ardósia rejeita spawn no gap
+PASS Golem de Ardósia aceita extensão sólida
+PASS Golem de Ardósia alcança C navegando pelas ilhas
+PASS Gap 1 é mortal com painel VOCÊ CAIU
+PASS Gap 2 é mortal com painel VOCÊ CAIU

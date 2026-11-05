@@ -1,0 +1,10 @@
+{
+  "mean_absolute_error_rgb": [
+    0.19432689525462962,
+    0.1740180121527778,
+    0.17676384066358025
+  ],
+  "percent_within_2": 97.13843074845678,
+  "percent_within_8": 99.951171875,
+  "max_channel_difference": 62
+}
