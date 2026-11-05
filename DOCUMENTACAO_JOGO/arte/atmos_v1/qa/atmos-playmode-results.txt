@@ -25,6 +25,7 @@ PASS Import nativo: preview
 PASS Import nativo: preview_x2
 PASS P1-P4 e dois overlays independentes
 PASS Snap 1/32 e cobertura horizontal das três cópias
+PASS Bordas das cópias coincidem antes e depois da reciclagem
 PASS Pés alinhados ao chão (até um pixel)
 PASS Salto atravessa gap -28.5
 PASS Salto atravessa gap -21.625

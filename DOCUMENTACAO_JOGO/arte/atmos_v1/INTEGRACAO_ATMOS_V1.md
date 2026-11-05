@@ -16,7 +16,7 @@ Todos os 18 PNGs: Sprite, PPU 32, Point, Compression None, mipmaps off, Full Rec
 
 Planos: P1=0,08/-50; P2=0,22/-40; fog=0,22/-35; P3=0,40/-30; veil=0,40/-25; P4=0,62/-20; P5=1/0. O texto de PARALLAX usa terminologia ambígua ao dizer fração de câmera e P5 acompanha o mundo. Para manter P5 fixo junto aos colisores, factor foi tratado como velocidade aparente do plano: compensação de câmera = 1-factor. P1 mantém cobertura vertical acompanhando Y da câmera; P2-P4 têm parallax vertical. Fog/veil seguem os mesmos fatores dos seus planos.
 
-P1-P4 e overlays têm três cópias de 24 u, recicladas fora da visão. Câmera e camadas são alinhadas a 1/32 u apenas no modo Atmos. O repouso da câmera fica 5,5 u acima do chão, colocando a superfície na linha Y=392 do preview. GroundTop é alinhado à grade (-2,34375). PixelPresentation foi preservado byte a byte: RT 768×432 Point, OrthoSize 6,75; inclusive o Fit e suas barras existentes em Full HD.
+P1-P4 e overlays têm três cópias de 24 u, recicladas fora da visão. As cópias vizinhas são espelhadas alternadamente para encostar a mesma borda do PNG, eliminando emendas sem retocar arte. O índice global de espelhamento é preservado na reciclagem; o trecho de referência permanece com a orientação original. O QA compara pixels reais das bordas antes e depois da reciclagem. Câmera e camadas são alinhadas a 1/32 u apenas no modo Atmos. O repouso da câmera fica 5,5 u acima do chão, colocando a superfície na linha Y=392 do preview. GroundTop é alinhado à grade (-2,34375). PixelPresentation foi preservado byte a byte: RT 768×432 Point, OrthoSize 6,75; inclusive o Fit e suas barras existentes em Full HD.
 
 ## Ajustes funcionais necessários
 
@@ -28,10 +28,10 @@ Atmos é o padrão (DefaultEnabled=true). Editor: Aetherion → Atmos V1 → Usa
 
 ## Verificação local executada
 
-Unity 6000.5.9f1: 45 checks Atmos e 46 do legado passaram, sem erros C#. Os 45 verificam todos os importadores, separação de planos, cobertura/snap, dois gaps realmente mortais com UI, apoio dos pés, saltos para A/B/C e navegação dos três inimigos até C. Também verificam a extensão do chão e rejeição de spawn em gaps. Scripts: AtmosV1Validation.Run e F1Validation.Run. Os testes são excluídos do WebGL por UNITY_EDITOR.
+Unity 6000.5.9f1: 46 checks Atmos e 46 do legado passaram, sem erros C#. Os 46 verificam todos os importadores, separação de planos, cobertura/snap, dois gaps realmente mortais com UI, apoio dos pés, saltos para A/B/C e navegação dos três inimigos até C. Também verificam a extensão do chão e rejeição de spawn em gaps. Scripts: AtmosV1Validation.Run e F1Validation.Run. Os testes são excluídos do WebGL por UNITY_EDITOR.
 
 Capturas locais em qa/inicio.png, gap_1.png, plat_A.png, plat_B.png e plat_C.png: RenderTexture da câmera real em Play Mode, com pose de câmera de referência para comparar o pack, sem o Canvas do HUD. A imagem sem personagens foi comparada a preview.png; métricas em qa/preview-comparison.json, erro médio RGB aproximadamente 0,18/255. Não são mockups. As capturas de A/B/C vêm de saltos físicos do corpo do jogador.
 
-Uma rodada ampliada detectou o ranged interrompendo o salto para atirar; foi corrigido e os 45 checks passaram. Uma tentativa de regressão com -nographics sofreu crash nativo em DrawSharedGeometryJobs; a execução com backend gráfico normal passou. O Editor também registra a exceção de inicialização já observada na base; não apresentar o Console do Editor como inteiramente limpo.
+Uma rodada ampliada detectou o ranged interrompendo o salto para atirar; foi corrigido e os 46 checks passaram. Uma tentativa de regressão com -nographics sofreu crash nativo em DrawSharedGeometryJobs; a execução com backend gráfico normal passou. O Editor também registra a exceção de inicialização já observada na base; não apresentar o Console do Editor como inteiramente limpo.
 
-Build WebGL pelo WebGLBuilder.Build do Feixe, com wrapper que deixa a flag do Editor em Atmos. Sucesso: 18.497.633 bytes. Sem serviços externos de produção/edição de arte. A publicação e suas capturas de navegador serão registradas após a verificação do build.
+Build WebGL pelo WebGLBuilder.Build do Feixe, com wrapper que deixa a flag do Editor em Atmos. Sucesso: 18.520.754 bytes. Sem serviços externos de produção/edição de arte. A publicação e suas capturas de navegador serão registradas após a verificação do build.

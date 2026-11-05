@@ -82,7 +82,7 @@ public class AtmosV1Smoke : MonoBehaviour
         var old = _camera.transform.position;
         if (reference) _camera.transform.position = new Vector3(-_stage.HalfWidth + 12f, _stage.GroundTop + 5.5f, -10f);
         foreach (var layer in FindObjectsByType<AtmosV1Parallax>(FindObjectsSortMode.None))
-            layer.transform.position = layer.PositionFor(_camera.transform.position);
+            layer.Apply(_camera.transform.position);
         _camera.Render();
         var rt = _camera.targetTexture;
         var previous = RenderTexture.active;
@@ -133,6 +133,25 @@ public class AtmosV1Smoke : MonoBehaviour
                 coverage &= Mathf.Abs(camera.x - pos.x) <= 12.02f;
             }
         Check(snapped && coverage, "Snap 1/32 e cobertura horizontal das três cópias");
+        bool seams = true;
+        foreach (var layer in layers)
+        {
+            foreach (float cameraX in new[] { -24f, 5f, 24f, 80f })
+            {
+                layer.Apply(new Vector3(cameraX, _stage.GroundTop + 5.5f, -10f));
+                var copies = new List<SpriteRenderer>(layer.GetComponentsInChildren<SpriteRenderer>());
+                copies.Sort((leftCopy,rightCopy) => leftCopy.transform.localPosition.x.CompareTo(rightCopy.transform.localPosition.x));
+                for (int i = 0; i + 1 < copies.Count; i++)
+                {
+                    var left = copies[i]; var right = copies[i+1];
+                    var tex = left.sprite.texture;
+                    int lx = left.flipX ? 0 : tex.width-1;
+                    int rx = right.flipX ? tex.width-1 : 0;
+                    for (int y = 0; y < tex.height; y++) seams &= tex.GetPixel(lx,y) == tex.GetPixel(rx,y);
+                }
+            }
+        }
+        Check(seams, "Bordas das cópias coincidem antes e depois da reciclagem");
         PlaceFeet(-31, _stage.GroundTop);
         yield return new WaitForSeconds(0.2f);
         Check(Mathf.Abs(_box.bounds.min.y - _stage.GroundTop) <= 1f / 32f, "Pés alinhados ao chão (até um pixel)");
