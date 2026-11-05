@@ -1,0 +1,202 @@
+Base: 65e19e85727330bac57254011b608699b30061f3
+Branch: codex/atmos-v1
+
+ Assets/Editor/AtmosV1Validation.cs                 |  31 +++
+ Assets/Editor/AtmosV1Validation.cs.meta            |   2 +
+ Assets/Editor/F1Validation.cs                      |   2 +
+ Assets/Resources/T1_Hybrid_Atmos.meta              |   8 +
+ .../T1_Hybrid_Atmos/CHANGELOG_ATMOS_V1.md          |  20 ++
+ .../T1_Hybrid_Atmos/CHANGELOG_ATMOS_V1.md.meta     |   7 +
+ Assets/Resources/T1_Hybrid_Atmos/LAYOUT_GAPS.md    |  18 ++
+ .../Resources/T1_Hybrid_Atmos/LAYOUT_GAPS.md.meta  |   7 +
+ Assets/Resources/T1_Hybrid_Atmos/PARALLAX.md       |  15 ++
+ Assets/Resources/T1_Hybrid_Atmos/PARALLAX.md.meta  |   7 +
+ Assets/Resources/T1_Hybrid_Atmos/docs.meta         |   8 +
+ .../docs/BRIEF_APRESENTACAO_768x432.md             |  65 ++++++
+ .../docs/BRIEF_APRESENTACAO_768x432.md.meta        |   7 +
+ .../docs/BRIEF_ETAPA2_PLATAFORMAS.md               |  36 +++
+ .../docs/BRIEF_ETAPA2_PLATAFORMAS.md.meta          |   7 +
+ .../docs/BRIEF_MULTICAMADAS_ATMOSFERICA.md         |  63 ++++++
+ .../docs/BRIEF_MULTICAMADAS_ATMOSFERICA.md.meta    |   7 +
+ Assets/Resources/T1_Hybrid_Atmos/far.png           | Bin 0 -> 27943 bytes
+ Assets/Resources/T1_Hybrid_Atmos/far.png.meta      | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/ground.png        | Bin 0 -> 18102 bytes
+ Assets/Resources/T1_Hybrid_Atmos/ground.png.meta   | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/layer_p1.png      | Bin 0 -> 12098 bytes
+ Assets/Resources/T1_Hybrid_Atmos/layer_p1.png.meta | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/layer_p2.png      | Bin 0 -> 27943 bytes
+ Assets/Resources/T1_Hybrid_Atmos/layer_p2.png.meta | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/layer_p3.png      | Bin 0 -> 22218 bytes
+ Assets/Resources/T1_Hybrid_Atmos/layer_p3.png.meta | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/layer_p4.png      | Bin 0 -> 25200 bytes
+ Assets/Resources/T1_Hybrid_Atmos/layer_p4.png.meta | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/layer_p5.png      | Bin 0 -> 15098 bytes
+ Assets/Resources/T1_Hybrid_Atmos/layer_p5.png.meta | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/mid.png           | Bin 0 -> 22218 bytes
+ Assets/Resources/T1_Hybrid_Atmos/mid.png.meta      | 104 +++++++++
+ .../Resources/T1_Hybrid_Atmos/overlay_p2b_fog.png  | Bin 0 -> 2351 bytes
+ .../T1_Hybrid_Atmos/overlay_p2b_fog.png.meta       | 104 +++++++++
+ .../Resources/T1_Hybrid_Atmos/overlay_p3b_veil.png | Bin 0 -> 2320 bytes
+ .../T1_Hybrid_Atmos/overlay_p3b_veil.png.meta      | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/plat_l.png        | Bin 0 -> 4838 bytes
+ Assets/Resources/T1_Hybrid_Atmos/plat_l.png.meta   | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/plat_m.png        | Bin 0 -> 3092 bytes
+ Assets/Resources/T1_Hybrid_Atmos/plat_m.png.meta   | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/plat_s.png        | Bin 0 -> 2019 bytes
+ Assets/Resources/T1_Hybrid_Atmos/plat_s.png.meta   | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/playfield_p5.png  | Bin 0 -> 15098 bytes
+ .../T1_Hybrid_Atmos/playfield_p5.png.meta          | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/preview.png       | Bin 0 -> 92960 bytes
+ Assets/Resources/T1_Hybrid_Atmos/preview.png.meta  | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/preview_x2.png    | Bin 0 -> 117698 bytes
+ .../Resources/T1_Hybrid_Atmos/preview_x2.png.meta  | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/ruins.png         | Bin 0 -> 25200 bytes
+ Assets/Resources/T1_Hybrid_Atmos/ruins.png.meta    | 104 +++++++++
+ Assets/Resources/T1_Hybrid_Atmos/sky.png           | Bin 0 -> 12098 bytes
+ Assets/Resources/T1_Hybrid_Atmos/sky.png.meta      | 104 +++++++++
+ Assets/Scripts/Diagnostics/AtmosV1Smoke.cs         | 249 +++++++++++++++++++++
+ Assets/Scripts/Diagnostics/AtmosV1Smoke.cs.meta    |   2 +
+ Assets/Scripts/Diagnostics/F1PlayModeSmoke.cs      |   1 +
+ Assets/Scripts/Enemies/EnemyController.cs          |   5 +
+ Assets/Scripts/Enemies/EnemyTraversal.cs           |   6 +-
+ Assets/Scripts/Enemies/InimigoVisual.cs            |   2 +-
+ Assets/Scripts/Player/CameraFollow.cs              |   7 +-
+ Assets/Scripts/Player/PlayerController.cs          |  18 +-
+ Assets/Scripts/Stages/AtmosFrontLevel.cs           | 102 +++++++++
+ Assets/Scripts/Stages/AtmosFrontLevel.cs.meta      |   2 +
+ Assets/Scripts/Stages/AtmosV1Parallax.cs           |  53 +++++
+ Assets/Scripts/Stages/AtmosV1Parallax.cs.meta      |   2 +
+ Assets/Scripts/Stages/AtmosV1Root.cs               |   6 +
+ Assets/Scripts/Stages/AtmosV1Root.cs.meta          |   2 +
+ Assets/Scripts/Stages/GroundT1Controller.cs        |  15 +-
+ Assets/Scripts/Stages/T1AtmosScenery.cs            |  97 ++++++++
+ Assets/Scripts/Stages/T1AtmosScenery.cs.meta       |   2 +
+ .../arte/atmos_v1/INTEGRACAO_ATMOS_V1.md           |  52 +++++
+ .../arte/atmos_v1/pack-original-sha256.json        |  26 +++
+ .../arte/atmos_v1/qa/atmos-playmode-results.txt    |  46 ++++
+ DOCUMENTACAO_JOGO/arte/atmos_v1/qa/gap_1.png       | Bin 0 -> 86317 bytes
+ DOCUMENTACAO_JOGO/arte/atmos_v1/qa/gap_2.png       | Bin 0 -> 86558 bytes
+ DOCUMENTACAO_JOGO/arte/atmos_v1/qa/inicio.png      | Bin 0 -> 86489 bytes
+ .../arte/atmos_v1/qa/legacy-playmode-results.txt   |  46 ++++
+ DOCUMENTACAO_JOGO/arte/atmos_v1/qa/plat_A.png      | Bin 0 -> 83814 bytes
+ DOCUMENTACAO_JOGO/arte/atmos_v1/qa/plat_B.png      | Bin 0 -> 86686 bytes
+ DOCUMENTACAO_JOGO/arte/atmos_v1/qa/plat_C.png      | Bin 0 -> 86714 bytes
+ .../arte/atmos_v1/qa/preview-comparison.json       |  10 +
+ .../arte/atmos_v1/qa/production-hashes.json        |  29 +++
+ .../arte/atmos_v1/qa/referencia_sem_player.png     | Bin 0 -> 85820 bytes
+ .../arte/atmos_v1/qa/webgl-console.txt             |   2 +
+ DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-gap-1.png | Bin 0 -> 139632 bytes
+ .../arte/atmos_v1/qa/webgl-inicio.png              | Bin 0 -> 141260 bytes
+ .../arte/atmos_v1/qa/webgl-plat-A.png              | Bin 0 -> 139769 bytes
+ .../arte/atmos_v1/qa/webgl-plat-B.png              | Bin 0 -> 143981 bytes
+ .../arte/atmos_v1/qa/webgl-plat-C.png              | Bin 0 -> 140029 bytes
+ .../arte/atmos_v1/qa/webgl-producao-console.txt    |   2 +
+ .../arte/atmos_v1/qa/webgl-producao-inicio.png     | Bin 0 -> 141678 bytes
+ .../arte/atmos_v1/qa/webgl-voce-caiu.png           | Bin 0 -> 139632 bytes
+ .../arte/atmos_v1/webgl-build-hashes.json          |  22 ++
+ webgl/Build/webgl.data.unityweb                    | Bin 3825553 -> 4113133 bytes
+ webgl/Build/webgl.framework.js.unityweb            | Bin 80592 -> 80658 bytes
+ webgl/Build/webgl.loader.js                        |   2 +-
+ webgl/Build/webgl.wasm.unityweb                    | Bin 6332814 -> 6343089 bytes
+ 97 files changed, 2972 insertions(+), 18 deletions(-)
+
+A	Assets/Editor/AtmosV1Validation.cs
+A	Assets/Editor/AtmosV1Validation.cs.meta
+M	Assets/Editor/F1Validation.cs
+A	Assets/Resources/T1_Hybrid_Atmos.meta
+A	Assets/Resources/T1_Hybrid_Atmos/CHANGELOG_ATMOS_V1.md
+A	Assets/Resources/T1_Hybrid_Atmos/CHANGELOG_ATMOS_V1.md.meta
+A	Assets/Resources/T1_Hybrid_Atmos/LAYOUT_GAPS.md
+A	Assets/Resources/T1_Hybrid_Atmos/LAYOUT_GAPS.md.meta
+A	Assets/Resources/T1_Hybrid_Atmos/PARALLAX.md
+A	Assets/Resources/T1_Hybrid_Atmos/PARALLAX.md.meta
+A	Assets/Resources/T1_Hybrid_Atmos/docs.meta
+A	Assets/Resources/T1_Hybrid_Atmos/docs/BRIEF_APRESENTACAO_768x432.md
+A	Assets/Resources/T1_Hybrid_Atmos/docs/BRIEF_APRESENTACAO_768x432.md.meta
+A	Assets/Resources/T1_Hybrid_Atmos/docs/BRIEF_ETAPA2_PLATAFORMAS.md
+A	Assets/Resources/T1_Hybrid_Atmos/docs/BRIEF_ETAPA2_PLATAFORMAS.md.meta
+A	Assets/Resources/T1_Hybrid_Atmos/docs/BRIEF_MULTICAMADAS_ATMOSFERICA.md
+A	Assets/Resources/T1_Hybrid_Atmos/docs/BRIEF_MULTICAMADAS_ATMOSFERICA.md.meta
+A	Assets/Resources/T1_Hybrid_Atmos/far.png
+A	Assets/Resources/T1_Hybrid_Atmos/far.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/ground.png
+A	Assets/Resources/T1_Hybrid_Atmos/ground.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p1.png
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p1.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p2.png
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p2.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p3.png
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p3.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p4.png
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p4.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p5.png
+A	Assets/Resources/T1_Hybrid_Atmos/layer_p5.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/mid.png
+A	Assets/Resources/T1_Hybrid_Atmos/mid.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/overlay_p2b_fog.png
+A	Assets/Resources/T1_Hybrid_Atmos/overlay_p2b_fog.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/overlay_p3b_veil.png
+A	Assets/Resources/T1_Hybrid_Atmos/overlay_p3b_veil.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/plat_l.png
+A	Assets/Resources/T1_Hybrid_Atmos/plat_l.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/plat_m.png
+A	Assets/Resources/T1_Hybrid_Atmos/plat_m.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/plat_s.png
+A	Assets/Resources/T1_Hybrid_Atmos/plat_s.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/playfield_p5.png
+A	Assets/Resources/T1_Hybrid_Atmos/playfield_p5.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/preview.png
+A	Assets/Resources/T1_Hybrid_Atmos/preview.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/preview_x2.png
+A	Assets/Resources/T1_Hybrid_Atmos/preview_x2.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/ruins.png
+A	Assets/Resources/T1_Hybrid_Atmos/ruins.png.meta
+A	Assets/Resources/T1_Hybrid_Atmos/sky.png
+A	Assets/Resources/T1_Hybrid_Atmos/sky.png.meta
+A	Assets/Scripts/Diagnostics/AtmosV1Smoke.cs
+A	Assets/Scripts/Diagnostics/AtmosV1Smoke.cs.meta
+M	Assets/Scripts/Diagnostics/F1PlayModeSmoke.cs
+M	Assets/Scripts/Enemies/EnemyController.cs
+M	Assets/Scripts/Enemies/EnemyTraversal.cs
+M	Assets/Scripts/Enemies/InimigoVisual.cs
+M	Assets/Scripts/Player/CameraFollow.cs
+M	Assets/Scripts/Player/PlayerController.cs
+A	Assets/Scripts/Stages/AtmosFrontLevel.cs
+A	Assets/Scripts/Stages/AtmosFrontLevel.cs.meta
+A	Assets/Scripts/Stages/AtmosV1Parallax.cs
+A	Assets/Scripts/Stages/AtmosV1Parallax.cs.meta
+A	Assets/Scripts/Stages/AtmosV1Root.cs
+A	Assets/Scripts/Stages/AtmosV1Root.cs.meta
+M	Assets/Scripts/Stages/GroundT1Controller.cs
+A	Assets/Scripts/Stages/T1AtmosScenery.cs
+A	Assets/Scripts/Stages/T1AtmosScenery.cs.meta
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/INTEGRACAO_ATMOS_V1.md
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/pack-original-sha256.json
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/atmos-playmode-results.txt
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/gap_1.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/gap_2.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/inicio.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/legacy-playmode-results.txt
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/plat_A.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/plat_B.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/plat_C.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/preview-comparison.json
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/production-hashes.json
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/referencia_sem_player.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-console.txt
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-gap-1.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-inicio.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-plat-A.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-plat-B.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-plat-C.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-producao-console.txt
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-producao-inicio.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/qa/webgl-voce-caiu.png
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/webgl-build-hashes.json
+M	webgl/Build/webgl.data.unityweb
+M	webgl/Build/webgl.framework.js.unityweb
+M	webgl/Build/webgl.loader.js
+M	webgl/Build/webgl.wasm.unityweb
+
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/diff-arquivos.txt
+A	DOCUMENTACAO_JOGO/arte/atmos_v1/integracao.patch

@@ -34,4 +34,19 @@ Capturas locais em qa/inicio.png, gap_1.png, plat_A.png, plat_B.png e plat_C.png
 
 Uma rodada ampliada detectou o ranged interrompendo o salto para atirar; foi corrigido e os 46 checks passaram. Uma tentativa de regressão com -nographics sofreu crash nativo em DrawSharedGeometryJobs; a execução com backend gráfico normal passou. O Editor também registra a exceção de inicialização já observada na base; não apresentar o Console do Editor como inteiramente limpo.
 
-Build WebGL pelo WebGLBuilder.Build do Feixe, com wrapper que deixa a flag do Editor em Atmos. Sucesso: 18.520.754 bytes. Sem serviços externos de produção/edição de arte. A publicação e suas capturas de navegador serão registradas após a verificação do build.
+Build WebGL pelo WebGLBuilder.Build do Feixe, com wrapper que deixa a flag do Editor em Atmos. Sucesso: 18.520.754 bytes. Sem serviços externos de produção/edição de arte. Publicado e verificado conforme registro abaixo.
+
+## Publicação verificada — 05/11/2026
+
+- URL pública: https://aetherion-voidfall-gules.vercel.app/
+- Conta pessoal: gabriellucassilva81-8983; projeto aetherion-voidfall, ID prj_BjRWPsfINvsxLR7ixioA1AVhrbWM. A conta Hobby antiga não foi usada.
+- Build do commit 9ebd2e1, deployment dpl_HK4RaHSnHZ4MHUnLc4WyEDsZ7sxF, Ready e promovido após testes.
+- Deployment imutável: https://aetherion-voidfall-qa9fsmkpp-gabriellucassilva81-8983.vercel.app/
+- Os quatro arquivos WebGL publicados responderam HTTP 200 e SHA-256 idêntico ao build local, tanto no staging quanto no domínio público; prova em qa/production-hashes.json.
+- Percurso no navegador com teclado normal: menu → introdução → seleção → Ground_T1 → A → B → C. Capturas reais com HUD em qa/webgl-inicio.png e qa/webgl-plat-A/B/C.png. A execução foi pausada somente após as capturas.
+- Queda real sem salto no primeiro gap e painel VOCÊ CAIU: qa/webgl-gap-1.png e qa/webgl-voce-caiu.png. Os dois gaps também passaram no Play Mode.
+- Domínio público novamente aberto pelo menu até Ground_T1: qa/webgl-producao-inicio.png; console do navegador sem entradas de erro em qa/webgl-producao-console.txt.
+- O Fit/barras e o HUD que excede a margem esquerda em 1920×1200 já pertencem à apresentação base; não foram alterados neste escopo. O Console do Editor tem a ressalva de inicialização descrita acima.
+- A nitidez e continuidade foram inspecionadas nas capturas e movimento; homologação artística final continua com a Direção.
+
+Lista e estatística de arquivos: diff-arquivos.txt. Diff textual da implementação e assets: integracao.patch (binários identificados pelo Git, sem payload binário). Nenhum merge em main foi realizado.
