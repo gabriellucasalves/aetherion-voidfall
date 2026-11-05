@@ -140,7 +140,7 @@ public class PlayerController : MonoBehaviour
 
         if (_jumpBuffer > 0f && _coyote > 0f)
         {
-            velocity.y = JumpSpeed;
+            velocity.y = T1AtmosScenery.Built ? T1AtmosScenery.PlayerJumpSpeed : JumpSpeed;
             _jumpBuffer = 0f;
             _coyote = 0f;
         }
@@ -187,15 +187,15 @@ public class PlayerController : MonoBehaviour
     {
         var box = GetComponent<BoxCollider2D>();
         float bottom = box != null ? box.bounds.min.y : transform.position.y - 0.48f;
-        var origin = new Vector2(transform.position.x, bottom + 0.04f);
-        var hits = Physics2D.OverlapBoxAll(origin, new Vector2(0.32f, 0.16f), 0f);
-        for (int i = 0; i < hits.Length; i++)
+        if (_body != null && _body.linearVelocity.y > 0.1f) return false;
+        var origin = new Vector2(transform.position.x, bottom + 0.08f);
+        var hits = Physics2D.BoxCastAll(origin, new Vector2(0.32f, 0.04f), 0f, Vector2.down, 0.14f);
+        foreach (var contact in hits)
         {
-            var hit = hits[i];
-            if (hit == null || hit.isTrigger || hit.transform == transform || hit.transform.IsChildOf(transform))
-                continue;
-            if (hit.GetComponent<EnemyController>() != null)
-                continue;
+            var hit = contact.collider;
+            if (hit == null || hit.isTrigger || hit.transform == transform || hit.transform.IsChildOf(transform)) continue;
+            if (hit.GetComponentInParent<EnemyController>() != null) continue;
+            if (hit.bounds.max.y > bottom + 0.11f || contact.normal.y < 0.7f) continue;
             return true;
         }
 

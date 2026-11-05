@@ -8,6 +8,7 @@ public class GroundT1Controller : MonoBehaviour
     public const bool ForceMagoForTesting = false;
 
     StageData _stage;
+    public StageData Stage => _stage;
     PlayerController _player;
     SimpleEnemySpawner _spawner;
     GameObject _pausePanel;
@@ -63,6 +64,7 @@ public class GroundT1Controller : MonoBehaviour
 
         Physics2D.gravity = new Vector2(0f, -32f);
         _stage = StageData.CreateT1();
+        if (T1AtmosScenery.Enabled) T1AtmosScenery.ConfigureStage(_stage);
         var hero = ResolveHero();
         BuildStage();
         _player = SpawnHero(hero);
@@ -175,6 +177,12 @@ public class GroundT1Controller : MonoBehaviour
     void BuildBackdrop()
     {
         T1FrontLevel.Reset();
+        T1AtmosScenery.Reset();
+        if (T1AtmosScenery.Enabled)
+        {
+            if (T1AtmosScenery.Build(_stage)) return;
+            if (!T1AtmosScenery.AllowLegacyFallback) return;
+        }
         GoldenAgeScenery.Build(_stage);
         if (T1HybridScenery.Enabled)
             T1HybridScenery.Apply(_stage);
@@ -183,7 +191,9 @@ public class GroundT1Controller : MonoBehaviour
     void BuildPlayfield()
     {
         // Fundo híbrido com o kit da frente: chão em segmentos já montado pelo T1FrontLevel.
-        if (T1FrontLevel.Built)
+        if (T1AtmosScenery.Built || T1FrontLevel.Built)
+            return;
+        if (T1AtmosScenery.Enabled && !T1AtmosScenery.AllowLegacyFallback)
             return;
 
         float groundHeight = 3.4f;
@@ -278,6 +288,9 @@ public class GroundT1Controller : MonoBehaviour
             ward.Changed += _ => RefreshHud();
 
         HeroAppearance.Build(go.transform, hero);
+        if (T1AtmosScenery.Built)
+            foreach (var renderer in go.GetComponentsInChildren<SpriteRenderer>(true))
+                if (renderer.sortingOrder == 12 || renderer.sortingOrder == 11) renderer.sortingOrder -= 2;
         return player;
     }
 

@@ -58,13 +58,13 @@ public class EnemyTraversal : MonoBehaviour
 
     bool TryJump(float dir, bool climb)
     {
-        const float jump = 13.2f;
+        float jump = T1AtmosScenery.Built ? T1AtmosScenery.PlayerJumpSpeed : 13.2f;
         float gravity = Mathf.Abs(Physics2D.gravity.y * _body.gravityScale);
         if (gravity < 1f) return false;
         float maxRise = jump * jump / (2f * gravity) - 0.15f;
         // O ponto de chegada precisa ter apoio para a largura inteira, não só um pixel.
         float half = _solid != null ? _solid.size.x * 0.5f : 0.5f;
-        for (float distance = 1f; distance <= 5.25f; distance += 0.25f)
+        for (float distance = 1f; distance <= (T1AtmosScenery.Built ? 8.5f : 5.25f); distance += 0.25f)
         {
             float x = transform.position.x + dir * distance;
             if (!SurfaceAt(x, transform.position.y + maxRise, maxRise + 4.5f, out var hit)) continue;
@@ -78,7 +78,7 @@ public class EnemyTraversal : MonoBehaviour
             if (disc <= 0f) continue;
             float flight = (jump + Mathf.Sqrt(disc)) / gravity;
             float vx = dir * distance / flight;
-            if (Mathf.Abs(vx) > 6.5f) continue;
+            if (Mathf.Abs(vx) > (T1AtmosScenery.Built ? 9f : 6.5f)) continue;
             Launch(vx, jump);
             return true;
         }

@@ -17,7 +17,8 @@ public class CameraFollow : MonoBehaviour
         if (_target == null)
             return;
 
-        transform.position = Clamped(TargetPoint());
+        var position = Clamped(TargetPoint());
+        transform.position = T1AtmosScenery.Built ? AtmosV1Parallax.Snap(position) : position;
     }
 
     public void SetTarget(Transform target)
@@ -31,7 +32,7 @@ public class CameraFollow : MonoBehaviour
             return;
 
         var next = Vector3.Lerp(transform.position, Clamped(TargetPoint()), Smooth * Time.deltaTime);
-        transform.position = next;
+        transform.position = T1AtmosScenery.Built ? AtmosV1Parallax.Snap(next) : next;
     }
 
     Vector3 TargetPoint()
@@ -52,7 +53,7 @@ public class CameraFollow : MonoBehaviour
         float viewHalfW = viewHalfH * _camera.aspect;
         float minX = -_stage.HalfWidth + viewHalfW;
         float maxX = _stage.HalfWidth - viewHalfW;
-        float minY = _stage.GroundTop + viewHalfH * 0.55f;
+        float minY = _stage.GroundTop + (T1AtmosScenery.Built ? T1AtmosScenery.GroundBelowCenter : viewHalfH * 0.55f);
         float maxY = _stage.GroundTop + 8.5f;
         if (minX > maxX)
         {

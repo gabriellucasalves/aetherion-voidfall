@@ -30,7 +30,7 @@ public class InimigoVisual : MonoBehaviour
         visual._frames = frames;
         visual._renderer = go.AddComponent<SpriteRenderer>();
         visual._renderer.sprite = frames[0];
-        visual._renderer.sortingOrder = 8;
+        visual._renderer.sortingOrder = T1AtmosScenery.Built ? 9 : 8;
         visual._body = owner.GetComponent<Rigidbody2D>();
         visual._controller = owner.GetComponent<EnemyController>();
         visual._clock = Random.Range(0f, 10f); // dessincroniza a animação entre inimigos

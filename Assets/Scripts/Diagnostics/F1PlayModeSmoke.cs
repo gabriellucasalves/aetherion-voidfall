@@ -49,6 +49,7 @@ public class F1PlayModeSmoke : MonoBehaviour
         Directory.CreateDirectory(Output);
         File.WriteAllLines(Output + "/playmode-results.txt", _results);
         EditorPrefs.SetBool(T1HybridScenery.EditorPrefKey, SessionState.GetBool("F1Smoke.OldHybrid", true));
+        EditorPrefs.SetBool(T1AtmosScenery.EditorPrefKey, SessionState.GetBool("F1Smoke.OldAtmos", true));
         Debug.Log("[F1 QA] FINAL " + (_failed == 0 ? "PASS" : "FAIL") + " cases=" + _results.Count);
         EditorApplication.Exit(_failed == 0 ? 0 : 1);
     }

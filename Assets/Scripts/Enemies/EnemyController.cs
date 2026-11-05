@@ -107,6 +107,11 @@ public class EnemyController : MonoBehaviour
     void Chase(float dir, float adx, float ady)
     {
         bool climb = _target.position.y - transform.position.y > 1.3f;
+        if (T1AtmosScenery.Built && (climb || !_traversal.Grounded))
+        {
+            _traversal.Move(dir, _data.MoveSpeed, true);
+            return;
+        }
         if (_data.AttackKind == "bone")
         {
             if (adx >= 3.2f && adx <= _data.AttackRange && ady < 3f && HasLineOfSight())
