@@ -6,7 +6,7 @@ public static class T1AtmosScenery
     public const string Folder = "T1_Hybrid_Atmos/";
     public const string EditorPrefKey = "Aetherion.AtmosV1.Enabled";
     public const bool DefaultEnabled = true;
-    public const bool AllowLegacyFallback = true;
+    public const bool AllowLegacyFallback = false;
     public const float Ppu = 32f;
     public const float GroundBelowCenter = 5.5f;
     public const float PlayerJumpSpeed = 15.6f;

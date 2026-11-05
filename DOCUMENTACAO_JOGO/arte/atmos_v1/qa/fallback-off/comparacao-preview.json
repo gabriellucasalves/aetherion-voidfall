@@ -1,0 +1,9 @@
+{
+  "mean_rgb_error_0_255": [
+    0.19432689525462962,
+    0.1740180121527778,
+    0.17676384066358025
+  ],
+  "capture": "Play Mode Unity, c\u00e2mera real RT 768x432, sem personagens e sem Canvas HUD",
+  "fallback": false
+}

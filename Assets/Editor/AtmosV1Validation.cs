@@ -4,6 +4,14 @@ using UnityEditor.SceneManagement;
 
 public static class AtmosV1Validation
 {
+    [MenuItem("Aetherion/Atmos V1/Abrir início em Play Mode")]
+    public static void OpenStartPreview()
+    {
+        EditorPrefs.SetBool(T1AtmosScenery.EditorPrefKey, true);
+        EditorSceneManager.OpenScene("Assets/Scenes/Ground_T1.unity");
+        EditorApplication.isPlaying = true;
+    }
+
     public static void Run()
     {
         SessionState.SetBool("AtmosQA.Enabled", true);

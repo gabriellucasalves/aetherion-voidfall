@@ -24,7 +24,7 @@ O salto antigo de 13,2 alcançava aproximadamente 2,72 u, abaixo da plataforma A
 
 ## Flags e fallback
 
-Atmos é o padrão (DefaultEnabled=true). Editor: Aetherion → Atmos V1 → Usar pack Atmos V1. WebGL: ?fundo=atmos, ?fundo=hibrido e ?fundo=classico. AllowLegacyFallback controla a recuperação automática caso falte arte obrigatória. GoldenAge/T1 só é construído quando o Atmos está desativado ou em fallback; não há mistura de raízes ou colisores.
+Atmos é o padrão (DefaultEnabled=true). Editor: Aetherion → Atmos V1 → Usar pack Atmos V1. WebGL: ?fundo=atmos, ?fundo=hibrido e ?fundo=classico. AllowLegacyFallback=false: recuperação automática pelo cenário antigo desativada, conforme pedido posterior da Direção. GoldenAge/T1 só é construído quando o Atmos está desativado ou em fallback; não há mistura de raízes ou colisores.
 
 ## Verificação local executada
 
@@ -50,3 +50,7 @@ Build WebGL pelo WebGLBuilder.Build do Feixe, com wrapper que deixa a flag do Ed
 - A nitidez e continuidade foram inspecionadas nas capturas e movimento; homologação artística final continua com a Direção.
 
 Lista e estatística de arquivos: diff-arquivos.txt. Diff textual da implementação e assets: integracao.patch (binários identificados pelo Git, sem payload binário). Nenhum merge em main foi realizado.
+
+## Conferência posterior — pack ativo, fallback off
+
+DefaultEnabled=true e AllowLegacyFallback=false. Os 18 PNGs conferidos como Sprite, Point, PPU 32, sem mipmaps e sem compressão. Nova execução real em Play Mode passou nos 46 checks. Captura do início sem personagens e sem HUD: qa/fallback-off/inicio-sem-personagem.png; RT nativa 768×432. Comparação contra preview.png: erro RGB médio 0,19/0,17/0,18 em 255. Assets originais preservados. Menu Aetherion → Atmos V1 → Abrir início em Play Mode habilita explicitamente a preferência do Editor e abre Ground_T1. Após esta conferência, a Direção solicitou novo WebGL e deploy pessoal. Build reconstruído de Aetherion_Atmos_V1 com fallback automático desligado; publicação registrada no bloco seguinte.
