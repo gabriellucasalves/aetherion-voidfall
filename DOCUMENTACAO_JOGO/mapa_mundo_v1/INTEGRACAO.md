@@ -27,3 +27,9 @@ Branch de trabalho: `codex/mapa-mundo-v1`, criada do HEAD `4e5b528` de `polish/a
 ## Como conferir no Editor
 
 Abrir `Assets/Scenes/Boot.unity`, entrar em `Ground_T1`, vencer as três ondas e atravessar o portal. No mapa, caminhar com `A/D` ou setas e confirmar com Enter/Espaço. Após a conclusão, o menu oferece acesso direto ao mapa. Para repetir o teste automatizado, executar `WorldMapValidation.Run` no Editor.
+
+## Publicação — 06/11/2026
+
+Build do commit `f97c897c238a752a390e1e655f83c9575c04ea45`, publicado na conta pessoal `gabriellucassilva81-8983`, projeto `aetherion-voidfall` (`prj_BjRWPsfINvsxLR7ixioA1AVhrbWM`). Deployment `dpl_F5BPua5d2NUjYUyfSfXme3fysiFF` em estado READY. Domínio: https://aetherion-voidfall-gules.vercel.app/ . URL imutável: https://aetherion-voidfall-eox1jdsjm-gabriellucassilva81-8983.vercel.app/ .
+
+`index.html` e os quatro arquivos WebGL principais retornaram HTTP 200 e SHA256 idêntico ao build local. O navegador de produção carregou o jogo e mostrou o mapa; captura `qa/browser-production-map.png`. A entrada no mapa nessa captura foi acelerada pelo mesmo comando de QA local, sem modificar o conteúdo publicado. Console: zero erros. Não houve merge em `main`.
