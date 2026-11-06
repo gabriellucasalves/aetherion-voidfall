@@ -18,4 +18,4 @@ PolishValidation.Run: 42 checks PASS, captura real de Game View no Editor, Guerr
 
 Três barras de 40 px, espaçamento, cabeçalho e margens pedem painel de 198 px; 90–120 px não comportariam o layout pedido. O mundo aparece com 1536×864 pixels nos dois monitores por causa da escala inteira: margens (192,108) em Full HD e (512,288) em QHD. Em QHD fica menor que a antiga apresentação 768×432 ampliada 3×; manter aquele tamanho exigiria escala fracionária 1.5× do novo RT. Ortho/framing e proporções entre personagens/plataformas não mudaram. Dobrar o RT não cria detalhe nos PNGs: a densidade da arte fonte foi preservada conforme a restrição de não redesenhar.
 
-Publicação e teste de navegador serão registrados após o build.
+Regressão AtmosV1Validation.Run: 46 checks PASS, incluindo ambos os gaps, saltos A/B/C, colisores, navegação dos três inimigos, parallax/snap e importação. Build WebGL concluído: 21.575.830 bytes, sem erros C# ou de shader. Pipeline existente, stripEngineCode=false conservado. A publicação será registrada após teste no navegador.
