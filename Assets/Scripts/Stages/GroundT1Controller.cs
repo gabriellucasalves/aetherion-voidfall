@@ -31,7 +31,7 @@ public class GroundT1Controller : MonoBehaviour
     bool _showWard;
     Text _waveBanner;
     float _waveBannerLeft;
-    const float BarWidth = 360f;
+    const float BarWidth = StageHud.BarWidth;
     bool _paused;
     bool _dead;
     bool _demoDone;
@@ -304,69 +304,18 @@ public class GroundT1Controller : MonoBehaviour
     void BuildHud(CharacterData hero)
     {
         var canvas = UiKit.CreateCanvas(transform, "HudT1");
-        UiKit.Label(canvas.transform, _stage.DisplayName, 22, new Vector2(0f, 470f), MenuTheme.CelestialGold, new Vector2(800f, 40f));
-        _hudName = UiKit.Label(canvas.transform, "", 22, new Vector2(-620f, 430f), MenuTheme.SoftIvory, new Vector2(820f, 36f));
-        _hudName.alignment = TextAnchor.MiddleLeft;
-
-        UiKit.Label(canvas.transform, "VIDA", 14, new Vector2(-820f, 392f), new Color(1f, 0.45f, 0.38f), new Vector2(80f, 22f)).alignment = TextAnchor.MiddleLeft;
-        _lifeFill = UiKit.Bar(canvas.transform, "BarraVida", new Vector2(-560f, 392f), new Vector2(BarWidth, 18f), new Color(0.12f, 0.05f, 0.06f, 0.85f), new Color(0.78f, 0.18f, 0.2f));
-        _lifeText = UiKit.Label(canvas.transform, "", 14, new Vector2(-300f, 392f), MenuTheme.SoftIvory, new Vector2(140f, 22f));
-        _lifeText.alignment = TextAnchor.MiddleLeft;
-
-        _shieldLabel = UiKit.Label(canvas.transform, "ESCUDO", 14, new Vector2(-820f, 364f), new Color(0.7f, 0.82f, 0.95f), new Vector2(90f, 22f));
-        _shieldLabel.alignment = TextAnchor.MiddleLeft;
-        _shieldFill = UiKit.Bar(canvas.transform, "BarraEscudo", new Vector2(-560f, 364f), new Vector2(BarWidth, 16f), new Color(0.07f, 0.1f, 0.16f, 0.85f), new Color(0.55f, 0.72f, 0.92f));
-        _shieldTrack = _shieldFill.transform.parent.gameObject;
-        _shieldText = UiKit.Label(canvas.transform, "", 14, new Vector2(-300f, 364f), MenuTheme.SoftIvory, new Vector2(140f, 22f));
-        _shieldText.alignment = TextAnchor.MiddleLeft;
-
-        // Barra de carregamento do ESPECIAL - dedicada, para os 3 herois.
-        var specialLabel = UiKit.Label(canvas.transform, "ESPECIAL", 14, new Vector2(-820f, 336f), MenuTheme.CelestialGold, new Vector2(110f, 22f));
-        specialLabel.alignment = TextAnchor.MiddleLeft;
-        _specialFill = UiKit.Bar(canvas.transform, "BarraEspecial", new Vector2(-560f, 336f), new Vector2(BarWidth, 16f), new Color(0.08f, 0.06f, 0.12f, 0.85f), SpecialColor(hero));
-        _specialText = UiKit.Label(canvas.transform, "", 14, new Vector2(-300f, 336f), MenuTheme.SoftIvory, new Vector2(160f, 22f));
-        _specialText.alignment = TextAnchor.MiddleLeft;
-
-        bool showShield = hero != null && hero.Id == "guerreiro";
-        // Arqueiro: sem barra de escudo (o especial ganhou barra dedicada acima).
+        var hud = StageHud.Build(canvas.transform, hero, _stage.DisplayName);
+        _hudName = hud.Name;
+        _lifeFill = hud.Life; _lifeText = hud.LifeValue;
+        _shieldFill = hud.Defense; _shieldText = hud.DefenseValue;
+        _shieldLabel = hud.DefenseLabel; _shieldTrack = hud.Defense.transform.parent.gameObject;
+        _specialFill = hud.Special; _specialText = hud.SpecialValue;
+        _resonanceText = hud.Supreme;
         _showWard = hero != null && hero.Id == "mago";
-        if (_shieldLabel != null)
-        {
-            _shieldLabel.gameObject.SetActive(showShield || _showWard);
-            if (_showWard)
-            {
-                _shieldLabel.text = "CAMPO";
-                _shieldLabel.color = new Color(0.55f, 0.78f, 1f);
-            }
-        }
-        if (_shieldTrack != null)
-            _shieldTrack.SetActive(showShield || _showWard);
-        if (_shieldText != null)
-            _shieldText.gameObject.SetActive(showShield || _showWard);
-        if (_shieldFill != null && _showWard)
-            _shieldFill.color = new Color(0.45f, 0.7f, 1f);
-
-        var resonanceLabel = UiKit.Label(canvas.transform, "RESSONÂNCIA", 14, new Vector2(-870f, 308f), ResonanceGold, new Vector2(160f, 22f));
-        resonanceLabel.alignment = TextAnchor.MiddleLeft;
-        resonanceLabel.gameObject.SetActive(!showShield);
-        _resonanceFill = UiKit.Bar(
-            canvas.transform,
-            "BarraRessonancia",
-            new Vector2(-560f, 308f),
-            new Vector2(BarWidth, 12f),
-            new Color(0.12f, 0.1f, 0.03f, 0.85f),
-            ResonanceGold);
-        _resonanceText = UiKit.Label(canvas.transform, "", 14, new Vector2(-250f, 308f), MenuTheme.SoftIvory, new Vector2(180f, 22f));
-        _resonanceText.alignment = TextAnchor.MiddleLeft;
-        if (showShield)
-        {
-            _resonanceFill.transform.parent.gameObject.SetActive(false);
-            _resonanceText.gameObject.SetActive(false);
-        }
 
         _special = _player != null ? _player.GetComponent<SpecialController>() : null;
         RefreshHud();
-        UiKit.Label(canvas.transform, HintFor(hero), 16, new Vector2(0f, -480f), new Color(1f, 1f, 1f, 0.55f), new Vector2(1700f, 30f));
+        StageHud.Footer(canvas.transform, HintFor(hero));
         MobileControls.Attach(transform);
         MobileControls.SetDefenseIcon(_showWard);
         RefreshHud();
@@ -424,7 +373,7 @@ public class GroundT1Controller : MonoBehaviour
             string wave = "";
             if (_spawner != null && _spawner.Wave > 0)
                 wave = "   ·   ONDA " + _spawner.Wave + "/" + _spawner.TotalWaves;
-            _hudName.text = name + "   ·   " + kit + "   ·   ☠ " + _kills + wave;
+            _hudName.text = name + "   ·   " + _kills + " ABATES" + wave;
         }
 
         float life = health != null ? health.Current : 0f;
@@ -500,7 +449,7 @@ public class GroundT1Controller : MonoBehaviour
 
     void RefreshResonanceBar()
     {
-        if (_player == null || _resonanceFill == null)
+        if (_player == null)
             return;
         var meter = _player.GetComponent<ResonanceMeter>();
         float resonance = meter != null ? meter.Normalized : 0f;
@@ -510,7 +459,7 @@ public class GroundT1Controller : MonoBehaviour
         {
             if (supremeReady)
             {
-                _resonanceText.text = "PRONTO! [E]";
+                _resonanceText.text = "SUPREMO\nPRONTO [E]";
                 var pulse = ResonanceGold;
                 pulse.a = 0.4f + 0.6f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * 3f));
                 _resonanceText.color = pulse;
@@ -518,13 +467,13 @@ public class GroundT1Controller : MonoBehaviour
             else if (meter != null && meter.IsFull && _special != null && _special.CooldownLeft > 0.05f)
             {
                 _resonanceText.color = ResonanceGold;
-                _resonanceText.text = _special.CooldownLeft.ToString("0.0") + "s";
+                _resonanceText.text = "SUPREMO\n" + _special.CooldownLeft.ToString("0.0") + "s";
             }
             else
             {
                 _resonanceText.color = MenuTheme.SoftIvory;
                 float current = meter != null ? meter.Current : 0f;
-                _resonanceText.text = Mathf.CeilToInt(current) + " / 100";
+                _resonanceText.text = "SUPREMO\n" + Mathf.CeilToInt(current) + " / 100";
             }
         }
 

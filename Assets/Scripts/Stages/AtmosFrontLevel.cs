@@ -42,6 +42,18 @@ public static class AtmosFrontLevel
         Ground("Ground_R", X(stage, 560), stage.HalfWidth, stage.GroundTop, slick, root.transform);
         _gaps.Add(new Vector2(X(stage, 240), X(stage, 320)));
         _gaps.Add(new Vector2(X(stage, 460), X(stage, 560)));
+        foreach (var gap in _gaps)
+        {
+            // Só fundo visual do abismo: nenhum colisor ou superfície extra.
+            var abyss = new GameObject("AbismoEscuro");
+            abyss.transform.SetParent(root.transform, false);
+            abyss.transform.position = new Vector3((gap.x+gap.y)*.5f,stage.GroundTop-4f,0);
+            abyss.transform.localScale = new Vector3(gap.y-gap.x,8f,1);
+            var shade = abyss.AddComponent<SpriteRenderer>();
+            shade.sprite = UiKit.WhiteSprite();
+            shade.color = new Color(.035f,.03f,.065f,1);
+            shade.sortingOrder = -1;
+        }
         BuildPlatform("A", 200, 280, 300, stage, root.transform);
         BuildPlatform("B", 480, 580, 270, stage, root.transform);
         BuildPlatform("C", 620, 700, 240, stage, root.transform);

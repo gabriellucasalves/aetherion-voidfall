@@ -1,19 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// Framebuffer interno 768×432 com escala inteira e filtro Point (sem mipmaps, sem MSAA).
-/// OrthoSize fica em 6.75 — o framing do design legado de 216 px a PPU 16 — e não
-/// deriva de InternalHeight. Dobrar só a altura do RT com a fórmula antiga
-/// (H / (Ppu * 2)) levaria OrthoSize a 13.5, a câmera mostraria o dobro do mundo
-/// e o Guerreiro encolheria na tela. Com o desacoplamento, cada texel de arte
-/// ocupa 2×2 px no framebuffer (nearest) e o level mantém o mesmo enquadramento.
-/// O follow da câmera permanece no mesmo GameObject.
+/// RT 1536×864 Point. OrthoSize 6.75 mantém o enquadramento de 24×13.5 u.
+/// Escala inteira em telas maiores; redução Point apenas quando a tela é menor
+/// que o RT, para não cortar o mundo. A resolução não adiciona pixels à arte fonte.
 /// </summary>
 [DefaultExecutionOrder(-100)]
 public class PixelPresentation : MonoBehaviour
 {
-    public const int InternalWidth = 768;
-    public const int InternalHeight = 432;
+    public const int InternalWidth = 1536;
+    public const int InternalHeight = 864;
 
     /// <summary>
     /// Altura de design do framing original. Não substituir por <see cref="InternalHeight"/>.
@@ -84,12 +80,16 @@ public class PixelPresentation : MonoBehaviour
 
     void Fit()
     {
-        int scale = Mathf.Max(1, Mathf.Min(Screen.width / InternalWidth, Screen.height / InternalHeight));
-        float w = InternalWidth * scale;
-        float h = InternalHeight * scale;
-        float x = (Screen.width - w) * 0.5f;
-        float y = (Screen.height - h) * 0.5f;
-        _dest = new Rect(x, y, w, h);
+        _dest = FitRect(Screen.width, Screen.height);
+    }
+
+    public static Rect FitRect(int width, int height)
+    {
+        float fit = Mathf.Min((float)width / InternalWidth, (float)height / InternalHeight);
+        float scale = fit >= 1f ? Mathf.Floor(fit) : fit;
+        float w = Mathf.Floor(InternalWidth * scale);
+        float h = Mathf.Floor(InternalHeight * scale);
+        return new Rect(Mathf.Floor((width-w)*0.5f), Mathf.Floor((height-h)*0.5f), w, h);
     }
 
     // Mostra o framebuffer num Canvas overlay atrás do HUD. RawImage já respeita

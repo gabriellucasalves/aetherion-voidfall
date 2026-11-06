@@ -12,6 +12,15 @@ public static class T1AtmosScenery
     public const float PlayerJumpSpeed = 15.6f;
     public static bool Built { get; private set; }
     static GameObject _root;
+    static Material Grade(bool far, Texture texture, AtmosV1Root owner)
+    {
+        var material = new Material(Resources.Load<Shader>("AtmosDepth"));
+        material.mainTexture = texture;
+        material.SetFloat("_Saturation", far ? .65f : .92f);
+        material.SetFloat("_Contrast", far ? .96f : 1.03f);
+        owner.Own(material);
+        return material;
+    }
 
     public static bool Enabled
     {
@@ -65,7 +74,7 @@ public static class T1AtmosScenery
             }
         }
         var root = new GameObject("Cenario_AtmosV1");
-        root.AddComponent<AtmosV1Root>();
+        var owner = root.AddComponent<AtmosV1Root>();
         var reference = new Vector2(-stage.HalfWidth + 12f, stage.GroundTop + GroundBelowCenter);
         float[] factors = { 0.08f, 0.22f, 0.22f, 0.40f, 0.40f, 0.62f };
         int[] orders = { -50, -40, -35, -30, -25, -20 };
@@ -73,6 +82,7 @@ public static class T1AtmosScenery
         {
             var group = new GameObject(names[i]);
             group.transform.SetParent(root.transform, false);
+            var grade = i == 0 || i == 1 || i == 3 || i == 5 ? Grade(i < 2, sprites[i].texture, owner) : null;
             for (int copy = -1; copy <= 1; copy++)
             {
                 var tile = new GameObject("Copia_" + copy);
@@ -81,6 +91,14 @@ public static class T1AtmosScenery
                 var renderer = tile.AddComponent<SpriteRenderer>();
                 renderer.sprite = sprites[i];
                 renderer.sortingOrder = orders[i];
+                if (i == 0 || i == 1)
+                {
+                    renderer.sharedMaterial = grade;
+                    renderer.color = i == 0 ? new Color(.77f,.82f,.92f) : new Color(.76f,.82f,.94f);
+                }
+                else if (i == 3 || i == 5) renderer.sharedMaterial = grade;
+                // Fog e veil conservam o alpha original e ficam entre seus planos.
+
             }
             group.AddComponent<AtmosV1Parallax>().Setup(factors[i], reference, i == 0);
         }

@@ -1,0 +1,42 @@
+PASS RT 1536x864 Point guerreiro
+PASS Framing 24x13.5 u guerreiro
+PASS HUD central guerreiro
+PASS Retrato correto guerreiro
+PASS Segunda barra visível correta guerreiro
+PASS Rótulo defesa guerreiro
+PASS Barra grossa opaca BarraVida guerreiro
+PASS Barra grossa opaca BarraEscudo guerreiro
+PASS Barra grossa opaca BarraEspecial guerreiro
+PASS Atmos ativo fallback off guerreiro
+PASS Planos e overlays ativos guerreiro
+PASS Especial cheio legível
+PASS Céu renderizado após recarga guerreiro
+PASS Game View Full HD real
+PASS Letterbox inteiro Full HD
+PASS Letterbox inteiro QHD
+PASS Viewport menor não recorta o mundo
+PASS Game View QHD real
+PASS Gap real mantém VOCÊ CAIU
+PASS RT 1536x864 Point mago
+PASS Framing 24x13.5 u mago
+PASS HUD central mago
+PASS Retrato correto mago
+PASS Segunda barra visível correta mago
+PASS Rótulo defesa mago
+PASS Barra grossa opaca BarraVida mago
+PASS Barra grossa opaca BarraEscudo mago
+PASS Barra grossa opaca BarraEspecial mago
+PASS Atmos ativo fallback off mago
+PASS Planos e overlays ativos mago
+PASS Céu renderizado após recarga mago
+PASS RT 1536x864 Point arqueiro
+PASS Framing 24x13.5 u arqueiro
+PASS HUD central arqueiro
+PASS Retrato correto arqueiro
+PASS Segunda barra visível correta arqueiro
+PASS Barra grossa opaca BarraVida arqueiro
+PASS Barra grossa opaca BarraEscudo arqueiro
+PASS Barra grossa opaca BarraEspecial arqueiro
+PASS Atmos ativo fallback off arqueiro
+PASS Planos e overlays ativos arqueiro
+PASS Céu renderizado após recarga arqueiro

@@ -101,8 +101,8 @@ public class AtmosV1Smoke : MonoBehaviour
         Bind();
         var rt = _camera.targetTexture;
         Check(T1AtmosScenery.Built && !T1FrontLevel.Built, "Atmos ativo sem terreno legado");
-        Check(rt.width == 768 && rt.height == 432 && rt.filterMode == FilterMode.Point && !rt.useMipMap
-            && rt.antiAliasing == 1 && Mathf.Abs(_camera.orthographicSize - 6.75f) < 0.001f, "Apresentação 768x432 Point Ortho 6.75 preservada");
+        Check(rt.width == 1536 && rt.height == 864 && rt.filterMode == FilterMode.Point && !rt.useMipMap
+            && rt.antiAliasing == 1 && Mathf.Abs(_camera.orthographicSize - 6.75f) < 0.001f, "Apresentação 1536x864 Point Ortho 6.75 preservada");
         Check(_stage.HalfWidth == 36f && AtmosFrontLevel.Gaps.Count == 2 && AtmosFrontLevel.Platforms.Count == 3,
             "72 unidades, somente dois gaps e três plataformas");
         foreach (var pair in new[] { new Vector2(-28.5f,-26f),new Vector2(-21.625f,-18.5f) })
