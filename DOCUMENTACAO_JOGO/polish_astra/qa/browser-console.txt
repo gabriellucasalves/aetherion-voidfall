@@ -1,0 +1,4 @@
+Total messages: 71 (Errors: 0, Warnings: 1)
+Returning 1 messages for level "warning"
+
+[WARNING] Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior. @ blob:https://aetherion-voidfall-gules.vercel.app/b8fb460a-12c0-418e-81a4-b8f10f14ecb9:1

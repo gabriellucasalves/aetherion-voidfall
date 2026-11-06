@@ -18,4 +18,12 @@ PolishValidation.Run: 42 checks PASS, captura real de Game View no Editor, Guerr
 
 Três barras de 40 px, espaçamento, cabeçalho e margens pedem painel de 198 px; 90–120 px não comportariam o layout pedido. O mundo aparece com 1536×864 pixels nos dois monitores por causa da escala inteira: margens (192,108) em Full HD e (512,288) em QHD. Em QHD fica menor que a antiga apresentação 768×432 ampliada 3×; manter aquele tamanho exigiria escala fracionária 1.5× do novo RT. Ortho/framing e proporções entre personagens/plataformas não mudaram. Dobrar o RT não cria detalhe nos PNGs: a densidade da arte fonte foi preservada conforme a restrição de não redesenhar.
 
-Regressão AtmosV1Validation.Run: 46 checks PASS, incluindo ambos os gaps, saltos A/B/C, colisores, navegação dos três inimigos, parallax/snap e importação. Build WebGL concluído: 21.575.830 bytes, sem erros C# ou de shader. Pipeline existente, stripEngineCode=false conservado. A publicação será registrada após teste no navegador.
+Regressão AtmosV1Validation.Run: 46 checks PASS, incluindo ambos os gaps, saltos A/B/C, colisores, navegação dos três inimigos, parallax/snap e importação. Build WebGL concluído: 21.575.830 bytes, sem erros C# ou de shader. Pipeline existente, stripEngineCode=false conservado. Publicação verificada abaixo.
+
+## Publicação verificada — 06/11/2026
+
+URL: https://aetherion-voidfall-gules.vercel.app/ . Conta pessoal gabriellucassilva81-8983, projeto aetherion-voidfall (prj_BjRWPsfINvsxLR7ixioA1AVhrbWM). Build do commit 8730814; deployment dpl_EugzJQbwiHsconsUc2D3GSCjRhr2 Ready, promovido após validação do staging. URL imutável: https://aetherion-voidfall-9bpmgy9ez-gabriellucassilva81-8983.vercel.app/ .
+
+SHA256 dos quatro arquivos WebGL idêntico ao local, com HTTP 200 no staging e na produção. Menu → introdução → seleção → Ground_T1 → salto para A usando controles normais no navegador. Testado retorno ao menu e nova seleção do Mago na mesma sessão: cenário e retrato corretos, label CAMPO. Console: zero erros, um aviso da Unity sobre sincronização futura de persistentDataPath. Logs Vercel de erro nos últimos cinco minutos: zero registros.
+
+Print público em qa/browser-live.png; Play Mode em qa/guerreiro-1920.png, guerreiro-2560.png, mago-1920.png, arqueiro-1920.png, inicio-sem-hud.png, gap.png e voce-caiu.png. Diff de arquivos em diff-arquivos.txt. Nenhum merge em main.
