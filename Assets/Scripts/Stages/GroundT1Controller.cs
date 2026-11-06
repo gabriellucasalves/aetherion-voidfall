@@ -139,9 +139,10 @@ public class GroundT1Controller : MonoBehaviour
             return;
 
         _demoDone = true;
+        WorldMapProgress.Complete(1);
         SpecialController.AbortActive();
         CinematicTime.End();
-        Time.timeScale = 0f;
+        Time.timeScale = 1f;
         if (_player != null)
         {
             _player.SetLocked(true);
@@ -153,8 +154,7 @@ public class GroundT1Controller : MonoBehaviour
             _spawner.SetLocked(true);
         if (_pausePanel != null)
             _pausePanel.SetActive(false);
-        if (_demoCompletePanel != null)
-            _demoCompletePanel.SetActive(true);
+        SceneTransitionManager.Instance.Load(GameScenes.WorldMap);
     }
 
     CharacterData ResolveHero()
@@ -339,16 +339,20 @@ public class GroundT1Controller : MonoBehaviour
         BuildPhaseTitleCard(canvas.transform);
 
         _pausePanel = UiKit.Panel(canvas.transform, "Pausa", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.62f)).gameObject;
-        UiKit.Panel(_pausePanel.transform, "Caixa", new Vector2(520f, 280f), Vector2.zero, MenuTheme.Panel);
+        UiKit.Panel(_pausePanel.transform, "Caixa", new Vector2(520f, 390f), Vector2.zero, MenuTheme.Panel);
         UiKit.Label(_pausePanel.transform, "PAUSA", 36, new Vector2(0f, 70f), MenuTheme.CelestialGold, new Vector2(400f, 50f));
         UiKit.Button(_pausePanel.transform, "CONTINUAR", new Vector2(0f, -10f), new Vector2(240f, 58f), TogglePause);
         UiKit.Button(_pausePanel.transform, "MENU", new Vector2(0f, -85f), new Vector2(240f, 58f), BackToMenu);
+        if (WorldMapProgress.HighestCompleted > 0)
+            UiKit.Button(_pausePanel.transform, "MAPA", new Vector2(0f, -155f), new Vector2(240f, 58f), BackToMap);
         _pausePanel.SetActive(false);
 
         _defeatPanel = UiKit.Panel(canvas.transform, "Derrota", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.72f)).gameObject;
-        UiKit.Panel(_defeatPanel.transform, "Caixa", new Vector2(560f, 260f), Vector2.zero, MenuTheme.Panel);
+        UiKit.Panel(_defeatPanel.transform, "Caixa", new Vector2(560f, 320f), Vector2.zero, MenuTheme.Panel);
         UiKit.Label(_defeatPanel.transform, "VOCÊ CAIU", 36, new Vector2(0f, 50f), MenuTheme.CelestialGold, new Vector2(500f, 50f));
         UiKit.Button(_defeatPanel.transform, "MENU", new Vector2(0f, -60f), new Vector2(240f, 58f), BackToMenu);
+        if (WorldMapProgress.HighestCompleted > 0)
+            UiKit.Button(_defeatPanel.transform, "MAPA", new Vector2(0f, -125f), new Vector2(240f, 58f), BackToMap);
         _defeatPanel.SetActive(false);
 
         _demoCompletePanel = UiKit.Panel(canvas.transform, "DemoFim", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.78f)).gameObject;
@@ -549,6 +553,15 @@ public class GroundT1Controller : MonoBehaviour
         Time.timeScale = 1f;
         Physics2D.gravity = new Vector2(0f, -9.81f);
         SceneTransitionManager.Instance.Load(GameScenes.MainMenu);
+    }
+
+    void BackToMap()
+    {
+        SpecialController.AbortActive();
+        CinematicTime.End();
+        Time.timeScale = 1f;
+        Physics2D.gravity = new Vector2(0f, -9.81f);
+        SceneTransitionManager.Instance.Load(GameScenes.WorldMap);
     }
 
     static string HintFor(CharacterData hero)

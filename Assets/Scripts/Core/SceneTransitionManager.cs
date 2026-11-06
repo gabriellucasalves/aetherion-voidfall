@@ -58,6 +58,8 @@ public class SceneTransitionManager : MonoBehaviour
             CharacterSelectController.EnsureExists();
         else if (sceneName == GameScenes.GroundT1)
             GroundT1Controller.EnsureExists();
+        else if (sceneName == GameScenes.WorldMap)
+            WorldMapController.EnsureExists();
     }
 
     public void ClearFade()

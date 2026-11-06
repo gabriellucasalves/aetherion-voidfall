@@ -5,6 +5,7 @@ public static class GameScenes
     public const string Intro = "Intro";
     public const string CharacterSelection = "CharacterSelection";
     public const string GroundT1 = "Ground_T1";
+    public const string WorldMap = "WorldMap";
     public const string GroundLevel = "GroundLevel";
     public const string SpaceLevel = "SpaceLevel";
     public const string Victory = "Victory";

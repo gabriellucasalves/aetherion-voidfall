@@ -19,7 +19,7 @@ public class MainMenuController : MonoBehaviour
         if (sceneName == GameScenes.Pong || sceneName == GameScenes.Boot)
             return;
 
-        if (sceneName == GameScenes.Intro || sceneName == GameScenes.CharacterSelection || sceneName == GameScenes.GroundT1)
+        if (sceneName == GameScenes.Intro || sceneName == GameScenes.CharacterSelection || sceneName == GameScenes.GroundT1 || sceneName == GameScenes.WorldMap)
             return;
 
         if (sceneName == GameScenes.MainMenu || sceneName == "Untitled" || string.IsNullOrEmpty(sceneName))
@@ -95,6 +95,8 @@ public class MainMenuController : MonoBehaviour
         CreateLabel(pedestal.transform, "ainda de pé nas ruínas", 15, new Vector2(0f, -200f), new Color(1f, 1f, 1f, 0.55f));
 
         CreateButton(canvasObject.transform, "JOGAR", new Vector2(0f, 40f), OnPlay);
+        if (WorldMapProgress.HighestCompleted > 0)
+            CreateButton(canvasObject.transform, "MAPA", new Vector2(400f, 40f), () => SceneTransitionManager.Instance.Load(GameScenes.WorldMap));
         CreateButton(canvasObject.transform, "CONFIGURAÇÕES", new Vector2(0f, -70f), () => TogglePanel(_settingsPanel));
         CreateButton(canvasObject.transform, "CRÉDITOS", new Vector2(0f, -180f), () => TogglePanel(_creditsPanel));
 

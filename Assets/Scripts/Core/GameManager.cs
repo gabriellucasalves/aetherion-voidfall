@@ -33,6 +33,13 @@ public class GameManager : MonoBehaviour
 
         if (GetComponent<SceneTransitionManager>() == null)
             gameObject.AddComponent<SceneTransitionManager>();
+
+        var savedHero = CharacterCatalog.ById(WorldMapProgress.SelectedHeroId);
+        if (savedHero != null)
+        {
+            _selectedHero = savedHero;
+            _selectedHeroId = savedHero.Id;
+        }
     }
 
     void OnDestroy()
@@ -45,5 +52,7 @@ public class GameManager : MonoBehaviour
     {
         _selectedHero = hero;
         _selectedHeroId = hero != null ? hero.Id : null;
+        if (hero != null)
+            WorldMapProgress.RememberHero(hero.Id);
     }
 }

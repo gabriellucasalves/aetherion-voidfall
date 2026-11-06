@@ -1,0 +1,15 @@
+PASS Fase 1 inicializou
+PASS Mapa ausente antes da conclusão
+PASS Três ondas obrigatórias abriram o portal
+PASS Portal abriu mapa uma vez
+PASS Fase 1 concluída, 2 liberada, 3 bloqueada
+PASS Fase 2 sem cena permanece no mapa e salva nó 2
+PASS Fase 2 mostra Em desenvolvimento
+PASS Progresso e nó sobreviveram recarga da cena
+PASS Nó 3 bloqueado não carrega fase
+PASS Fase 1 concluída aceita replay
+PASS Pausa funciona no replay
+PASS Morte preserva derrota e não desbloqueia Fase 3
+PASS Retorno ao mapa após derrota
+PASS Herói selecionado persiste após recriar GameManager
+PASS Avatar do mapa usa o sheet atual do Mago salvo
