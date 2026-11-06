@@ -115,9 +115,22 @@ public class GroundT1Controller : MonoBehaviour
     {
         if (_dead || _demoDone || FindFirstObjectByType<F1ExitPortal>() != null) return;
         F1ExitPortal.Spawn(this, new Vector2(32.5f, _stage.GroundTop));
-        _waveBanner.text = "PORTAL ABERTO À DIREITA — ATRAVESSE PARA CONCLUIR";
-        _waveBanner.gameObject.SetActive(true);
-        _waveBannerLeft = 6f;
+        if (_player != null)
+        {
+            float px = _player.transform.position.x;
+            float nearX = Mathf.Clamp(px + 4.5f, -33f, 29f);
+            // Evita abrir em cima dos dois gaps (-28.5..-26 e -21.625..-18.5)
+            if (nearX > -29.2f && nearX < -25.2f) nearX = -24.2f;
+            if (nearX > -22.3f && nearX < -17.8f) nearX = -16.5f;
+            if (Mathf.Abs(nearX - 32.5f) > 3f)
+                F1ExitPortal.Spawn(this, new Vector2(nearX, _stage.GroundTop));
+        }
+        if (_waveBanner != null)
+        {
+            _waveBanner.text = "PORTAL ANCESTRAL ABERTO — ATRAVESSE PARA CONCLUIR A FASE I";
+            _waveBanner.gameObject.SetActive(true);
+            _waveBannerLeft = 8f;
+        }
     }
 
     public void OnDemoComplete()

@@ -28,22 +28,16 @@ public class AtmosV1Parallax : MonoBehaviour
         float x = _reference.x + (cameraPosition.x - _reference.x) * (1f - _factor);
         // Mantém as três cópias centradas perto da câmera; o salto ocorre fora do viewport.
         x += Mathf.Round((cameraPosition.x - x) / TileWidth) * TileWidth;
-        // O céu opaco mantém cobertura vertical completa. Outros planos têm paralaxe vertical.
-        float y = _sky ? cameraPosition.y : _reference.y + (cameraPosition.y - _reference.y) * (1f - _factor);
+        // O céu opaco mantém cobertura vertical completa. Outros planos têm paralaxe vertical suave.
+        float y = _sky ? cameraPosition.y : _reference.y + (cameraPosition.y - _reference.y) * (1f - _factor) * 0.25f;
         return Snap(new Vector3(x, y, 0f));
     }
     public void Apply(Vector3 cameraPosition)
     {
         transform.position = PositionFor(cameraPosition);
-        float baseX = _reference.x + (cameraPosition.x - _reference.x) * (1f - _factor);
-        int index = Mathf.RoundToInt((cameraPosition.x - baseX) / TileWidth);
-        // Alterna cópias, mantendo o índice global na reciclagem. A borda toca sua própria
-        // borda espelhada, evitando costuras sem pintar ou filtrar o PNG aprovado.
+        if (_copies == null) return;
         foreach (var renderer in _copies)
-        {
-            int copy = Mathf.RoundToInt(renderer.transform.localPosition.x / TileWidth);
-            renderer.flipX = ((index + copy) & 1) != 0;
-        }
+            renderer.flipX = false;
     }
     void LateUpdate() => Follow();
     void Follow()
