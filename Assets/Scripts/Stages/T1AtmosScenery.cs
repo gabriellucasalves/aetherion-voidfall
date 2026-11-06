@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Integra o pack intacto, com PPU próprio. Não muda o contrato PPU 16 dos personagens.
+// Integra o pack 16-bit em PPU 32 Point. Não muda o contrato PPU 16 dos personagens.
 public static class T1AtmosScenery
 {
     public const string Folder = "T1_Hybrid_Atmos/";
@@ -16,8 +16,8 @@ public static class T1AtmosScenery
     {
         var material = new Material(Resources.Load<Shader>("AtmosDepth"));
         material.mainTexture = texture;
-        material.SetFloat("_Saturation", far ? .65f : .92f);
-        material.SetFloat("_Contrast", far ? .96f : 1.03f);
+        material.SetFloat("_Saturation", far ? .96f : 1f);
+        material.SetFloat("_Contrast", 1f);
         owner.Own(material);
         return material;
     }
@@ -91,16 +91,20 @@ public static class T1AtmosScenery
                 var renderer = tile.AddComponent<SpriteRenderer>();
                 renderer.sprite = sprites[i];
                 renderer.sortingOrder = orders[i];
-                if (i == 0 || i == 1)
-                {
-                    renderer.sharedMaterial = grade;
-                    renderer.color = i == 0 ? new Color(.77f,.82f,.92f) : new Color(.76f,.82f,.94f);
-                }
-                else if (i == 3 || i == 5) renderer.sharedMaterial = grade;
-                // Fog e veil conservam o alpha original e ficam entre seus planos.
-
+                if (grade != null) renderer.sharedMaterial = grade;
             }
             group.AddComponent<AtmosV1Parallax>().Setup(factors[i], reference, i == 0);
+        }
+        // Uma única Cidadela Celeste flutuante (não repete nas cópias de montanha).
+        var citadelSprite = Load("citadel");
+        if (citadelSprite != null)
+        {
+            var citadelGo = new GameObject("Cidadela_Unica");
+            citadelGo.transform.SetParent(root.transform, false);
+            var citadelRenderer = citadelGo.AddComponent<SpriteRenderer>();
+            citadelRenderer.sprite = citadelSprite;
+            citadelRenderer.sortingOrder = -42;
+            citadelGo.AddComponent<AtmosSingleCitadel>().Setup(0.14f, reference);
         }
         // Dois gaps no início; a extensão restante não acrescenta abismos.
         AtmosFrontLevel.Build(stage, sprites[6], root.transform);
@@ -111,5 +115,27 @@ public static class T1AtmosScenery
     public static void ClearIfOwner(GameObject owner)
     {
         if (_root == owner) Reset();
+    }
+}
+
+[DefaultExecutionOrder(100)]
+public class AtmosSingleCitadel : MonoBehaviour
+{
+    float _factor;
+    Vector2 _reference;
+    public void Setup(float factor, Vector2 reference)
+    {
+        _factor = factor;
+        _reference = reference;
+        Apply();
+    }
+    void LateUpdate() => Apply();
+    void Apply()
+    {
+        if (Camera.main == null) return;
+        var cam = Camera.main.transform.position;
+        float x = _reference.x + (cam.x - _reference.x) * (1f - _factor);
+        float y = _reference.y + (cam.y - _reference.y) * (1f - _factor);
+        transform.position = AtmosV1Parallax.Snap(new Vector3(x, y, 0f));
     }
 }
