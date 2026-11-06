@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// LAYOUT_GAPS, PPU 32: trecho aprovado de 24 u no início de uma fase de 72 u.
-// Decisão da Direção: somente dois gaps; o Ground R continua sólido até o fim.
+// LAYOUT_GAPS, PPU 32: trecho inicial com 2 gaps + plataformas A/B/C e plataformas 16-bit ao longo da fase inteira.
 public static class AtmosFrontLevel
 {
     public const float Width = 24f;
@@ -24,6 +23,19 @@ public static class AtmosFrontLevel
     public static float X(StageData stage, float pixelX) => -stage.HalfWidth + pixelX / 32f;
     public static float Y(StageData stage, float pixelY) => stage.GroundTop + (SurfaceRow - pixelY) / 32f;
 
+    // Plataformas extras distribuídas de x=-9.5 ate x=+28.5 (2 e 3 alturas para combate e mobilidade)
+    static readonly (string sprite, float centerX, float heightAboveGround)[] ExtraPlatforms =
+    {
+        ("plat_m", -9.0f,  2.2f),
+        ("plat_s", -4.2f,  3.8f),
+        ("plat_l",  1.5f,  2.4f),
+        ("plat_m",  7.2f,  4.1f),
+        ("plat_s", 12.5f,  2.2f),
+        ("plat_l", 18.0f,  3.6f),
+        ("plat_m", 23.5f,  2.3f),
+        ("plat_s", 28.0f,  3.9f),
+    };
+
     public static void Build(StageData stage, Sprite playfield, Transform parent)
     {
         Reset();
@@ -44,7 +56,6 @@ public static class AtmosFrontLevel
         _gaps.Add(new Vector2(X(stage, 460), X(stage, 560)));
         foreach (var gap in _gaps)
         {
-            // Só fundo visual do abismo: nenhum colisor ou superfície extra.
             var abyss = new GameObject("AbismoEscuro");
             abyss.transform.SetParent(root.transform, false);
             abyss.transform.position = new Vector3((gap.x+gap.y)*.5f,stage.GroundTop-4f,0);
@@ -54,10 +65,13 @@ public static class AtmosFrontLevel
             shade.color = new Color(.035f,.03f,.065f,1);
             shade.sortingOrder = -1;
         }
-        BuildPlatform("A", 200, 280, 300, stage, root.transform);
-        BuildPlatform("B", 480, 580, 270, stage, root.transform);
-        BuildPlatform("C", 620, 700, 240, stage, root.transform);
+        BuildPlatform("L0", 76, 152, 324, stage, root.transform, false);
+        BuildPlatform("A", 200, 284, 296, stage, root.transform, true);
+        BuildPlatform("M", 340, 436, 264, stage, root.transform, false);
+        BuildPlatform("B", 480, 576, 284, stage, root.transform, true);
+        BuildPlatform("C", 620, 708, 240, stage, root.transform, true);
         ExtendGround(stage, root.transform);
+        BuildExtraPlatforms(stage, root.transform);
 
         var fall = new GameObject("Atmos_ZonaDeQueda");
         fall.transform.SetParent(root.transform, false);
@@ -76,10 +90,10 @@ public static class AtmosFrontLevel
         collider.size = new Vector2(right - left, 4f);
         collider.sharedMaterial = material;
     }
-    static void BuildPlatform(string name, int left, int right, int surface, StageData stage, Transform parent)
+    static void BuildPlatform(string name, int left, int right, int surface, StageData stage, Transform parent, bool register)
     {
         float x0 = X(stage, left), x1 = X(stage, right), top = Y(stage, surface);
-        _platforms.Add(new Platform(name, x0, x1, top));
+        if (register) _platforms.Add(new Platform(name, x0, x1, top));
         var go = new GameObject("Plat_" + name);
         go.transform.SetParent(parent, false);
         go.transform.position = new Vector3((x0 + x1) * 0.5f, top - Thickness * 0.5f, 0f);
@@ -89,6 +103,36 @@ public static class AtmosFrontLevel
         var effector = go.AddComponent<PlatformEffector2D>();
         effector.useOneWay = true;
         effector.surfaceArc = 165f;
+    }
+    static void BuildExtraPlatforms(StageData stage, Transform parent)
+    {
+        for (int i = 0; i < ExtraPlatforms.Length; i++)
+        {
+            var item = ExtraPlatforms[i];
+            var spr = T1AtmosScenery.Load(item.sprite);
+            if (spr == null) continue;
+            float w = (spr.rect.width - 12f) / 32f;
+            float h = spr.rect.height / 32f;
+            float top = stage.GroundTop + item.heightAboveGround;
+            var go = new GameObject("Plat_Stage_" + i + "_" + item.sprite);
+            go.transform.SetParent(parent, false);
+            // Superficie pisavel fica a 6 px (6/32 u) abaixo do topo do sprite
+            float centerY = top + (6f / 32f) - h * 0.5f;
+            go.transform.position = new Vector3(item.centerX, centerY, 0f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = spr;
+            sr.sortingOrder = 1;
+
+            var colGo = new GameObject("Colisor");
+            colGo.transform.SetParent(go.transform, false);
+            colGo.transform.position = new Vector3(item.centerX, top - Thickness * 0.5f, 0f);
+            var collider = colGo.AddComponent<BoxCollider2D>();
+            collider.size = new Vector2(w, Thickness);
+            collider.usedByEffector = true;
+            var effector = colGo.AddComponent<PlatformEffector2D>();
+            effector.useOneWay = true;
+            effector.surfaceArc = 165f;
+        }
     }
     static void ExtendGround(StageData stage, Transform parent)
     {

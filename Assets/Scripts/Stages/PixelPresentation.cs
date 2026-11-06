@@ -85,8 +85,7 @@ public class PixelPresentation : MonoBehaviour
 
     public static Rect FitRect(int width, int height)
     {
-        float fit = Mathf.Min((float)width / InternalWidth, (float)height / InternalHeight);
-        float scale = fit >= 1f ? Mathf.Floor(fit) : fit;
+        float scale = Mathf.Min((float)width / InternalWidth, (float)height / InternalHeight);
         float w = Mathf.Floor(InternalWidth * scale);
         float h = Mathf.Floor(InternalHeight * scale);
         return new Rect(Mathf.Floor((width-w)*0.5f), Mathf.Floor((height-h)*0.5f), w, h);

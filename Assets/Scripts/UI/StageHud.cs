@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Somente apresentação: os valores continuam vindo dos sistemas de combate existentes.
+// HUD 16-bit central no topo da tela, 100% visivel dentro do quadro do mundo.
 public static class StageHud
 {
-    public const float BarWidth = 380f;
+    public const float BarWidth = 340f;
     public sealed class View
     {
         public Text Name, LifeValue, DefenseValue, DefenseLabel, SpecialValue, Supreme;
@@ -15,49 +15,52 @@ public static class StageHud
     static readonly Dictionary<string, Sprite> Portraits = new Dictionary<string, Sprite>();
     public static View Build(Transform parent, CharacterData hero, string phase)
     {
-        var panel = UiKit.Panel(parent, "HudCentral", new Vector2(640, 198), Vector2.zero, new Color(.05f,.04f,.08f,.96f));
-        Top(panel.rectTransform, 18);
+        var panel = UiKit.Panel(parent, "HudCentral", new Vector2(580, 156), Vector2.zero, new Color(.06f,.05f,.12f,.94f));
+        Top(panel.rectTransform, 62);
         Outline(panel.gameObject, 2);
-        var trim = UiKit.Panel(panel.transform,"Filete",new Vector2(600,2),new Vector2(0,97),new Color(.66f,.58f,.8f));
-        trim.raycastTarget = false;
+        var borderTop = UiKit.Panel(panel.transform,"FileteTopo",new Vector2(572,3),new Vector2(0,75),new Color(.95f,.76f,.32f));
+        borderTop.raycastTarget = false;
+        var borderBot = UiKit.Panel(panel.transform,"FileteBase",new Vector2(572,2),new Vector2(0,-75),new Color(.28f,.78f,.88f));
+        borderBot.raycastTarget = false;
         var v = new View();
-        v.Name = Label(panel.transform, "", 18, new Vector2(0,78), new Vector2(590,24));
-        var rim = UiKit.Panel(panel.transform, "RetratoBorda", new Vector2(86,86), new Vector2(-239,10), Color.black);
+        v.Name = Label(panel.transform, "", 16, new Vector2(28,58), new Vector2(480,22));
+        v.Name.color = new Color(1f, .94f, .76f);
+        var rim = UiKit.Panel(panel.transform, "RetratoBorda", new Vector2(78,78), new Vector2(-216,6), new Color(.95f,.76f,.32f));
         rim.sprite = Circle();
-        var mask = UiKit.Panel(rim.transform,"RetratoMascara",new Vector2(80,80),Vector2.zero,new Color(.19f,.17f,.27f));
+        var mask = UiKit.Panel(rim.transform,"RetratoMascara",new Vector2(72,72),Vector2.zero,new Color(.16f,.14f,.26f));
         mask.sprite = Circle(); mask.gameObject.AddComponent<Mask>().showMaskGraphic = true;
-        var portrait = UiKit.Panel(mask.transform,"Retrato",new Vector2(76,76),Vector2.zero,Color.white);
+        var portrait = UiKit.Panel(mask.transform,"Retrato",new Vector2(68,68),Vector2.zero,Color.white);
         portrait.sprite = Portrait(hero); portrait.preserveAspect = true;
         portrait.raycastTarget = false;
-        v.Supreme = Label(panel.transform,"",16,new Vector2(-239,-58),new Vector2(136,44));
+        v.Supreme = Label(panel.transform,"",13,new Vector2(-216,-48),new Vector2(132,36));
         v.Supreme.gameObject.SetActive(hero != null && hero.Id != "guerreiro");
-        v.Life = Bar(panel.transform,"BarraVida","VIDA",40,new Color(.85f,.15f,.18f),out v.LifeValue,out _);
+        v.Life = Bar(panel.transform,"BarraVida","VIDA",26,new Color(.90f,.18f,.22f),out v.LifeValue,out _);
         bool defense = hero != null && hero.Id != "arqueiro";
-        v.Defense = Bar(panel.transform,"BarraEscudo",hero != null && hero.Id == "mago" ? "CAMPO" : "ESCUDO",-8,new Color(.35f,.65f,.95f),out v.DefenseValue,out v.DefenseLabel);
+        v.Defense = Bar(panel.transform,"BarraEscudo",hero != null && hero.Id == "mago" ? "CAMPO" : "ESCUDO",-10,new Color(.25f,.72f,.96f),out v.DefenseValue,out v.DefenseLabel);
         v.Defense.transform.parent.gameObject.SetActive(defense);
-        v.Special = Bar(panel.transform,"BarraEspecial","ESPECIAL",defense ? -56 : -8,new Color(1f,.62f,.25f),out v.SpecialValue,out _);
-        // A segunda barra é removida por inteiro para o Arqueiro, sem texto solto.
-        var title = Label(parent,phase,20,Vector2.zero,new Vector2(800,30));
+        v.Special = Bar(panel.transform,"BarraEspecial","ESPECIAL",defense ? -46 : -10,new Color(1f,.66f,.22f),out v.SpecialValue,out _);
+        var title = Label(parent,phase,17,Vector2.zero,new Vector2(700,24));
+        title.color = new Color(.92f, .88f, .98f);
         title.gameObject.name = "TituloFase"; Top(title.rectTransform,224);
         return v;
     }
     static Image Bar(Transform parent,string name,string label,float y,Color color,out Text value,out Text caption)
     {
-        var fill = UiKit.Bar(parent,name,new Vector2(90,y),new Vector2(BarWidth,40),new Color(.075f,.065f,.105f,1),color);
+        var fill = UiKit.Bar(parent,name,new Vector2(82,y),new Vector2(BarWidth,28),new Color(.08f,.07f,.14f,1),color);
         var track = fill.transform.parent;
         Outline(track.gameObject,2);
-        caption = Label(track,label,20,new Vector2(-115,0),new Vector2(132,36));
+        caption = Label(track,label,16,new Vector2(-98,0),new Vector2(120,26));
         caption.alignment = TextAnchor.MiddleLeft;
-        value = Label(track,"",20,new Vector2(70,0),new Vector2(224,36));
+        value = Label(track,"",16,new Vector2(54,0),new Vector2(200,26));
         value.alignment = TextAnchor.MiddleRight;
         return fill;
     }
     public static void Footer(Transform parent,string hint)
     {
-        var panel = UiKit.Panel(parent,"ControlesRodape",new Vector2(1800,42),Vector2.zero,new Color(.05f,.04f,.08f,.96f));
+        var panel = UiKit.Panel(parent,"ControlesRodape",new Vector2(1780,36),Vector2.zero,new Color(.05f,.04f,.09f,.92f));
         panel.rectTransform.anchorMin=panel.rectTransform.anchorMax=new Vector2(.5f,0);
-        panel.rectTransform.pivot=new Vector2(.5f,0);panel.rectTransform.anchoredPosition=new Vector2(0,18);
-        Label(panel.transform,hint,20,Vector2.zero,new Vector2(1770,40));
+        panel.rectTransform.pivot=new Vector2(.5f,0);panel.rectTransform.anchoredPosition=new Vector2(0,8);
+        Label(panel.transform,hint,17,Vector2.zero,new Vector2(1750,34));
     }
     static Text Label(Transform p,string text,int size,Vector2 pos,Vector2 dimensions)
     {
