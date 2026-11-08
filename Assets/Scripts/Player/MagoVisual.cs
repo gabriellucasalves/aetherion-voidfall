@@ -28,6 +28,8 @@ public class MagoVisual : MonoBehaviour
     static readonly int[] Special = { 17, 18, 19, 20 };
     static readonly int[] Hurt = { 21, 22 };
     static readonly int[] Land = { 25, 26 };
+    static readonly int[] Death = { 28, 29, 30, 31, 32 };
+    static readonly int[] Run = { 33, 34, 35, 36, 37, 38 };
 
     Sprite[] _frames;
     SpriteRenderer _renderer;
@@ -69,6 +71,8 @@ public class MagoVisual : MonoBehaviour
 
         Bind();
 
+        if (_health != null && _health.IsDead) { Play("death", Death, 7f, false); return; }
+
         if (_hurtLeft > 0f)
             _hurtLeft -= Time.deltaTime;
 
@@ -82,13 +86,13 @@ public class MagoVisual : MonoBehaviour
         // Frames 17–20 sync com wind-up + pico do Núcleo Arcano (ArcaneNova ArmDelay ~0.18s).
         if (_combat != null && _combat.IsCastingSpecial)
         {
-            Play("special", Special, 11f, false);
+            Play("special", Special, 6f, false);
             return;
         }
 
         if (_combat != null && _combat.IsAttacking)
         {
-            Play("cast", Cast, 12f, false);
+            Play("cast", Cast, 8.3f, false);
             return;
         }
 
@@ -138,7 +142,7 @@ public class MagoVisual : MonoBehaviour
         if (walking)
         {
             _landLeft = 0f; // andar cancela o squash
-            Play("walk", Walk, 12f, true);
+            Play(Mathf.Abs(velocity.x) > 5.5f ? "run" : "walk", Mathf.Abs(velocity.x) > 5.5f ? Run : Walk, Mathf.Abs(velocity.x) > 5.5f ? 13f : 10f, true);
             return;
         }
 
@@ -162,7 +166,7 @@ public class MagoVisual : MonoBehaviour
             return;
         }
 
-        _clock += Time.deltaTime * fps;
+        _clock += (clip == "death" ? Time.unscaledDeltaTime : Time.deltaTime) * fps;
         if (_clock < 1f)
             return;
 
@@ -216,7 +220,7 @@ public class MagoVisual : MonoBehaviour
         if (texture == null)
             return null;
 
-        var frames = new Sprite[FrameCount];
+        var frames = new Sprite[40];
         int height = texture.height;
         for (int i = 0; i < FrameCount; i++)
         {
@@ -236,6 +240,14 @@ public class MagoVisual : MonoBehaviour
                 SpriteMeshType.FullRect);
         }
 
+        TrioAnimationFrames.Copy(frames, 0, "mago", "idle", 4);
+        TrioAnimationFrames.Copy(frames, 4, "mago", "andar", 6);
+        TrioAnimationFrames.Copy(frames, 10, "mago", "pulo", 3);
+        TrioAnimationFrames.Copy(frames, 13, "mago", "ataque", 4);
+        TrioAnimationFrames.Copy(frames, 17, "mago", "especial_pulso", 4);
+        TrioAnimationFrames.Copy(frames, 21, "mago", "dano", 2);
+        TrioAnimationFrames.Copy(frames, 28, "mago", "morte", 5);
+        TrioAnimationFrames.Copy(frames, 33, "mago", "correr", 6);
         return frames;
     }
 

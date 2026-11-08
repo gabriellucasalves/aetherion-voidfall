@@ -1,0 +1,69 @@
+PASS guerreiro carrega em Ground_T1
+PASS guerreiro usa sheet idle do pack
+PASS guerreiro usa HUD horizontal
+PASS guerreiro ícone importado
+PASS guerreiro VIDA vinculada
+PASS guerreiro defesa correta
+PASS guerreiro anima dano
+PASS guerreiro HUD mostra VIDA parcial
+PASS guerreiro anima caminhada
+PASS guerreiro anima corrida
+PASS guerreiro anima pulo
+PASS ESCUDO parcial usa valor real
+PASS ESCUDO vazio usa valor real
+PASS Golem telegrapha alvo alcançável
+PASS Golem mantém direção da investida
+PASS Pulso não imobiliza Golem
+PASS Golem evita gap e não investe em alvo sem caminho
+PASS Golem respeita parede e linha de visão
+PASS Golem não investe em plataforma inalcançável
+PASS ESPECIAL parcial acompanha Ressonância
+PASS ESPECIAL cheio acompanha Ressonância
+PASS Feixe consome barra exatamente uma vez
+PASS Guerreiro anima preparo do Feixe
+PASS Morte cancela Feixe ativo
+PASS guerreiro anima morte com tempo pausado
+PASS guerreiro mantém tela VOCÊ CAIU
+PASS mago carrega em Ground_T1
+PASS mago usa sheet idle do pack
+PASS mago usa HUD horizontal
+PASS mago ícone importado
+PASS mago VIDA vinculada
+PASS mago defesa correta
+PASS mago anima dano
+PASS mago HUD mostra VIDA parcial
+PASS mago anima caminhada
+PASS mago anima corrida
+PASS mago anima pulo
+PASS Campo preservado e barra parcial real
+PASS Campo vazio usa valor real
+PASS mago anima especial
+PASS mago especial atinge alvos reais
+PASS Pulso Rúnico aplica lentidão curta
+PASS mago projétil para no terreno
+PASS mago anima ataque básico
+PASS mago ataque básico atinge alvo
+PASS mago anima morte com tempo pausado
+PASS mago mantém tela VOCÊ CAIU
+PASS arqueiro carrega em Ground_T1
+PASS arqueiro usa sheet idle do pack
+PASS arqueiro usa HUD horizontal
+PASS arqueiro ícone importado
+PASS arqueiro VIDA vinculada
+PASS arqueiro defesa correta
+PASS arqueiro anima dano
+PASS arqueiro HUD mostra VIDA parcial
+PASS arqueiro anima caminhada
+PASS arqueiro anima corrida
+PASS arqueiro anima pulo
+PASS arqueiro anima especial
+PASS arqueiro especial atinge alvos reais
+PASS Flecha Perfurante limita a três alvos
+PASS arqueiro projétil para no terreno
+PASS arqueiro anima ataque básico
+PASS arqueiro ataque básico atinge alvo
+PASS Pausa preservada
+PASS Retorno da pausa preservado
+PASS Morte cancela disparo pendente
+PASS arqueiro anima morte com tempo pausado
+PASS arqueiro mantém tela VOCÊ CAIU

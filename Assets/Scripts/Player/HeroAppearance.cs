@@ -4,8 +4,7 @@ public static class HeroAppearance
 {
     public static void Build(Transform parent, CharacterData hero)
     {
-        // Cut-in de especial (overlay MvC-style) para qualquer heroi com sheet em Resources/CutIns.
-        SpecialCutIn.Attach(parent, hero);
+        // Os especiais comuns mostram telegraph e mira no mundo; o Supremo mantém seu CutInPanel.
 
         if (hero != null && hero.Id == "guerreiro" && GuerreiroVisual.Attach(parent))
             return;

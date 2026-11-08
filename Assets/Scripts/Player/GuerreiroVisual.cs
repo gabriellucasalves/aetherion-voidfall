@@ -13,6 +13,9 @@ public class GuerreiroVisual : MonoBehaviour
     static readonly int[] Attack = { 13, 14, 15, 16 };
     static readonly int[] Block = { 17, 18 };
     static readonly int[] Hurt = { 19, 20 };
+    static readonly int[] Special = { 21, 22, 23, 24 };
+    static readonly int[] Death = { 25, 26, 27, 28, 29 };
+    static readonly int[] Run = { 30, 31, 32, 33, 34, 35 };
 
     static Sprite _auraSprite;
 
@@ -66,6 +69,8 @@ public class GuerreiroVisual : MonoBehaviour
         bool blocking = _combat != null && _combat.IsBlocking;
         UpdateAura(blocking);
 
+        if (_health != null && _health.IsDead) { Play("death", Death, 7f, false); return; }
+
         if (_hurtLeft > 0f)
             _hurtLeft -= Time.deltaTime;
 
@@ -86,7 +91,7 @@ public class GuerreiroVisual : MonoBehaviour
         // Sheet atual (21 frames) não tem clip de special — reusa Attack 13–16 como placeholder.
         if (_combat != null && _combat.IsCastingSpecial)
         {
-            Play("special", Attack, 12f, false);
+            Play("special", Special, 12f, false);
             return;
         }
 
@@ -110,7 +115,7 @@ public class GuerreiroVisual : MonoBehaviour
         bool walking = Mathf.Abs(velocity.x) > 0.12f || (_player != null && _player.WantsMove);
         if (walking)
         {
-            Play("walk", Walk, 12f, true);
+            Play(Mathf.Abs(velocity.x) > 5.5f ? "run" : "walk", Mathf.Abs(velocity.x) > 5.5f ? Run : Walk, Mathf.Abs(velocity.x) > 5.5f ? 13f : 10f, true);
             return;
         }
 
@@ -128,7 +133,7 @@ public class GuerreiroVisual : MonoBehaviour
             return;
         }
 
-        _clock += Time.deltaTime * fps;
+        _clock += (clip == "death" ? Time.unscaledDeltaTime : Time.deltaTime) * fps;
         if (_clock < 1f)
             return;
 
@@ -164,7 +169,7 @@ public class GuerreiroVisual : MonoBehaviour
         if (texture == null)
             return null;
 
-        var frames = new Sprite[FrameCount];
+        var frames = new Sprite[36];
         int height = texture.height;
         for (int i = 0; i < FrameCount; i++)
         {
@@ -184,6 +189,14 @@ public class GuerreiroVisual : MonoBehaviour
                 SpriteMeshType.FullRect);
         }
 
+        TrioAnimationFrames.Copy(frames, 0, "guerreiro", "idle", 4);
+        TrioAnimationFrames.Copy(frames, 4, "guerreiro", "andar", 6);
+        TrioAnimationFrames.Copy(frames, 10, "guerreiro", "pulo", 3);
+        TrioAnimationFrames.Copy(frames, 13, "guerreiro", "ataque", 4);
+        TrioAnimationFrames.Copy(frames, 19, "guerreiro", "dano", 2);
+        TrioAnimationFrames.Copy(frames, 21, "guerreiro", "especial_feixe", 4);
+        TrioAnimationFrames.Copy(frames, 25, "guerreiro", "morte", 5);
+        TrioAnimationFrames.Copy(frames, 30, "guerreiro", "correr", 6);
         return frames;
     }
 

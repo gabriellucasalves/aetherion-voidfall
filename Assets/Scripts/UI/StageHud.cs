@@ -13,36 +13,98 @@ public static class StageHud
     }
     static Sprite _circle;
     static readonly Dictionary<string, Sprite> Portraits = new Dictionary<string, Sprite>();
+    static readonly Dictionary<string, Sprite> HudSprites = new Dictionary<string, Sprite>();
     public static View Build(Transform parent, CharacterData hero, string phase)
     {
-        var panel = UiKit.Panel(parent, "HudCentral", new Vector2(580, 156), Vector2.zero, new Color(.06f,.05f,.12f,.94f));
-        Top(panel.rectTransform, 62);
-        Outline(panel.gameObject, 2);
-        var borderTop = UiKit.Panel(panel.transform,"FileteTopo",new Vector2(572,3),new Vector2(0,75),new Color(.95f,.76f,.32f));
-        borderTop.raycastTarget = false;
-        var borderBot = UiKit.Panel(panel.transform,"FileteBase",new Vector2(572,2),new Vector2(0,-75),new Color(.28f,.78f,.88f));
-        borderBot.raycastTarget = false;
+        // UiKit usa referência 1920×1080; cada pixel do pack 384×216 vale cinco unidades UI.
+        var go = new GameObject("HudHorizontalV1", typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+        var root = (RectTransform)go.transform;
+        root.anchorMin = root.anchorMax = new Vector2(.5f, 1f);
+        root.pivot = new Vector2(.5f, 1f);
+        root.sizeDelta = new Vector2(1920, 1080);
+        root.anchoredPosition = Vector2.zero;
         var v = new View();
-        v.Name = Label(panel.transform, "", 16, new Vector2(28,58), new Vector2(480,22));
-        v.Name.color = new Color(1f, .94f, .76f);
-        var rim = UiKit.Panel(panel.transform, "RetratoBorda", new Vector2(78,78), new Vector2(-216,6), new Color(.95f,.76f,.32f));
-        rim.sprite = Circle();
-        var mask = UiKit.Panel(rim.transform,"RetratoMascara",new Vector2(72,72),Vector2.zero,new Color(.16f,.14f,.26f));
-        mask.sprite = Circle(); mask.gameObject.AddComponent<Mask>().showMaskGraphic = true;
-        var portrait = UiKit.Panel(mask.transform,"Retrato",new Vector2(68,68),Vector2.zero,Color.white);
-        portrait.sprite = Portrait(hero); portrait.preserveAspect = true;
-        portrait.raycastTarget = false;
-        v.Supreme = Label(panel.transform,"",13,new Vector2(-216,-48),new Vector2(132,36));
-        v.Supreme.gameObject.SetActive(hero != null && hero.Id != "guerreiro");
-        v.Life = Bar(panel.transform,"BarraVida","VIDA",26,new Color(.90f,.18f,.22f),out v.LifeValue,out _);
+        string id = hero != null ? hero.Id : "guerreiro";
         bool defense = hero != null && hero.Id != "arqueiro";
-        v.Defense = Bar(panel.transform,"BarraEscudo",hero != null && hero.Id == "mago" ? "CAMPO" : "ESCUDO",-10,new Color(.25f,.72f,.96f),out v.DefenseValue,out v.DefenseLabel);
-        v.Defense.transform.parent.gameObject.SetActive(defense);
-        v.Special = Bar(panel.transform,"BarraEspecial","ESPECIAL",defense ? -46 : -10,new Color(1f,.66f,.22f),out v.SpecialValue,out _);
+        // Mesmo grupo de três slots para todos. Arqueiro usa o slot desabilitado do pack.
+        int icon = 65;
+        int life = 91;
+        int special = 247;
+        Art(root, "icon_" + id + "_20x20", icon, 4, 20, 20);
+        Art(root, "label_vida", life - 1, 5, 17, 7);
+        v.Life = HudBar(root, "vida", life);
+        v.LifeValue = HudValue(root, life, 24);
+        if (defense)
+        {
+            Art(root, id == "mago" ? "label_campo" : "label_escudo", 168, 5,
+                id == "mago" ? 21 : 25, 7);
+            v.Defense = HudBar(root, "escudo", 169);
+            v.DefenseValue = HudValue(root, 169, 24);
+            v.DefenseLabel = HudValue(root, 169, 32);
+            v.DefenseLabel.gameObject.SetActive(false);
+        }
+        else
+        {
+            var disabledLabel = Art(root, "label_escudo", 168, 5, 25, 7);
+            disabledLabel.color = new Color(.5f, .5f, .55f, .7f);
+            Art(root, "bar_frame_desabilitada_72x10", 169, 14, 72, 10);
+        }
+        Art(root, "label_especial", special - 1, 5, 33, 7);
+        v.Special = HudBar(root, "especial", special);
+        v.SpecialValue = HudValue(root, special, 24);
+        v.Name = HudText(root, 60, 37, 264, 8, 24);
+        v.Supreme = HudText(root, 110, 31, 164, 7, 22);
+        v.Supreme.gameObject.SetActive(id != "guerreiro");
         var title = Label(parent,phase,17,Vector2.zero,new Vector2(700,24));
         title.color = new Color(.92f, .88f, .98f);
         title.gameObject.name = "TituloFase"; Top(title.rectTransform,224);
         return v;
+    }
+    static Sprite HudSprite(string name)
+    {
+        if (HudSprites.TryGetValue(name, out var sprite)) return sprite;
+        var texture = Resources.Load<Texture2D>("HudHorizontal/" + name);
+        if (texture == null) return null;
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+            new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect);
+        HudSprites[name] = sprite;
+        return sprite;
+    }
+    static Image Art(RectTransform root, string name, int x, int y, int w, int h)
+    {
+        var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+        go.transform.SetParent(root, false);
+        var rect = (RectTransform)go.transform;
+        rect.anchorMin = rect.anchorMax = new Vector2(0, 1);
+        rect.pivot = new Vector2(0, 1);
+        rect.anchoredPosition = new Vector2(x * 5, -y * 5);
+        rect.sizeDelta = new Vector2(w * 5, h * 5);
+        var image = go.GetComponent<Image>();
+        image.sprite = HudSprite(name);
+        image.raycastTarget = false;
+        return image;
+    }
+    static Image HudBar(RectTransform root, string kind, int x)
+    {
+        Art(root, "bar_frame_72x10", x, 14, 72, 10);
+        var fill = Art(root, "bar_fill_" + kind + "_68x6", x + 2, 16, 68, 6);
+        var rect = fill.rectTransform;
+        rect.pivot = new Vector2(0, 1);
+        return fill;
+    }
+    static Text HudValue(RectTransform root, int x, int y) => HudText(root, x, y, 72, 8, 22);
+    static Text HudText(RectTransform root, int x, int y, int w, int h, int font)
+    {
+        var label = UiKit.Label(root, "", font, Vector2.zero, Color.white, new Vector2(w * 5, h * 5));
+        var rect = label.rectTransform;
+        rect.anchorMin = rect.anchorMax = new Vector2(0, 1);
+        rect.pivot = new Vector2(0, 1);
+        rect.anchoredPosition = new Vector2(x * 5, -y * 5);
+        label.raycastTarget = false;
+        return label;
     }
     static Image Bar(Transform parent,string name,string label,float y,Color color,out Text value,out Text caption)
     {

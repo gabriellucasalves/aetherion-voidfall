@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Tiro básico do Arqueiro — flecha reta na facing.
@@ -10,8 +11,8 @@ public class Arrow : MonoBehaviour
 {
     // Básico: draw hold (13×2 @ ~12 fps) → soltar no frame 14 (~0.16s).
     // Especial: delay maior sync com frame 18 (leque) — ver Launch(muzzleDelay).
-    public const float BasicMuzzleDelay = 0.16f;
-    public const float SpecialMuzzleDelay = 0.25f;
+    public const float BasicMuzzleDelay = 0.27f;
+    public const float SpecialMuzzleDelay = 0.44f;
     const float TrailInterval = 0.055f;
 
     // Flecha horizontal apontando para +X (transform.right = direção do tiro).
@@ -32,6 +33,7 @@ public class Arrow : MonoBehaviour
     };
 
     static Sprite _arrowSprite;
+    static Sprite[] _piercingFrames;
 
     Vector2 _direction = Vector2.right;
     float _speed;
@@ -43,8 +45,11 @@ public class Arrow : MonoBehaviour
     float _muzzleDelay = BasicMuzzleDelay;
     bool _armed;
     bool _hit;
+    int _hitsRemaining = 1;
+    readonly HashSet<EnemyController> _hitEnemies = new HashSet<EnemyController>();
     SpriteRenderer _renderer;
     Collider2D _hitbox;
+    HealthSystem _ownerHealth;
 
     public static void Launch(
         Transform owner,
@@ -53,7 +58,8 @@ public class Arrow : MonoBehaviour
         float damage,
         Vector3 localOffset,
         Color color,
-        float muzzleDelay = -1f)
+        float muzzleDelay = -1f,
+        int pierce = 1)
     {
         if (ability == null || owner == null)
             return;
@@ -72,11 +78,15 @@ public class Arrow : MonoBehaviour
         arrow._speed = ability.ProjectileSpeed;
         arrow._lifetime = ability.Lifetime;
         arrow._damage = damage;
+        arrow._ownerHealth = owner.GetComponent<HealthSystem>();
         arrow._fxColor = color;
         arrow._muzzleDelay = muzzleDelay >= 0f ? muzzleDelay : BasicMuzzleDelay;
+        arrow._hitsRemaining = Mathf.Clamp(pierce, 1, 3);
 
         arrow._renderer = go.AddComponent<SpriteRenderer>();
-        arrow._renderer.sprite = ArrowSprite();
+        if (pierce > 1)
+            _piercingFrames ??= TrioAnimationFrames.Vfx("perfurante_disparo", 40, 9, 3, new Vector2(39f / 40f, 4f / 9f));
+        arrow._renderer.sprite = pierce > 1 && _piercingFrames != null ? _piercingFrames[0] : ArrowSprite();
         arrow._renderer.sortingOrder = 20;
         arrow._renderer.color = color;
         arrow._renderer.enabled = false; // aparece no muzzle delay (sync soltar)
@@ -106,6 +116,7 @@ public class Arrow : MonoBehaviour
 
     void Update()
     {
+        if (_ownerHealth != null && _ownerHealth.IsDead) { Destroy(gameObject); return; }
         if (_hit)
             return;
 
@@ -118,9 +129,26 @@ public class Arrow : MonoBehaviour
             Arm();
         }
 
-        transform.position += (Vector3)(_direction * _speed * Time.deltaTime);
+        Vector2 start = transform.position;
+        float distance = _speed * Time.deltaTime;
+        var hits = Physics2D.RaycastAll(start, _direction, distance + 0.1f);
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (var hit in hits)
+        {
+            if (hit.collider == null || hit.collider == _hitbox) continue;
+            if (EnemyTraversal.IsSurface(hit.collider))
+            {
+                Impact(hit.point);
+                return;
+            }
+            TryHit(hit.collider);
+            if (_hit) return;
+        }
+        transform.position += (Vector3)(_direction * distance);
         // Mantém a flecha alinhada à direção (rajada em leque / facing).
         transform.right = _direction;
+        if (_hitsRemaining > 1 && _piercingFrames != null)
+            _renderer.sprite = _piercingFrames[Mathf.FloorToInt(_age * 16f) % _piercingFrames.Length];
         SpawnTrail();
 
         if (_age - _muzzleDelay >= _lifetime)
@@ -157,16 +185,31 @@ public class Arrow : MonoBehaviour
         if (_hit || !_armed || other == null)
             return;
 
+        if (EnemyTraversal.IsSurface(other)) { Impact(transform.position); return; }
+
         var enemy = other.GetComponent<EnemyController>();
         if (enemy == null)
             enemy = other.GetComponentInParent<EnemyController>();
-        if (enemy == null || enemy.Health == null || enemy.Health.IsDead)
+        if (enemy == null || enemy.Health == null || enemy.Health.IsDead || !_hitEnemies.Add(enemy))
             return;
 
-        _hit = true;
         enemy.ReceiveDamage(_damage);
+        if (_hitsRemaining > 1)
+            TrioVfxPlayer.Spawn("perfurante_impacto", transform.position, 14, 14, 4,
+                new Vector2(.5f, .5f), 18f);
         PixelBurst.Spawn(transform.position, _fxColor, 6);
         PixelBurst.Spawn(transform.position, Color.Lerp(_fxColor, Color.white, 0.45f), 3);
+        if (--_hitsRemaining <= 0) Impact(transform.position);
+    }
+
+    void Impact(Vector2 at)
+    {
+        if (_hit) return;
+        _hit = true;
+        if (_hitEnemies.Count == 0)
+            TrioVfxPlayer.Spawn("flecha_cravada", at, 12, 7, 3,
+                new Vector2(9f / 12f, 3f / 7f), 8f);
+        PixelBurst.Spawn(at, _fxColor, 5);
         Destroy(gameObject);
     }
 
@@ -174,6 +217,9 @@ public class Arrow : MonoBehaviour
     {
         if (_arrowSprite != null)
             return _arrowSprite;
+
+        var art = TrioAnimationFrames.Vfx("flecha", 16, 7, 1, new Vector2(14f / 16f, 3f / 7f));
+        if (art != null) return _arrowSprite = art[0];
 
         int height = ArrowArt.Length;
         int width = ArrowArt[0].Length;

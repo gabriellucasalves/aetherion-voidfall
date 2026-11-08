@@ -8,7 +8,7 @@ using UnityEngine;
 public class ArcaneBolt : MonoBehaviour
 {
     // Atraso curto para alinhar o disparo com o thrust do cast (frames 14–15 @ ~12 fps).
-    const float MuzzleDelay = 0.08f;
+    const float MuzzleDelay = 0.24f;
     const float TrailInterval = 0.045f;
 
     static readonly string[] BoltArt =
@@ -25,6 +25,7 @@ public class ArcaneBolt : MonoBehaviour
     };
 
     static Sprite _boltSprite;
+    static Sprite[] _orbFrames;
 
     Vector2 _direction = Vector2.right;
     float _speed;
@@ -37,6 +38,7 @@ public class ArcaneBolt : MonoBehaviour
     bool _hit;
     SpriteRenderer _renderer;
     Collider2D _hitbox;
+    HealthSystem _ownerHealth;
 
     public static void Launch(Transform owner, Vector2 direction, AbilityData ability, float damage)
     {
@@ -54,6 +56,7 @@ public class ArcaneBolt : MonoBehaviour
         bolt._speed = ability.ProjectileSpeed;
         bolt._lifetime = ability.Lifetime;
         bolt._damage = damage;
+        bolt._ownerHealth = owner.GetComponent<HealthSystem>();
         bolt._fxColor = ability.Color;
 
         bolt._renderer = go.AddComponent<SpriteRenderer>();
@@ -87,6 +90,7 @@ public class ArcaneBolt : MonoBehaviour
 
     void Update()
     {
+        if (_ownerHealth != null && _ownerHealth.IsDead) { Destroy(gameObject); return; }
         if (_hit)
             return;
 
@@ -99,7 +103,27 @@ public class ArcaneBolt : MonoBehaviour
             Arm();
         }
 
-        transform.position += (Vector3)(_direction * _speed * Time.deltaTime);
+        Vector2 start = transform.position;
+        float distance = _speed * Time.deltaTime;
+        var hits = Physics2D.RaycastAll(start, _direction, distance + 0.1f);
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (var hit in hits)
+        {
+            if (hit.collider == null || hit.collider == _hitbox) continue;
+            if (EnemyTraversal.IsSurface(hit.collider))
+            {
+                _hit = true;
+                TrioVfxPlayer.Spawn("orbe_arcano_impacto", hit.point, 24, 24, 5, new Vector2(.5f, .5f), 18f);
+                PixelBurst.Spawn(hit.point, _fxColor, 5);
+                Destroy(gameObject);
+                return;
+            }
+            TryHit(hit.collider);
+            if (_hit) return;
+        }
+        transform.position += (Vector3)(_direction * distance);
+        if (_orbFrames != null)
+            _renderer.sprite = _orbFrames[Mathf.FloorToInt(_age * 12f) % _orbFrames.Length];
         SpawnTrail();
 
         if (_age - MuzzleDelay >= _lifetime)
@@ -138,6 +162,15 @@ public class ArcaneBolt : MonoBehaviour
         if (_hit || !_armed || other == null)
             return;
 
+        if (EnemyTraversal.IsSurface(other))
+        {
+            _hit = true;
+            TrioVfxPlayer.Spawn("orbe_arcano_impacto", transform.position, 24, 24, 5, new Vector2(.5f, .5f), 18f);
+            PixelBurst.Spawn(transform.position, _fxColor, 5);
+            Destroy(gameObject);
+            return;
+        }
+
         var enemy = other.GetComponent<EnemyController>();
         if (enemy == null)
             enemy = other.GetComponentInParent<EnemyController>();
@@ -146,6 +179,7 @@ public class ArcaneBolt : MonoBehaviour
 
         _hit = true;
         enemy.ReceiveDamage(_damage);
+        TrioVfxPlayer.Spawn("orbe_arcano_impacto", transform.position, 24, 24, 5, new Vector2(.5f, .5f), 18f);
         PixelBurst.Spawn(transform.position, _fxColor, 5);
         PixelBurst.Spawn(transform.position, Color.Lerp(_fxColor, Color.white, 0.5f), 3);
         Destroy(gameObject);
@@ -155,6 +189,9 @@ public class ArcaneBolt : MonoBehaviour
     {
         if (_boltSprite != null)
             return _boltSprite;
+
+        _orbFrames = TrioAnimationFrames.Vfx("orbe_arcano_loop", 16, 16, 4, new Vector2(9f / 16f, .5f));
+        if (_orbFrames != null) return _boltSprite = _orbFrames[0];
 
         int height = BoltArt.Length;
         int width = BoltArt[0].Length;

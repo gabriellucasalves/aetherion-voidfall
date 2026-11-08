@@ -25,13 +25,16 @@ public class ArqueiroVisual : MonoBehaviour
     // Walk — passada curta
     static readonly int[] Walk = { 4, 5, 6, 7, 8, 9 };
     // Shoot — draw hold → release → recover (legível; flecha spawna no release)
-    static readonly int[] Shoot = { 13, 13, 14, 15 };
+    static readonly int[] Shoot = { 13, 14, 15, 38 };
     // Dash — impulso (no Guerreiro estes slots são Block)
     static readonly int[] Dash = { 16, 17 };
     // Special — draw hold → release → leque (18); sync Arrow.SpecialMuzzleDelay
     static readonly int[] Special = { 13, 13, 14, 18 };
     // Hurt — recuo
     static readonly int[] Hurt = { 19, 20 };
+    static readonly int[] Piercing = { 21, 22, 23, 24, 25, 26 };
+    static readonly int[] Death = { 27, 28, 29, 30, 31 };
+    static readonly int[] Run = { 32, 33, 34, 35, 36, 37 };
 
     Sprite[] _frames;
     SpriteRenderer _renderer;
@@ -71,6 +74,8 @@ public class ArqueiroVisual : MonoBehaviour
 
         Bind();
 
+        if (_health != null && _health.IsDead) { Play("death", Death, 7f, false); return; }
+
         if (_hurtLeft > 0f)
             _hurtLeft -= Time.deltaTime;
 
@@ -83,14 +88,14 @@ public class ArqueiroVisual : MonoBehaviour
         if (_combat != null && _combat.IsSpecialAttacking)
         {
             // ~12 fps: draw (13×2) + release (14) → leque (18) ~0.25s (= Arrow.SpecialMuzzleDelay).
-            Play("special", Special, 12f, false);
+            Play("special", Piercing, 9f, false);
             return;
         }
 
         if (_combat != null && _combat.IsAttacking)
         {
             // ~12 fps: draw (13×2) cobre MuzzleDelay ~0.16s; release (14) bate com spawn da flecha.
-            Play("shoot", Shoot, 12f, false);
+            Play("shoot", Shoot, 7.5f, false);
             return;
         }
 
@@ -123,7 +128,7 @@ public class ArqueiroVisual : MonoBehaviour
         bool walking = Mathf.Abs(velocity.x) > 0.12f || (_player != null && _player.WantsMove);
         if (walking)
         {
-            Play("walk", Walk, 12f, true);
+            Play(Mathf.Abs(velocity.x) > 5.5f ? "run" : "walk", Mathf.Abs(velocity.x) > 5.5f ? Run : Walk, Mathf.Abs(velocity.x) > 5.5f ? 13f : 10f, true);
             return;
         }
 
@@ -141,7 +146,7 @@ public class ArqueiroVisual : MonoBehaviour
             return;
         }
 
-        _clock += Time.deltaTime * fps;
+        _clock += (clip == "death" ? Time.unscaledDeltaTime : Time.deltaTime) * fps;
         if (_clock < 1f)
             return;
 
@@ -178,7 +183,7 @@ public class ArqueiroVisual : MonoBehaviour
         if (texture == null)
             return null;
 
-        var frames = new Sprite[FrameCount];
+        var frames = new Sprite[39];
         int height = texture.height;
         for (int i = 0; i < FrameCount; i++)
         {
@@ -198,6 +203,20 @@ public class ArqueiroVisual : MonoBehaviour
                 SpriteMeshType.FullRect);
         }
 
+        TrioAnimationFrames.Copy(frames, 0, "arqueiro", "idle", 2);
+        frames[2] = frames[0]; frames[3] = frames[1];
+        TrioAnimationFrames.Copy(frames, 4, "arqueiro", "andar", 6);
+        TrioAnimationFrames.Copy(frames, 10, "arqueiro", "pulo", 3);
+        var attack = TrioAnimationFrames.Load("arqueiro", "ataque", 4);
+        if (attack != null)
+        {
+            frames[13] = attack[0]; frames[14] = attack[1];
+            frames[15] = attack[2]; frames[38] = attack[3];
+        }
+        TrioAnimationFrames.Copy(frames, 19, "arqueiro", "dano", 2);
+        TrioAnimationFrames.Copy(frames, 21, "arqueiro", "especial_perfurante", 6);
+        TrioAnimationFrames.Copy(frames, 27, "arqueiro", "morte", 5);
+        TrioAnimationFrames.Copy(frames, 32, "arqueiro", "correr", 6);
         return frames;
     }
 

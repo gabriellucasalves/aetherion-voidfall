@@ -59,6 +59,13 @@ public class InfernalBeam : MonoBehaviour
         _renderer.enabled = IsActive;
     }
 
+    void Update()
+    {
+        // A morte pausa o tempo físico; encerra o feixe mesmo sem outro FixedUpdate.
+        if (_owner == null || (_health != null && _health.IsDead))
+            Destroy(gameObject);
+    }
+
     void FixedUpdate()
     {
         if (_owner == null || (_health != null && _health.IsDead))

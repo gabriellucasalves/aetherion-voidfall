@@ -18,7 +18,7 @@ public class PlayerCombat : MonoBehaviour
     bool _locked;
     bool _blocking;
 
-    // Especial do Mago (Núcleo Arcano).
+    // Pulso Rúnico: telegraph à frente, dano em área e lentidão curta.
     public const float MageSpecialCooldown = 6.5f;
     public const float MageSpecialRadius = 3.4f;
     public const float MageSpecialDamageScale = 0.95f;
@@ -241,25 +241,19 @@ public class PlayerCombat : MonoBehaviour
 
         ArcaneBolt.Launch(transform, facing, _ability, DamageForShot());
         // 4 frames de cast @ ~12 fps (~0.33s) + hold curto no último frame — sync MagoVisual 13–16.
-        _attackLeft = 0.38f;
+        _attackLeft = 0.52f;
         ArmCooldown();
     }
 
     void FireMageSpecial()
     {
-        // Núcleo Arcano: explosão em área no inimigo mais próximo (ou à frente).
-        // Distinto do Orbe básico (tiro reto) — limpa grupo com CD longo (6.5s).
-        var target = FindNearest(transform, transform.position, AttackRange);
+        // Centro fixado na direção do personagem no início do cast.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
-        Vector3 center;
-        if (target != null)
-            center = target.transform.position + Vector3.up * 0.55f;
-        else
-            center = transform.position + (Vector3)(facing.normalized * 4.2f) + Vector3.up * 0.55f;
+        Vector3 center = transform.position + (Vector3)(facing.normalized * 2.3f) + Vector3.up * 0.55f;
 
         float damage = _hero.Power * MageSpecialDamageScale;
         var color = _ability != null ? _ability.Color : new Color(0.45f, 0.72f, 1f);
-        ArcaneNova.Detonate(center, MageSpecialRadius, damage, color);
+        ArcaneNova.Detonate(center, MageSpecialRadius, damage, color, true, transform);
 
         _attackLeft = 0.45f; // cast visual (MagoVisual)
         // Clip special 17–20 (~11 fps) + hold: cobre wind-up (0.18s) e pico da explosão VFX.
@@ -275,38 +269,29 @@ public class PlayerCombat : MonoBehaviour
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         FireArrow(facing, Vector3.zero, DamageForShot(), _ability.Color);
         // Clip shoot 13×2→14→15 @ ~12 fps (~0.33s) + hold no recover — sync Arrow.BasicMuzzleDelay.
-        _attackLeft = 0.42f;
+        _attackLeft = 0.55f;
         ArmCooldown();
     }
 
     void FireArcherSpecial()
     {
-        // FASE 5 — Rajada em leque: 5 flechas com o mesmo sprite Arrow, spread angular na facing.
-        // CD próprio ~6.5s (ArcherSpecialCooldown). Spawn sync com frame special 18.
+        // Flecha Perfurante: tiro reto, atravessa até três inimigos e para no terreno.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         if (facing.sqrMagnitude < 0.01f)
             facing = Vector2.right;
         facing.Normalize();
 
         Color tint = new Color(0.55f, 0.95f, 0.62f);
-        Color gold = new Color(0.95f, 0.85f, 0.35f);
-        float damage = DamageForShot() * 0.5f;
-        float[] angles = { -24f, -12f, 0f, 12f, 24f };
-        Vector2 perp = new Vector2(-facing.y, facing.x);
-        float[] lateral = { 0.22f, 0.11f, 0f, -0.11f, -0.22f };
-
-        for (int i = 0; i < angles.Length; i++)
-        {
-            Vector2 dir = Rotate(facing, angles[i]);
-            Vector3 offset = (Vector3)(perp * lateral[i]) + Vector3.up * 0.02f;
-            // Leve cascade: todas saem no release do leque (~0.25s), com micro-stagger.
-            float delay = Arrow.SpecialMuzzleDelay + i * 0.02f;
-            FireArrow(dir, offset, damage, tint, delay);
-        }
+        Arrow.Launch(transform, facing, _ability, DamageForShot() * 1.35f,
+            Vector3.zero, tint, Arrow.SpecialMuzzleDelay, 3);
+        Vector3 muzzle = transform.position + (Vector3)facing * .65f + Vector3.up * .4f;
+        TrioVfxPlayer.Spawn("perfurante_mira", muzzle, 40, 3, 2,
+            new Vector2(0f, 1f / 3f), 4f, 1f, facing.x);
+        TrioVfxPlayer.Spawn("perfurante_carga", muzzle, 12, 12, 4,
+            new Vector2(.5f, .5f), 8f);
 
         // VFX de wind-up (draw) — o PixelBurst de muzzle de cada Arrow dispara no soltar.
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.45f + Vector3.up * 0.35f, tint, 10);
-        PixelBurst.Spawn(transform.position + (Vector3)facing * 0.25f + Vector3.up * 0.4f, gold, 6);
         PixelBurst.Spawn(transform.position + Vector3.up * 0.55f, new Color(0.7f, 1f, 0.75f), 4);
 
         // Clip special {13,13,14,18} @ ~12 fps (~0.33s) + hold no leque.

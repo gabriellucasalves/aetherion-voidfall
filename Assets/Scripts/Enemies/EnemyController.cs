@@ -24,6 +24,9 @@ public class EnemyController : MonoBehaviour
     float _faceDir = 1f;
 
     float _stunLeft;
+    float _slowLeft;
+    float _patrolDir = 1f;
+    float _patrolClock;
     bool _frozen;
     float _storedDamage;
     float _savedGravity = 1f;
@@ -32,9 +35,11 @@ public class EnemyController : MonoBehaviour
     public HealthSystem Health => _health;
     public EnemyData Data => _data;
     public bool IsWindingUp => _phase == Phase.Windup;
+    public bool IsCharging => _phase == Phase.Active && _data != null && _data.AttackKind == "charge";
     public bool IsFrozen => _frozen;
     public float StoredDamage => _storedDamage;
     public int VitalMarks => _vitalMarks;
+    public bool IsSlowed => _slowLeft > 0f;
 
     public static event System.Action<EnemyController, float> AnyDamaged;
     public static event System.Action<EnemyController> AnyDied;
@@ -61,6 +66,9 @@ public class EnemyController : MonoBehaviour
             _body.linearVelocity = Vector2.zero;
             return;
         }
+
+        if (_slowLeft > 0f)
+            _slowLeft -= Time.fixedDeltaTime;
 
         if (_stunLeft > 0f)
         {
@@ -101,11 +109,16 @@ public class EnemyController : MonoBehaviour
         }
 
         Clamp();
-        Face(_phase == Phase.Chase ? dir : _faceDir);
+        Face(_phase == Phase.Chase && _data.AttackKind != "charge" ? dir : _faceDir);
     }
 
     void Chase(float dir, float adx, float ady)
     {
+        if (_data.AttackKind == "charge")
+        {
+            ChaseGolem(dir, adx, ady);
+            return;
+        }
         bool climb = _target.position.y - transform.position.y > 1.3f;
         if (T1AtmosScenery.Built && (climb || !_traversal.Grounded))
         {
@@ -121,7 +134,7 @@ public class EnemyController : MonoBehaviour
             }
             // Ranged recua quando pressionado e avança quando fora do alcance.
             float move = adx < 3.2f && !climb ? -dir : dir;
-            _traversal.Move(move, _data.MoveSpeed, climb);
+            _traversal.Move(move, MoveSpeed, climb);
         }
         else
         {
@@ -130,8 +143,61 @@ public class EnemyController : MonoBehaviour
                 BeginWindup(dir);
                 return;
             }
-            _traversal.Move(dir, _data.MoveSpeed, climb);
+            _traversal.Move(dir, MoveSpeed, climb);
         }
+    }
+
+    float MoveSpeed => _data.MoveSpeed * (IsSlowed ? 0.55f : 1f);
+
+    void ChaseGolem(float dir, float adx, float ady)
+    {
+        // Tanque terrestre: patrulha o apoio atual e só investe num alvo alcançável.
+        bool reachable = ady < 1.15f && HasLineOfSight() &&
+            EnemyTraversal.SurfaceAt(_target.position.x, _target.position.y + 0.2f, 1.5f, out var targetGround) &&
+            EnemyTraversal.SurfaceAt(transform.position.x, transform.position.y + 0.2f, 0.5f, out var ownGround) &&
+            Mathf.Abs(targetGround.point.y - ownGround.point.y) < 0.35f &&
+            SameSurfacePath(transform.position.x, _target.position.x, ownGround.point.y);
+        if (reachable && adx < _data.AttackRange && _traversal.Grounded)
+        {
+            BeginWindup(dir);
+            return;
+        }
+        float move = reachable ? dir : _patrolDir;
+        _patrolClock += Time.fixedDeltaTime;
+        if (_patrolClock > 2.4f || !GolemSafe(move))
+        {
+            _patrolClock = 0f;
+            _patrolDir = -move;
+            move = _patrolDir;
+        }
+        if (!GolemSafe(move)) { Halt(); return; }
+        _faceDir = move;
+        var v = _body.linearVelocity;
+        v.x = move * MoveSpeed;
+        _body.linearVelocity = v;
+    }
+
+    bool GolemSafe(float dir)
+    {
+        if (!_traversal.SafeAhead(dir, 0.45f)) return false;
+        Vector2 origin = (Vector2)transform.position + new Vector2(dir * (_data.Size.x * 0.5f), _data.Size.y * 0.5f);
+        foreach (var hit in Physics2D.RaycastAll(origin, new Vector2(dir, 0f), 0.45f))
+            if (EnemyTraversal.IsSurface(hit.collider)) return false;
+        return true;
+    }
+
+    static bool SameSurfacePath(float from, float to, float groundY)
+    {
+        float length = Mathf.Abs(to - from);
+        int steps = Mathf.CeilToInt(length / .3f);
+        for (int i = 1; i < steps; i++)
+        {
+            float x = Mathf.Lerp(from, to, i / (float)steps);
+            if (!EnemyTraversal.SurfaceAt(x, groundY + .2f, .5f, out var hit) ||
+                Mathf.Abs(hit.point.y - groundY) > .35f)
+                return false;
+        }
+        return true;
     }
 
     bool HasLineOfSight()
@@ -152,6 +218,9 @@ public class EnemyController : MonoBehaviour
         _phaseLeft = _data.AttackWindup;
         _struckPlayer = false;
         Halt();
+        if (_data.AttackKind == "charge")
+            TrioVfxPlayer.Spawn("golem_carga_tremor", transform.position + Vector3.up * .7f,
+                10, 24, 2, new Vector2(.5f, .5f), 8f);
     }
 
     void Strike()
@@ -173,15 +242,18 @@ public class EnemyController : MonoBehaviour
     {
         _phaseLeft -= Time.fixedDeltaTime;
         bool charge = _data.AttackKind == "charge";
-        if (_phaseLeft <= 0f || (charge && !_traversal.SafeAhead(_faceDir, 0.7f)))
+        if (_phaseLeft <= 0f || (charge && !GolemSafe(_faceDir)))
         {
+            if (charge && _phaseLeft > 0f)
+                TrioVfxPlayer.Spawn("golem_parada_borda", transform.position + Vector3.up * .2f,
+                    24, 12, 4, new Vector2(.5f, .5f), 12f);
             Recover();
             return;
         }
         if (charge)
         {
             var v = _body.linearVelocity;
-            v.x = _faceDir * 8f;
+            v.x = _faceDir * (IsSlowed ? 4.4f : 8f);
             _body.linearVelocity = v;
         }
         var center = transform.position + new Vector3(_faceDir * (_data.Size.x * 0.5f + 0.25f), _data.Size.y * 0.5f, 0f);
@@ -316,6 +388,13 @@ public class EnemyController : MonoBehaviour
             _faceDir = Mathf.Sign(velocity.x);
         if (_body != null)
             _body.linearVelocity = velocity;
+    }
+
+    public void ApplySlow(float seconds)
+    {
+        if (_health == null || _health.IsDead || _data == null || _data.AttackKind == "charge")
+            return; // o tanque recebe dano, sem imobilização nem stun.
+        _slowLeft = Mathf.Max(_slowLeft, seconds);
     }
 
     public void AddVitalMark()

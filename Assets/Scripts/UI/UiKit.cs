@@ -115,7 +115,8 @@ public static class UiKit
             return;
 
         var rect = fill.rectTransform;
-        rect.sizeDelta = new Vector2(width * Mathf.Clamp01(ratio), 0f);
+        float height = Mathf.Approximately(rect.anchorMin.y, rect.anchorMax.y) ? rect.sizeDelta.y : 0f;
+        rect.sizeDelta = new Vector2(width * Mathf.Clamp01(ratio), height);
     }
 
     public static Font ResolveFont()

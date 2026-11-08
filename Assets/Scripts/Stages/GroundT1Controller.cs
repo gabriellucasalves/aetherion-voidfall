@@ -321,7 +321,8 @@ public class GroundT1Controller : MonoBehaviour
         _hudName = hud.Name;
         _lifeFill = hud.Life; _lifeText = hud.LifeValue;
         _shieldFill = hud.Defense; _shieldText = hud.DefenseValue;
-        _shieldLabel = hud.DefenseLabel; _shieldTrack = hud.Defense.transform.parent.gameObject;
+        _shieldLabel = hud.DefenseLabel;
+        _shieldTrack = hud.Defense != null ? hud.Defense.transform.parent.gameObject : null;
         _specialFill = hud.Special; _specialText = hud.SpecialValue;
         _resonanceText = hud.Supreme;
         _showWard = hero != null && hero.Id == "mago";

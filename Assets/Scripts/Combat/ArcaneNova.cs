@@ -23,14 +23,19 @@ public class ArcaneNova : MonoBehaviour
     Color _color;
     bool _armed;
     bool _damaged;
+    bool _runicPulse;
+    HealthSystem _ownerHealth;
 
     SpriteRenderer _runeRing;
     SpriteRenderer _hex;
     SpriteRenderer _core;
     SpriteRenderer _shock;
     SpriteRenderer _flash;
+    SpriteRenderer _packPulse;
+    Sprite[] _packFrames;
 
-    public static void Detonate(Vector3 center, float radius, float damage, Color color)
+    public static void Detonate(Vector3 center, float radius, float damage, Color color,
+        bool runicPulse = false, Transform owner = null)
     {
         var go = new GameObject("NucleoArcano");
         go.transform.position = center;
@@ -38,6 +43,9 @@ public class ArcaneNova : MonoBehaviour
         nova._radius = Mathf.Max(1f, radius);
         nova._damage = damage;
         nova._color = color;
+        nova._runicPulse = runicPulse;
+        nova._armAt = runicPulse ? .34f : ArmDelay;
+        nova._ownerHealth = owner != null ? owner.GetComponent<HealthSystem>() : null;
         nova.BuildVisuals();
         // Charge spark no centro — mago já está no clip special (17–20).
         PixelBurst.Spawn(center, color, 4);
@@ -46,6 +54,13 @@ public class ArcaneNova : MonoBehaviour
 
     void BuildVisuals()
     {
+        _packFrames = _runicPulse
+            ? TrioAnimationFrames.Vfx("pulso_runico", 64, 24, 7, new Vector2(.5f, 16f / 24f)) : null;
+        if (_packFrames != null)
+        {
+            _packPulse = CreateSprite("PulsoRunicoV1", _packFrames[0], 24);
+            _packPulse.transform.localScale = new Vector3(2.2f, 2.2f, 1f);
+        }
         // Flash inicial (pulso de carga).
         _flash = CreateSprite("Flash", CoreSprite(), 22);
         _flash.color = new Color(0.85f, 0.95f, 1f, 0.7f);
@@ -81,7 +96,15 @@ public class ArcaneNova : MonoBehaviour
 
     void Update()
     {
+        if (_ownerHealth != null && _ownerHealth.IsDead) { Destroy(gameObject); return; }
         _age += Time.deltaTime;
+        if (_packPulse != null)
+        {
+            int frame = _age < _armAt
+                ? Mathf.Min(3, Mathf.FloorToInt(_age / _armAt * 4f))
+                : Mathf.Min(6, 4 + Mathf.FloorToInt((_age - _armAt) * 14f));
+            _packPulse.sprite = _packFrames[frame];
+        }
 
         if (!_armed)
         {
@@ -222,6 +245,7 @@ public class ArcaneNova : MonoBehaviour
                 continue;
 
             enemy.ReceiveDamage(_damage);
+            if (_runicPulse) enemy.ApplySlow(1.5f);
             PixelBurst.Spawn(enemyPoint, _color, 6);
             PixelBurst.Spawn(enemyPoint, new Color(0.75f, 0.5f, 1f), 3);
         }

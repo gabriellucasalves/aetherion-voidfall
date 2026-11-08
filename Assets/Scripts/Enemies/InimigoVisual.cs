@@ -17,6 +17,11 @@ public class InimigoVisual : MonoBehaviour
     Sprite[] _frames;
     float _clock;
     float _hurtLeft;
+    float _golemFxClock;
+    SpriteRenderer _golemWarning;
+    Sprite[] _golemWarningFrames;
+    SpriteRenderer _slowMark;
+    Sprite[] _slowFrames;
 
     public static bool Attach(GameObject owner, string id)
     {
@@ -33,6 +38,31 @@ public class InimigoVisual : MonoBehaviour
         visual._renderer.sortingOrder = T1AtmosScenery.Built ? 9 : 8;
         visual._body = owner.GetComponent<Rigidbody2D>();
         visual._controller = owner.GetComponent<EnemyController>();
+        visual._slowFrames = TrioAnimationFrames.Vfx("lentidao_marca", 8, 10, 3,
+            new Vector2(.5f, 9f / 10f));
+        if (visual._slowFrames != null)
+        {
+            var mark = new GameObject("MarcaLentidao");
+            mark.transform.SetParent(go.transform, false);
+            mark.transform.localPosition = new Vector3(0f, 1.85f, 0f);
+            visual._slowMark = mark.AddComponent<SpriteRenderer>();
+            visual._slowMark.sortingOrder = 13;
+            visual._slowMark.enabled = false;
+        }
+        if (id == "golem_ardosia")
+        {
+            visual._golemWarningFrames = TrioAnimationFrames.Vfx("golem_carga_brilho", 16, 16, 3,
+                new Vector2(.5f, .5f));
+            if (visual._golemWarningFrames != null)
+            {
+                var warning = new GameObject("AvisoInvestida");
+                warning.transform.SetParent(go.transform, false);
+                warning.transform.localPosition = new Vector3(0f, 1.05f, 0f);
+                visual._golemWarning = warning.AddComponent<SpriteRenderer>();
+                visual._golemWarning.sortingOrder = 12;
+                visual._golemWarning.enabled = false;
+            }
+        }
         visual._clock = Random.Range(0f, 10f); // dessincroniza a animação entre inimigos
 
         var health = owner.GetComponent<HealthSystem>();
@@ -82,6 +112,29 @@ public class InimigoVisual : MonoBehaviour
         }
 
         _clock += Time.deltaTime;
+        if (_slowMark != null)
+        {
+            _slowMark.enabled = _controller != null && _controller.IsSlowed;
+            if (_slowMark.enabled)
+                _slowMark.sprite = _slowFrames[Mathf.FloorToInt(_clock * 8f) % _slowFrames.Length];
+        }
+        if (_golemWarning != null)
+        {
+            bool winding = _controller != null && _controller.IsWindingUp;
+            _golemWarning.enabled = winding;
+            if (winding)
+                _golemWarning.sprite = _golemWarningFrames[Mathf.FloorToInt(_clock * 10f) % 3];
+            if (_controller != null && _controller.IsCharging)
+            {
+                _golemFxClock += Time.deltaTime;
+                if (_golemFxClock >= .12f)
+                {
+                    _golemFxClock = 0f;
+                    TrioVfxPlayer.Spawn("golem_investida_poeira", transform.position + Vector3.up * .1f,
+                        32, 14, 5, new Vector2(.5f, .5f), 14f);
+                }
+            }
+        }
 
         // flash de dano > telegraph de ataque > normal
         if (_hurtLeft > 0f)
