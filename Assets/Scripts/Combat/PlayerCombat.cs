@@ -18,6 +18,13 @@ public class PlayerCombat : MonoBehaviour
     bool _locked;
     bool _blocking;
 
+    // Estado da nova mecânica de Tiro Carregado do Arqueiro Arcano (Puxar -> Carregar -> Soltar -> Recuo)
+    bool _isCharging;
+    float _chargeTime;
+    bool _prevMobileAttackHeld;
+    bool _damagedHooked;
+    int _lastReleasedTier = 2;
+
     // Pulso Rúnico: telegraph à frente, dano em área e lentidão curta.
     public const float MageSpecialCooldown = 6.5f;
     public const float MageSpecialRadius = 3.4f;
@@ -26,12 +33,22 @@ public class PlayerCombat : MonoBehaviour
     // Feixe Infernal: L/Q/E consomem a mesma barra ESPECIAL; Corte permanece independente.
     public const float WarriorSpecialCooldown = 6f;
 
-
-    // Especial do Arqueiro (Rajada em leque) — CD próprio, espelha o padrão do Mago.
+    // Especial do Arqueiro (Flecha Perfurante) — CD próprio, espelha o padrão do Mago.
     public const float ArcherSpecialCooldown = 6.5f;
+
+    // Constantes do Tiro Carregado do Arqueiro Arcano
+    public const float ChargeMoveScale = 0.4f;
+    public const float ArcherChargeMidThreshold = 0.25f;
+    public const float ArcherChargeMaxThreshold = 0.80f;
+    public const float ArcherReleaseCooldown = 0.30f;
+    public const float ArcherRecoilDuration = 0.22f;
 
     public bool IsBlocking => CanBlock && _blocking && !_locked;
     public bool IsWarding => IsMage && _ward != null && _ward.IsActive && !_locked;
+    public bool IsCharging => IsArcher && _isCharging && !_locked;
+    public float ChargeTime => _isCharging ? _chargeTime : 0f;
+    public int ChargeSegmentCount => !_isCharging ? 0 : (_chargeTime >= ArcherChargeMaxThreshold ? 3 : (_chargeTime >= ArcherChargeMidThreshold ? 2 : 1));
+    public int LastReleasedTier => _lastReleasedTier;
     public bool IsAttacking => _attackLeft > 0f;
     public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldownLeft);
     public float SpecialCooldownMax =>
@@ -69,6 +86,7 @@ public class PlayerCombat : MonoBehaviour
         _ability = ability;
         _player = GetComponent<PlayerController>();
         _health = GetComponent<HealthSystem>();
+        HookDamageCancel();
 
         if (IsWarrior)
         {
@@ -90,12 +108,40 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    void HookDamageCancel()
+    {
+        if (_damagedHooked || _health == null)
+            return;
+        _health.Damaged += OnOwnerDamaged;
+        _damagedHooked = true;
+    }
+
+    void OnDestroy()
+    {
+        if (_damagedHooked && _health != null)
+            _health.Damaged -= OnOwnerDamaged;
+    }
+
+    void OnOwnerDamaged(HealthSystem _)
+    {
+        // Tomar dano no meio da carga cancela a puxada SEM disparar nenhuma flecha.
+        if (IsArcher && _isCharging)
+            CancelArcherCharge();
+    }
+
+    public void CancelArcherCharge()
+    {
+        _isCharging = false;
+        _chargeTime = 0f;
+    }
+
     public void SetLocked(bool locked)
     {
         _locked = locked;
         if (_locked)
         {
             _blocking = false;
+            CancelArcherCharge();
             if (_ward != null)
                 _ward.SetHolding(false);
         }
@@ -137,8 +183,17 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
-        if (_locked || _ability == null || _hero == null)
+        HookDamageCancel();
+
+        bool mobileHeld = MobileControls.IsVisible && MobileControls.AttackHeld;
+        bool mobileDown = mobileHeld && !_prevMobileAttackHeld;
+        bool mobileUp = !mobileHeld && _prevMobileAttackHeld;
+        _prevMobileAttackHeld = mobileHeld;
+
+        if (_locked || _ability == null || _hero == null || (_health != null && _health.IsDead))
         {
+            if (_isCharging)
+                CancelArcherCharge();
             // Descarta toques mobile de especial/dash enquanto travado (pausa/morte).
             if (MobileControls.IsVisible)
             {
@@ -178,12 +233,6 @@ public class PlayerCombat : MonoBehaviour
 
         _blocking = false;
 
-        if (IsArcher && WantsDash() && _dashCooldown <= 0f && _player != null)
-            Dash();
-
-        if (IsArcher && _specialCooldownLeft <= 0f && WantsSpecial())
-            FireArcherSpecial();
-
         if (IsMage)
         {
             // Campo de Magia: mesmo input de block do Guerreiro (S/K/direito / mobile Block).
@@ -191,19 +240,165 @@ public class PlayerCombat : MonoBehaviour
                 _ward.SetHolding(WantsBlock());
 
             // Especial tem CD próprio — não fica bloqueado pelo CD do Orbe básico.
-            // CD primeiro: não consome o toque/tecla se ainda estiver em cooldown.
             if (_specialCooldownLeft <= 0f && WantsSpecial())
                 FireMageSpecial();
 
             // Tiro básico: só clique/J (ou hold) — sem auto-fire por proximidade.
-            // Hold do campo cancela o orbe (canalizar defesa).
             if (!IsWarding && WantsAttack() && _cooldownLeft <= 0f)
                 FireMage();
             return;
         }
 
-        if (IsArcher && WantsAttack() && _cooldownLeft <= 0f)
-            FireArcher();
+        if (IsArcher)
+        {
+            UpdateArcherCombat(mobileDown, mobileHeld, mobileUp);
+        }
+    }
+
+    void UpdateArcherCombat(bool mobileDown, bool mobileHeld, bool mobileUp)
+    {
+        // Dash (Shift) cancela carga ativa sem disparar.
+        if (WantsDash() && _dashCooldown <= 0f && _player != null)
+        {
+            CancelArcherCharge();
+            Dash();
+            return;
+        }
+
+        // Especial (L/Q) cancela carga ativa sem disparar o básico e lança 1 Flecha Perfurante.
+        if (_specialCooldownLeft <= 0f && WantsSpecial())
+        {
+            CancelArcherCharge();
+            FireArcherSpecial();
+            return;
+        }
+
+        if (_isCharging)
+        {
+            // Se entrou em dash ou especial, cancela sem disparar.
+            if ((_player != null && _player.IsDashing) || _specialAnimLeft > 0f)
+            {
+                CancelArcherCharge();
+                return;
+            }
+
+            bool released = WantsArcherAttackUp(mobileUp) || !WantsArcherAttackHeld(mobileHeld);
+            if (released)
+            {
+                ReleaseArcherCharge();
+            }
+            else
+            {
+                _chargeTime += Time.deltaTime;
+            }
+            return;
+        }
+
+        // Fora de carga: só inicia uma nova puxada na borda de descida (GetMouseButtonDown/GetKeyDown/toque inicial)
+        // e nunca durante o recuo (_attackLeft > 0), cooldown (_cooldownLeft > 0), especial ou dash.
+        bool canStartCharge = _cooldownLeft <= 0f
+            && _attackLeft <= 0f
+            && _specialAnimLeft <= 0f
+            && (_player == null || !_player.IsDashing);
+
+        if (canStartCharge && WantsArcherAttackDown(mobileDown))
+        {
+            BeginArcherCharge();
+        }
+    }
+
+    public bool BeginArcherCharge()
+    {
+        if (!IsArcher || _locked || (_health != null && _health.IsDead))
+            return false;
+        if (_cooldownLeft > 0f || _attackLeft > 0f || _specialAnimLeft > 0f || (_player != null && _player.IsDashing))
+            return false;
+        _isCharging = true;
+        _chargeTime = 0f;
+        return true;
+    }
+
+    public void AdvanceArcherCharge(float seconds)
+    {
+        if (_isCharging && seconds > 0f)
+            _chargeTime += seconds;
+    }
+
+    void FireArcher()
+    {
+        // Mantido apenas para compatibilidade de reflexão em testes legados: simula puxada média + soltura de 1 flecha
+        _isCharging = true;
+        _chargeTime = 0.45f;
+        ReleaseArcherCharge();
+    }
+
+    public void ReleaseArcherCharge()
+    {
+        if (!_isCharging)
+            return;
+
+        float held = _chargeTime;
+        _isCharging = false;
+        _chargeTime = 0f;
+
+        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        if (facing.sqrMagnitude < 0.01f)
+            facing = Vector2.right;
+        facing.Normalize();
+
+        float baseDamage = DamageForShot();
+        int tier;
+        float damage;
+        float speed;
+        float lifetime;
+        Color fxColor;
+
+        if (held < ArcherChargeMidThreshold)
+        {
+            // Nível 1 (< 0.25s): 40% do dano base, mais lenta, alcance curto e leve queda no fim
+            tier = 1;
+            damage = baseDamage * 0.40f;
+            speed = 14.5f;
+            lifetime = 0.28f;
+            fxColor = new Color(0.42f, 0.97f, 1f);
+        }
+        else if (held < ArcherChargeMaxThreshold)
+        {
+            // Nível 2 (0.25s a 0.80s): dano interpola continuamente de 40% a 100%, haste dourada/cristal
+            tier = 2;
+            float t = Mathf.InverseLerp(ArcherChargeMidThreshold, ArcherChargeMaxThreshold, held);
+            damage = baseDamage * Mathf.Lerp(0.40f, 1.00f, t);
+            speed = Mathf.Lerp(18.5f, 23.0f, t);
+            lifetime = Mathf.Lerp(0.38f, 0.50f, t);
+            fxColor = new Color(0.55f, 0.95f, 1f);
+        }
+        else
+        {
+            // Nível 3 (>= 0.80s): 100% do dano base, mais rápida e longa, rastro mágico e impacto estelar
+            tier = 3;
+            damage = baseDamage;
+            speed = 27.5f;
+            lifetime = 0.60f;
+            fxColor = new Color(1f, 0.95f, 0.62f);
+        }
+
+        // Nasce EXATAMENTE UMA flecha no frame de soltar (muzzleDelay = 0f).
+        Arrow.Launch(
+            transform,
+            facing,
+            _ability,
+            damage,
+            Vector3.zero,
+            fxColor,
+            muzzleDelay: 0f,
+            pierce: 1,
+            chargeTier: tier,
+            speedOverride: speed,
+            lifetimeOverride: lifetime);
+
+        _lastReleasedTier = tier;
+        _attackLeft = ArcherRecoilDuration;     // Janela de animação Soltar -> Recuo (~0.22s)
+        _cooldownLeft = ArcherReleaseCooldown;  // Cooldown fixo de 0.30s após o disparo
     }
 
     void FireWarrior()
@@ -212,7 +407,6 @@ public class PlayerCombat : MonoBehaviour
         go.AddComponent<MeleeSlash>().Swing(transform, _ability, DamageForShot());
         Vector3 swingFx = transform.position + (Vector3)_player.Facing * 1.0f + Vector3.up * 0.35f;
         PixelBurst.Spawn(swingFx, _ability.Color, 6);
-        // 4 frames de ataque a ~12 fps (~0.33s) + hold curto no último frame
         _attackLeft = 0.40f;
         ArmCooldown();
     }
@@ -233,21 +427,18 @@ public class PlayerCombat : MonoBehaviour
 
     void FireMage()
     {
-        // Orbe Arcano: tiro reto na facing (sem lock / sem homing). Clique/J ou hold.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         if (facing.sqrMagnitude < 0.01f)
             facing = Vector2.right;
         facing.Normalize();
 
         ArcaneBolt.Launch(transform, facing, _ability, DamageForShot());
-        // 4 frames de cast @ ~12 fps (~0.33s) + hold curto no último frame — sync MagoVisual 13–16.
         _attackLeft = 0.52f;
         ArmCooldown();
     }
 
     void FireMageSpecial()
     {
-        // Centro fixado na direção do personagem no início do cast.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         Vector3 center = transform.position + (Vector3)(facing.normalized * 2.3f) + Vector3.up * 0.55f;
 
@@ -255,27 +446,16 @@ public class PlayerCombat : MonoBehaviour
         var color = _ability != null ? _ability.Color : new Color(0.45f, 0.72f, 1f);
         ArcaneNova.Detonate(center, MageSpecialRadius, damage, color, true, transform);
 
-        _attackLeft = 0.45f; // cast visual (MagoVisual)
-        // Clip special 17–20 (~11 fps) + hold: cobre wind-up (0.18s) e pico da explosão VFX.
-        _specialAnimLeft = 0.75f; // cut-in (~0.71s) + pico da explosao
-        _specialCooldownLeft = MageSpecialCooldown; // CD próprio ~6.5s — independente do Orbe básico
+        _attackLeft = 0.45f;
+        _specialAnimLeft = 0.75f;
+        _specialCooldownLeft = MageSpecialCooldown;
         PixelBurst.Spawn(transform.position + Vector3.up * 0.8f, color, 6);
         PixelBurst.Spawn(transform.position + Vector3.up * 0.55f, new Color(0.7f, 0.45f, 1f), 4);
     }
 
-    void FireArcher()
-    {
-        // Flecha visual (Arrow): 1 tiro reto na facing. Spawn com delay no frame de soltar.
-        Vector2 facing = _player != null ? _player.Facing : Vector2.right;
-        FireArrow(facing, Vector3.zero, DamageForShot(), _ability.Color);
-        // Clip shoot 13×2→14→15 @ ~12 fps (~0.33s) + hold no recover — sync Arrow.BasicMuzzleDelay.
-        _attackLeft = 0.55f;
-        ArmCooldown();
-    }
-
     void FireArcherSpecial()
     {
-        // Flecha Perfurante: tiro reto, atravessa até três inimigos e para no terreno.
+        // Flecha Perfurante: 1 único projétil reto, atravessa até três inimigos e para no terreno.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         if (facing.sqrMagnitude < 0.01f)
             facing = Vector2.right;
@@ -290,19 +470,16 @@ public class PlayerCombat : MonoBehaviour
         TrioVfxPlayer.Spawn("perfurante_carga", muzzle, 12, 12, 4,
             new Vector2(.5f, .5f), 8f);
 
-        // VFX de wind-up (draw) — o PixelBurst de muzzle de cada Arrow dispara no soltar.
         PixelBurst.Spawn(transform.position + (Vector3)facing * 0.45f + Vector3.up * 0.35f, tint, 10);
         PixelBurst.Spawn(transform.position + Vector3.up * 0.55f, new Color(0.7f, 1f, 0.75f), 4);
 
-        // Clip special {13,13,14,18} @ ~12 fps (~0.33s) + hold no leque.
         _attackLeft = 0.45f;
-        _specialAnimLeft = 0.70f; // cobre o cut-in (~0.71s)
+        _specialAnimLeft = 0.70f;
         _specialCooldownLeft = ArcherSpecialCooldown;
     }
 
     void Dash()
     {
-        // Esquiva do arqueiro: impulso curto na facing com i-frames breves (PlayerController).
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         float agility = Mathf.Max(40, _hero.Agility);
         float speed = 18f + agility * 0.06f;
@@ -318,15 +495,8 @@ public class PlayerCombat : MonoBehaviour
         _dashCooldown = 0f;
     }
 
-    void FireArrow(Vector2 direction, Vector3 localOffset, float damage, Color color, float muzzleDelay = -1f)
-    {
-        // Arrow: sprite ponta+haste+pena, rotação na direção, PixelBurst no impacto.
-        Arrow.Launch(transform, direction, _ability, damage, localOffset, color, muzzleDelay);
-    }
-
     float DamageForShot()
     {
-        // Mago: Power * DamageScale (kit de dano à distância). Guerreiro continua em Strength.
         if (IsMage)
             return _hero.Power * _ability.DamageScale;
         if (IsArcher)
@@ -380,19 +550,32 @@ public class PlayerCombat : MonoBehaviour
             : new Vector3(0.28f, 0.7f, 1f);
     }
 
-    static Vector2 Rotate(Vector2 value, float degrees)
-    {
-        float rad = degrees * Mathf.Deg2Rad;
-        float sin = Mathf.Sin(rad);
-        float cos = Mathf.Cos(rad);
-        return new Vector2(value.x * cos - value.y * sin, value.x * sin + value.y * cos);
-    }
-
     static bool WantsAttack()
     {
         if (MobileControls.IsVisible)
             return MobileControls.AttackHeld;
         return Input.GetMouseButton(0) || Input.GetKey(KeyCode.J);
+    }
+
+    static bool WantsArcherAttackDown(bool mobileDown)
+    {
+        if (MobileControls.IsVisible)
+            return mobileDown;
+        return Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.J);
+    }
+
+    static bool WantsArcherAttackHeld(bool mobileHeld)
+    {
+        if (MobileControls.IsVisible)
+            return mobileHeld;
+        return Input.GetMouseButton(0) || Input.GetKey(KeyCode.J);
+    }
+
+    static bool WantsArcherAttackUp(bool mobileUp)
+    {
+        if (MobileControls.IsVisible)
+            return mobileUp;
+        return Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.J);
     }
 
     static bool WantsBlock()
@@ -406,8 +589,6 @@ public class PlayerCombat : MonoBehaviour
 
     static bool WantsSpecial()
     {
-        // Teclado: L ou Q. Mobile: botão de especial (ConsumeSpecialDown).
-        // E fica reservado ao Especial Supremo (SpecialController).
         if (MobileControls.IsVisible)
             return MobileControls.ConsumeSpecialDown();
         return Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Q);

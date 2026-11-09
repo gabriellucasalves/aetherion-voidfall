@@ -271,6 +271,114 @@ public class CombateHudSmoke : MonoBehaviour
             }
             if (hero == "arqueiro")
             {
+                // Aguarda fim de qualquer recuo/cooldown anterior
+                yield return new WaitForSeconds(0.40f);
+                foreach (var a in FindObjectsByType<Arrow>(FindObjectsSortMode.None)) Destroy(a.gameObject);
+
+                // Print 1: Idle do Arqueiro Arcano no cenário (capuz azul-noturno, 27px)
+                yield return new WaitForEndOfFrame();
+                Capture("arqueiro_idle_cenario");
+
+                // Teste 4 + Prints de Carga: segurar sem soltar (nenhuma flecha nasce; poses 1, 2 e 3 + indicador)
+                combat.enabled = false;
+                bool started = combat.BeginArcherCharge();
+                combat.AdvanceArcherCharge(0.10f);
+                yield return null;
+                Check(started && combat.IsCharging && combat.ChargeSegmentCount == 1 &&
+                    FindObjectsByType<Arrow>(FindObjectsSortMode.None).Length == 0,
+                    "Arqueiro Puxar (<0.25s): pose de carga N1, 1 segmento, 0 flechas nascem durante hold");
+                yield return new WaitForEndOfFrame();
+                Capture("arqueiro_carga_1_puxar");
+
+                combat.AdvanceArcherCharge(0.40f); // total 0.50s (Carga Média)
+                yield return null;
+                Check(combat.IsCharging && combat.ChargeSegmentCount == 2 &&
+                    FindObjectsByType<Arrow>(FindObjectsSortMode.None).Length == 0,
+                    "Arqueiro Carga Média (0.25-0.80s): pose N2, 2 segmentos, 0 flechas nascem durante hold");
+                yield return new WaitForEndOfFrame();
+                Capture("arqueiro_carga_2_media");
+
+                combat.AdvanceArcherCharge(0.40f); // total 0.90s (Carga Máxima >= 0.80s)
+                yield return null;
+                Check(combat.IsCharging && combat.ChargeSegmentCount == 3 &&
+                    FindObjectsByType<Arrow>(FindObjectsSortMode.None).Length == 0,
+                    "Arqueiro Carga Máxima (>=0.80s): pose N3, 3 segmentos, 0 flechas nascem durante hold");
+                yield return new WaitForEndOfFrame();
+                Capture("arqueiro_carga_3_maxima");
+
+                // Teste 6: tomar hit no meio da carga cancela a carga SEM disparar nenhuma flecha
+                health.IsInvulnerable = false;
+                health.TakeDamage(5f);
+                health.Configure(health.Max);
+                health.IsInvulnerable = true;
+                yield return null;
+                Check(!combat.IsCharging && FindObjectsByType<Arrow>(FindObjectsSortMode.None).Length == 0,
+                    "Tomar dano no meio da carga cancela a carga sem disparar flecha");
+                yield return new WaitForSeconds(0.28f);
+
+                // Teste 1: Clique curto (<0.25s) -> sai exatamente 1 flecha fraca (N1), nunca 2 ou 3
+                var targetDummy = SimpleEnemySpawner.SpawnAt(EnemyData.CreateAlienSkeleton(), player.transform,
+                    StageData.CreateT1(), new Vector2(3.6f, StageData.CreateT1().GroundTop),
+                    player.GetComponent<Collider2D>());
+                targetDummy.Health.Configure(1000f);
+                targetDummy.enabled = false;
+                targetDummy.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+
+                combat.BeginArcherCharge();
+                combat.AdvanceArcherCharge(0.10f);
+                combat.ReleaseArcherCharge();
+                // Teste 5: tentativa de spam imediato durante recuo/cooldown deve ser bloqueada
+                bool spamBlocked = !combat.BeginArcherCharge();
+                yield return new WaitForSeconds(0.06f);
+                int n1Count = FindObjectsByType<Arrow>(FindObjectsSortMode.None).Length;
+                Check(n1Count == 1 && combat.LastReleasedTier == 1 && spamBlocked,
+                    "Clique curto (<0.25s) dispara EXATAMENTE 1 flecha N1 e bloqueia spam no cooldown");
+                yield return new WaitForEndOfFrame();
+                Capture("arqueiro_n1_voando");
+                yield return new WaitForSeconds(0.32f);
+                float hpAfterN1 = targetDummy.Health.Current;
+                float dmgN1 = 1000f - hpAfterN1;
+                foreach (var a in FindObjectsByType<Arrow>(FindObjectsSortMode.None)) Destroy(a.gameObject);
+
+                // Teste 2: Segurar ~0.50s e soltar -> sai exatamente 1 flecha média (N2)
+                combat.enabled = true;
+                yield return new WaitForSeconds(0.35f);
+                combat.enabled = false;
+                combat.BeginArcherCharge();
+                combat.AdvanceArcherCharge(0.50f);
+                combat.ReleaseArcherCharge();
+                yield return new WaitForSeconds(0.06f);
+                int n2Count = FindObjectsByType<Arrow>(FindObjectsSortMode.None).Length;
+                Check(n2Count == 1 && combat.LastReleasedTier == 2,
+                    "Carga média (~0.50s) dispara EXATAMENTE 1 flecha N2");
+                yield return new WaitForEndOfFrame();
+                Capture("arqueiro_n2_voando");
+                yield return new WaitForSeconds(0.30f);
+                float hpAfterN2 = targetDummy.Health.Current;
+                float dmgN2 = hpAfterN1 - hpAfterN2;
+                foreach (var a in FindObjectsByType<Arrow>(FindObjectsSortMode.None)) Destroy(a.gameObject);
+
+                // Teste 3: Segurar >= 0.80s e soltar -> sai exatamente 1 flecha máxima (N3) com rastro e impacto estelar
+                combat.enabled = true;
+                yield return new WaitForSeconds(0.35f);
+                combat.enabled = false;
+                combat.BeginArcherCharge();
+                combat.AdvanceArcherCharge(0.88f);
+                combat.ReleaseArcherCharge();
+                yield return new WaitForSeconds(0.06f);
+                int n3Count = FindObjectsByType<Arrow>(FindObjectsSortMode.None).Length;
+                Check(n3Count == 1 && combat.LastReleasedTier == 3,
+                    "Carga máxima (>=0.80s) dispara EXATAMENTE 1 flecha N3 com rastro mágico");
+                yield return new WaitForEndOfFrame();
+                Capture("arqueiro_n3_voando");
+                yield return new WaitForSeconds(0.28f);
+                float dmgN3 = hpAfterN2 - targetDummy.Health.Current;
+                Check(dmgN1 > 0f && dmgN2 > dmgN1 && dmgN3 > dmgN2,
+                    $"Dano escala corretamente N1({dmgN1:F1}) < N2({dmgN2:F1}) < N3({dmgN3:F1})");
+                Destroy(targetDummy.gameObject);
+                combat.enabled = true;
+                yield return new WaitForSeconds(0.35f);
+
                 Arrow.Launch(player.transform, Vector2.right, AbilityData.CreateFlecha(), 12f,
                     Vector3.zero, Color.white, .3f);
                 var stage = FindFirstObjectByType<GroundT1Controller>();

@@ -1,17 +1,10 @@
 using UnityEngine;
 
-// Runtime visual do Arqueiro — mesma pipeline do GuerreiroVisual
-// (Resources/<Hero>/sheet.png, célula 64, 7 colunas, pivot no pé, PixelArt.Ppu).
-// Mapa completo: Assets/Art/Arqueiro/FRAME_MAP.md
-//
-//   Idle      0  1  2  3
-//   Walk      4  5  6  7  8  9
-//   Jump     10 11 12          (subida / ápice / queda)
-//   Shoot    13 14 15          (puxa → solta → recolhe) — sync Arrow.MuzzleDelay no 14
-//   Dash     16 17
-//   Special  18                (soltura em leque; wind-up 13×2→14; sync SpecialMuzzleDelay)
-//   Hurt     19 20
-//
+// Runtime visual do Arqueiro Arcano — mesma pipeline do GuerreiroVisual e MagoVisual
+// (Resources/Arqueiro/sheet.png + overrides em Resources/TrioAnimations/arqueiro/<acao>.png,
+// célula 64x64, FootPivot = 3/64, PPU = 16).
+// Suporta o Tiro Carregado em 5 frames (ataque.png: 0=Puxar, 1=Carga média, 2=Carga máxima, 3=Soltar, 4=Recuo)
+// e o indicador discreto de 3 segmentos acima do capuz azul-noturno.
 public class ArqueiroVisual : MonoBehaviour
 {
     const int Cell = 64;
@@ -20,24 +13,20 @@ public class ArqueiroVisual : MonoBehaviour
     const float Ppu = PixelArt.Ppu;
     const float FootPivot = 3f / 64f;
 
-    // Idle — respiração com arco em guarda
     static readonly int[] Idle = { 0, 1, 2, 3 };
-    // Walk — passada curta
     static readonly int[] Walk = { 4, 5, 6, 7, 8, 9 };
-    // Shoot — draw hold → release → recover (legível; flecha spawna no release)
-    static readonly int[] Shoot = { 13, 14, 15, 38 };
-    // Dash — impulso (no Guerreiro estes slots são Block)
+    static readonly int[] ReleaseRecoil = { 38, 39 };
     static readonly int[] Dash = { 16, 17 };
-    // Special — draw hold → release → leque (18); sync Arrow.SpecialMuzzleDelay
-    static readonly int[] Special = { 13, 13, 14, 18 };
-    // Hurt — recuo
     static readonly int[] Hurt = { 19, 20 };
     static readonly int[] Piercing = { 21, 22, 23, 24, 25, 26 };
     static readonly int[] Death = { 27, 28, 29, 30, 31 };
     static readonly int[] Run = { 32, 33, 34, 35, 36, 37 };
 
+    static Sprite[] _chargeIndicatorSprites;
+
     Sprite[] _frames;
     SpriteRenderer _renderer;
+    SpriteRenderer _chargeIndicatorRenderer;
     PlayerController _player;
     PlayerCombat _combat;
     HealthSystem _health;
@@ -47,6 +36,7 @@ public class ArqueiroVisual : MonoBehaviour
     string _clip = "";
     float _hurtLeft;
     float _afterimageClock;
+    int _prevChargeSegment;
 
     public static bool Attach(Transform parent)
     {
@@ -63,6 +53,15 @@ public class ArqueiroVisual : MonoBehaviour
         visual._renderer = go.AddComponent<SpriteRenderer>();
         visual._renderer.sortingOrder = 12;
         visual._renderer.sprite = frames[0];
+
+        // Indicador discreto de 3 segmentos acima da cabeça durante a carga
+        var indGo = new GameObject("ChargeIndicator");
+        indGo.transform.SetParent(go.transform, false);
+        indGo.transform.localPosition = new Vector3(0f, 1.92f, 0f);
+        visual._chargeIndicatorRenderer = indGo.AddComponent<SpriteRenderer>();
+        visual._chargeIndicatorRenderer.sortingOrder = 25;
+        visual._chargeIndicatorRenderer.enabled = false;
+
         go.SetActive(true);
         return true;
     }
@@ -74,35 +73,53 @@ public class ArqueiroVisual : MonoBehaviour
 
         Bind();
 
-        if (_health != null && _health.IsDead) { Play("death", Death, 7f, false); return; }
+        if (_health != null && _health.IsDead)
+        {
+            UpdateChargeIndicator(0);
+            Play("death", Death, 7f, false);
+            return;
+        }
 
         if (_hurtLeft > 0f)
             _hurtLeft -= Time.deltaTime;
 
         if (_hurtLeft > 0f)
         {
+            UpdateChargeIndicator(0);
             Play("hurt", Hurt, 10f, false);
             return;
         }
 
         if (_combat != null && _combat.IsSpecialAttacking)
         {
-            // ~12 fps: draw (13×2) + release (14) → leque (18) ~0.25s (= Arrow.SpecialMuzzleDelay).
+            UpdateChargeIndicator(0);
             Play("special", Piercing, 9f, false);
             return;
         }
 
+        // Estado de carga (segurando o botão): trava a pose de mira conforme o nível (Puxar / Média / Máxima)
+        if (_combat != null && _combat.IsCharging)
+        {
+            int seg = _combat.ChargeSegmentCount;
+            UpdateChargeIndicator(seg);
+            int chargeFrame = seg >= 3 ? 15 : (seg == 2 ? 14 : 13);
+            Show(chargeFrame);
+            _clip = "charge_" + seg;
+            return;
+        }
+
+        UpdateChargeIndicator(0);
+
+        // Soltar + Recuo logo após o disparo
         if (_combat != null && _combat.IsAttacking)
         {
-            // ~12 fps: draw (13×2) cobre MuzzleDelay ~0.16s; release (14) bate com spawn da flecha.
-            Play("shoot", Shoot, 7.5f, false);
+            Play("release_recoil", ReleaseRecoil, 10f, false);
             return;
         }
 
         if (_player != null && _player.IsDashing)
         {
             Play("dash", Dash, 14f, false);
-            // Rastro leve (pós-imagem) — VFX trivial do dash Shift.
             _afterimageClock += Time.deltaTime;
             if (_afterimageClock >= 0.045f)
             {
@@ -135,6 +152,92 @@ public class ArqueiroVisual : MonoBehaviour
         Play("idle", Idle, 5f, true);
     }
 
+    void UpdateChargeIndicator(int segmentCount)
+    {
+        if (_chargeIndicatorRenderer == null)
+            return;
+
+        if (segmentCount <= 0)
+        {
+            _chargeIndicatorRenderer.enabled = false;
+            _prevChargeSegment = 0;
+            return;
+        }
+
+        // Flash ciano/dourado quando atinge a Carga Máxima (transição para o 3º segmento)
+        if (segmentCount == 3 && _prevChargeSegment < 3)
+        {
+            Vector3 flashPos = transform.position + Vector3.up * 0.9f;
+            PixelBurst.Spawn(flashPos, new Color(0.42f, 0.97f, 1f), 5);
+            PixelBurst.Spawn(flashPos, new Color(1f, 0.95f, 0.62f), 4);
+        }
+        _prevChargeSegment = segmentCount;
+
+        var sprites = GetChargeIndicatorSprites();
+        int idx = Mathf.Clamp(segmentCount - 1, 0, sprites.Length - 1);
+        _chargeIndicatorRenderer.sprite = sprites[idx];
+        _chargeIndicatorRenderer.enabled = true;
+
+        // Mantém a barra sempre orientada da esquerda para a direita mesmo quando o herói olha para a esquerda
+        float parentSign = transform.lossyScale.x < 0f ? -1f : 1f;
+        _chargeIndicatorRenderer.transform.localScale = new Vector3(parentSign, 1f, 1f);
+    }
+
+    static Sprite[] GetChargeIndicatorSprites()
+    {
+        if (_chargeIndicatorSprites != null && _chargeIndicatorSprites.Length == 3 && _chargeIndicatorSprites[0] != null)
+            return _chargeIndicatorSprites;
+
+        _chargeIndicatorSprites = new Sprite[3];
+        const int w = 13;
+        const int h = 4;
+        var border = new Color32(18, 16, 32, 255);
+        var empty = new Color32(28, 36, 56, 255);
+        var seg1 = new Color32(46, 194, 230, 255);
+        var seg2 = new Color32(107, 247, 255, 255);
+        var seg3 = new Color32(255, 244, 156, 255);
+
+        for (int level = 1; level <= 3; level++)
+        {
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            var px = new Color32[w * h];
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    px[y * w + x] = border;
+                }
+            }
+            for (int s = 0; s < 3; s++)
+            {
+                Color32 c = (s + 1 <= level)
+                    ? (s == 0 ? seg1 : (s == 1 ? seg2 : seg3))
+                    : empty;
+                int sx = 1 + s * 4;
+                for (int dy = 1; dy <= 2; dy++)
+                {
+                    for (int dx = 0; dx < 3; dx++)
+                    {
+                        px[dy * w + (sx + dx)] = c;
+                    }
+                }
+            }
+            tex.SetPixels32(px);
+            tex.Apply();
+            tex.filterMode = FilterMode.Point;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            _chargeIndicatorSprites[level - 1] = Sprite.Create(
+                tex,
+                new Rect(0, 0, w, h),
+                new Vector2(0.5f, 0f),
+                Ppu,
+                0,
+                SpriteMeshType.FullRect);
+        }
+
+        return _chargeIndicatorSprites;
+    }
+
     void Play(string clip, int[] frames, float fps, bool loop)
     {
         if (_clip != clip)
@@ -158,7 +261,6 @@ public class ArqueiroVisual : MonoBehaviour
         Show(frames[_index]);
     }
 
-    // Jump — mesmos slots do Guerreiro (10 subida / 11 ápice / 12 queda)
     static int JumpFrame(float vy)
     {
         if (vy > 2.4f)
@@ -172,7 +274,7 @@ public class ArqueiroVisual : MonoBehaviour
     {
         if (_renderer == null || _frames == null)
             return;
-        if (frame < 0 || frame >= _frames.Length)
+        if (frame < 0 || frame >= _frames.Length || _frames[frame] == null)
             return;
         _renderer.sprite = _frames[frame];
     }
@@ -183,7 +285,7 @@ public class ArqueiroVisual : MonoBehaviour
         if (texture == null)
             return null;
 
-        var frames = new Sprite[39];
+        var frames = new Sprite[40];
         int height = texture.height;
         for (int i = 0; i < FrameCount; i++)
         {
@@ -207,12 +309,30 @@ public class ArqueiroVisual : MonoBehaviour
         frames[2] = frames[0]; frames[3] = frames[1];
         TrioAnimationFrames.Copy(frames, 4, "arqueiro", "andar", 6);
         TrioAnimationFrames.Copy(frames, 10, "arqueiro", "pulo", 3);
-        var attack = TrioAnimationFrames.Load("arqueiro", "ataque", 4);
-        if (attack != null)
+
+        // Suporta ataque.png expandido com 5 frames (0=Puxar, 1=Carga média, 2=Carga máxima, 3=Soltar, 4=Recuo)
+        var attack5 = TrioAnimationFrames.Load("arqueiro", "ataque", 5);
+        if (attack5 != null)
         {
-            frames[13] = attack[0]; frames[14] = attack[1];
-            frames[15] = attack[2]; frames[38] = attack[3];
+            frames[13] = attack5[0];
+            frames[14] = attack5[1];
+            frames[15] = attack5[2];
+            frames[38] = attack5[3];
+            frames[39] = attack5[4];
         }
+        else
+        {
+            var attack4 = TrioAnimationFrames.Load("arqueiro", "ataque", 4);
+            if (attack4 != null)
+            {
+                frames[13] = attack4[0];
+                frames[14] = attack4[1];
+                frames[15] = attack4[1];
+                frames[38] = attack4[2];
+                frames[39] = attack4[3];
+            }
+        }
+
         TrioAnimationFrames.Copy(frames, 19, "arqueiro", "dano", 2);
         TrioAnimationFrames.Copy(frames, 21, "arqueiro", "especial_perfurante", 6);
         TrioAnimationFrames.Copy(frames, 27, "arqueiro", "morte", 5);
@@ -233,7 +353,6 @@ public class ArqueiroVisual : MonoBehaviour
         texture.wrapMode = TextureWrapMode.Clamp;
         return texture;
     }
-
 
     void SpawnDashAfterimage()
     {

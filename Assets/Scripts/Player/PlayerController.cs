@@ -130,6 +130,8 @@ public class PlayerController : MonoBehaviour
             speed *= 0.42f;
         else if (combat != null && combat.IsWarding)
             speed *= 0.72f; // campo canalizado — mais leve que o escudo
+        else if (combat != null && combat.IsCharging)
+            speed *= PlayerCombat.ChargeMoveScale; // 40% da velocidade durante a puxada/carga do Arqueiro
 
         var velocity = _body.linearVelocity;
         velocity.x = x * speed;

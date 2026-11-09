@@ -64,9 +64,9 @@ public static class CharacterCatalog
                 "Núcleo Arcano", "Especial (L/Q): explosão arcana em área, CD 6.5s. Orbe: clique / J. Campo (S/K/direito): hold reduz 55% do dano.",
                 new Color(0.45f, 0.55f, 0.95f)),
             Make("arqueiro", "Arqueiro", "Mobilidade / equilíbrio",
-                "Arco leve e aljava. Esquiva, avança e dispara flechas à distância.",
+                "Capuz arcano, arco de cristal e aljava de luz. Carrega disparos precisos e esquiva.",
                 100, 50, 65, 45, 100, 80,
-                "Flecha", "Flecha reta (clique/J). Shift: dash. L/Q: rajada em leque (CD ~6.5s).",
+                "Flecha Arcana", "Clique/J: segura para carregar e solta para atirar. L/Q: flecha perfurante (até 3 alvos, para no terreno). Shift: dash.",
                 new Color(0.93f, 0.82f, 0.42f))
         };
     }
