@@ -570,17 +570,17 @@ public class GroundT1Controller : MonoBehaviour
         if (MobileControls.ShouldShow() || MobileControls.IsVisible)
         {
             if (hero != null && hero.Id == "mago")
-                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: orbe / campo / especial   |   SUPREMO quando a barra encher";
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: pulso rúnico / campo / zona rúnica   |   SUPREMO quando a barra encher";
             if (hero != null && hero.Id == "guerreiro")
                 return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: corte / escudo / Feixe Infernal   |   ESPECIAL quando a barra encher";
             if (hero != null && hero.Id == "arqueiro")
-                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: flecha / especial / dash   |   SUPREMO quando a barra encher";
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: tiro carregado / flecha perfurante / dash   |   SUPREMO quando a barra encher";
             return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo";
         }
         if (hero != null && hero.Id == "mago")
-            return "A/D andar   ·   ESPAÇO pular   ·   clique / J orbe reto   ·   S/K/direito campo   ·   L/Q Núcleo Arcano   ·   E supremo   ·   ESC pausa";
+            return "A/D andar   ·   ESPAÇO pular   ·   clique / J Pulso Rúnico   ·   S/K/direito campo   ·   L/Q Zona Rúnica   ·   E supremo   ·   ESC pausa";
         if (hero != null && hero.Id == "arqueiro")
-            return "A/D andar   ·   ESPAÇO pular   ·   clique / J flecha   ·   SHIFT dash   ·   L/Q rajada   ·   E supremo   ·   ESC pausa";
+            return "A/D andar   ·   ESPAÇO pular   ·   segurar J / clique tiro carregado   ·   SHIFT dash   ·   L/Q Flecha Perfurante   ·   E supremo   ·   ESC pausa";
         return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q/E Feixe Infernal (barra cheia)   ·   S / K / direito bloqueia   ·   ESC pausa";
     }
 

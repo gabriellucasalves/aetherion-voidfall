@@ -25,10 +25,10 @@ public class PlayerCombat : MonoBehaviour
     bool _damagedHooked;
     int _lastReleasedTier = 2;
 
-    // Pulso Rúnico: telegraph à frente, dano em área e lentidão curta.
+    // Zona Rúnica no chão (especial L/Q do Mago): raio 2.8, duração 3.5s, tick de 16 (Power * 0.16) + lentidão.
     public const float MageSpecialCooldown = 6.5f;
-    public const float MageSpecialRadius = 3.4f;
-    public const float MageSpecialDamageScale = 0.95f;
+    public const float MageSpecialRadius = ArcaneZone.DefaultRadius;
+    public const float MageSpecialDamageScale = ArcaneZone.TickDamageScale;
 
     // Feixe Infernal: L/Q/E consomem a mesma barra ESPECIAL; Corte permanece independente.
     public const float WarriorSpecialCooldown = 6f;
@@ -440,11 +440,13 @@ public class PlayerCombat : MonoBehaviour
     void FireMageSpecial()
     {
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        if (facing.sqrMagnitude < 0.01f)
+            facing = Vector2.right;
         Vector3 center = transform.position + (Vector3)(facing.normalized * 2.3f) + Vector3.up * 0.55f;
 
-        float damage = _hero.Power * MageSpecialDamageScale;
+        float tickDamage = _hero.Power * MageSpecialDamageScale;
         var color = _ability != null ? _ability.Color : new Color(0.45f, 0.72f, 1f);
-        ArcaneNova.Detonate(center, MageSpecialRadius, damage, color, true, transform);
+        ArcaneZone.Spawn(center, MageSpecialRadius, tickDamage, color, transform, ArcaneZone.DefaultDuration);
 
         _attackLeft = 0.45f;
         _specialAnimLeft = 0.75f;

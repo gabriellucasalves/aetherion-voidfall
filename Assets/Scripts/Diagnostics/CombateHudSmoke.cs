@@ -116,6 +116,8 @@ public class CombateHudSmoke : MonoBehaviour
             yield return new WaitForSeconds(.1f);
             if (hero == "guerreiro")
             {
+                Check(Mathf.Approximately(health.Max, 160f) && Mathf.Approximately(combat.Shield.Max, 110f),
+                    "Guerreiro tank balanceado: HP=160 e Escudo=110 (Def=90)");
                 var defenseFill = hud.GetComponentsInChildren<Image>()
                     .First(i => i.name == "bar_fill_escudo_68x6").rectTransform;
                 combat.Shield.Absorb(combat.Shield.Max * .5f);
@@ -129,6 +131,7 @@ public class CombateHudSmoke : MonoBehaviour
             }
             if (hero == "mago")
             {
+                Check(Mathf.Approximately(health.Max, 115f), "Mago balanceado: HP=115");
                 var defenseFill = hud.GetComponentsInChildren<Image>()
                     .First(i => i.name == "bar_fill_escudo_68x6").rectTransform;
                 combat.enabled = false;
@@ -208,11 +211,101 @@ public class CombateHudSmoke : MonoBehaviour
                 yield return new WaitForEndOfFrame();
                 Capture("guerreiro_feixe_768x432");
             }
-            if (hero == "mago" || hero == "arqueiro")
+            if (hero == "mago")
             {
+                // Kit novo do Mago: Especial L/Q = Zona Rúnica no chão (raio 2.8, duração 3.5s, tick 16 + lentidão 0.60s)
                 var enemies = new List<EnemyController>();
-                int count = hero == "arqueiro" ? 4 : 1;
-                for (int i = 0; i < count; i++)
+                float[] xs = { 1.2f, 1.9f, 2.6f, 3.3f }; // 4 inimigos comuns dentro do raio 2.8 (centro em x=2.3)
+                for (int i = 0; i < xs.Length; i++)
+                {
+                    var e = SimpleEnemySpawner.SpawnAt(EnemyData.CreateAlienSkeleton(), player.transform,
+                        StageData.CreateT1(), new Vector2(xs[i], StageData.CreateT1().GroundTop),
+                        player.GetComponent<Collider2D>());
+                    e.Health.Configure(1000f);
+                    e.enabled = false;
+                    e.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+                    enemies.Add(e);
+                }
+                var zoneGolem = SimpleEnemySpawner.SpawnAt(EnemyData.CreateSlateGolem(), player.transform,
+                    StageData.CreateT1(), new Vector2(3.8f, StageData.CreateT1().GroundTop),
+                    player.GetComponent<Collider2D>());
+                zoneGolem.Health.Configure(1000f);
+                zoneGolem.enabled = false;
+                zoneGolem.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+
+                var method = typeof(PlayerCombat).GetMethod("FireMageSpecial", BindingFlags.Instance | BindingFlags.NonPublic);
+                method.Invoke(combat, null);
+                yield return null;
+                Check(visual.GetComponent<SpriteRenderer>().sprite.texture.name == "especial_pulso",
+                    "mago anima especial");
+                Check(ArcaneZone.ActiveZone != null && FindObjectsByType<ArcaneZone>(FindObjectsSortMode.None).Length == 1,
+                    "Mago L/Q cria Zona Rúnica no chão à frente");
+
+                // Aguarda o 1º tick (~0.25s)
+                yield return new WaitForSeconds(0.32f);
+                yield return new WaitForEndOfFrame();
+                Capture("mago_especial_768x432");
+                Capture("mago_zona_runica_768x432");
+
+                Check(enemies.All(e => e != null && Mathf.Approximately(1000f - e.Health.Current, 16f) && e.IsSlowed),
+                    "Zona Rúnica aplica tick de 16 de dano e lentidão a TODOS os 4 inimigos comuns dentro do raio");
+                Check(zoneGolem.Health.Current < 1000f && !zoneGolem.IsSlowed,
+                    "Golem dentro da Zona Rúnica recebe o dano do tick e NÃO fica lento");
+
+                // Testa que usar o especial de novo substitui a zona anterior (apenas 1 zona por vez)
+                method.Invoke(combat, null);
+                yield return null;
+                Check(FindObjectsByType<ArcaneZone>(FindObjectsSortMode.None).Length == 1,
+                    "Apenas 1 Zona Rúnica ativa por vez (nova conjuração remove a anterior)");
+
+                // Testa que ao sair da zona a lentidão acaba em menos de 1s (~0.60s)
+                var runner = enemies[0];
+                runner.transform.position = new Vector3(-9f, StageData.CreateT1().GroundTop, 0f);
+                runner.enabled = true; // permite FixedUpdate descontar _slowLeft fora da zona
+                yield return new WaitForSeconds(0.72f);
+                Check(!runner.IsSlowed, "Ao sair da Zona Rúnica, a lentidão expira em menos de 1s");
+
+                if (ArcaneZone.ActiveZone != null) Destroy(ArcaneZone.ActiveZone.gameObject);
+                if (zoneGolem != null) Destroy(zoneGolem.gameObject);
+                foreach (var e in enemies) if (e != null) Destroy(e.gameObject);
+                yield return null;
+
+                // Colisão do projétil básico no terreno
+                var barrier = new GameObject("BarreiraQA");
+                barrier.transform.position = new Vector3(1.5f, StageData.CreateT1().GroundTop + 1f, 0f);
+                var solid = barrier.AddComponent<BoxCollider2D>();
+                solid.size = new Vector2(.2f, 2f);
+                ArcaneBolt.Launch(player.transform, Vector2.right, AbilityData.CreateOrbe(), 12f);
+                yield return new WaitForSeconds(.45f);
+                Check(GameObject.Find("OrbeArcano") == null, "mago projétil para no terreno");
+                Destroy(barrier);
+
+                // Básico do Mago: Pulso Rúnico largo (~52 de dano, SEM lentidão)
+                var basicEnemy = SimpleEnemySpawner.SpawnAt(EnemyData.CreateAlienSkeleton(), player.transform,
+                    StageData.CreateT1(), new Vector2(2.8f, StageData.CreateT1().GroundTop),
+                    player.GetComponent<Collider2D>());
+                basicEnemy.Health.Configure(1000f);
+                basicEnemy.enabled = false;
+                basicEnemy.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+                var basic = typeof(PlayerCombat).GetMethod("FireMage", BindingFlags.Instance | BindingFlags.NonPublic);
+                basic.Invoke(combat, null);
+                yield return null;
+                Check(visual.GetComponent<SpriteRenderer>().sprite.texture.name == "ataque",
+                    "mago anima ataque básico");
+                yield return new WaitForSeconds(0.28f);
+                yield return new WaitForEndOfFrame();
+                Capture("mago_pulso_basico_768x432");
+                yield return new WaitForSeconds(0.22f);
+                float pulseDmg = 1000f - basicEnemy.Health.Current;
+                Check(Mathf.Approximately(pulseDmg, 52f) && !basicEnemy.IsSlowed,
+                    $"Mago Pulso Rúnico básico causa 52 de dano ({pulseDmg:F1}) e NÃO aplica lentidão");
+                Destroy(basicEnemy.gameObject);
+            }
+            if (hero == "arqueiro")
+            {
+                Check(Mathf.Approximately(health.Max, 70f), "Arqueiro vidro balanceado: HP=70");
+                var enemies = new List<EnemyController>();
+                for (int i = 0; i < 4; i++)
                 {
                     var e = SimpleEnemySpawner.SpawnAt(EnemyData.CreateAlienSkeleton(), player.transform,
                         StageData.CreateT1(), new Vector2(2.5f + i * 1.3f, StageData.CreateT1().GroundTop),
@@ -222,36 +315,29 @@ public class CombateHudSmoke : MonoBehaviour
                     e.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
                     enemies.Add(e);
                 }
-                var method = typeof(PlayerCombat).GetMethod(hero == "mago" ? "FireMageSpecial" : "FireArcherSpecial",
+                var method = typeof(PlayerCombat).GetMethod("FireArcherSpecial",
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 method.Invoke(combat, null);
                 yield return null;
-                Check(visual.GetComponent<SpriteRenderer>().sprite.texture.name ==
-                    (hero == "mago" ? "especial_pulso" : "especial_perfurante"),
-                    hero + " anima especial");
-                yield return new WaitForSeconds(hero == "mago" ? .36f : .5f);
+                Check(visual.GetComponent<SpriteRenderer>().sprite.texture.name == "especial_perfurante",
+                    "arqueiro anima especial");
+                yield return new WaitForSeconds(.5f);
                 yield return new WaitForEndOfFrame();
-                Capture(hero + "_especial_768x432");
-                yield return new WaitForSeconds(hero == "mago" ? .44f : .3f);
-                Check(enemies.Take(hero == "arqueiro" ? 3 : 1).All(e => e != null && e.Health.Current < 1000f),
-                    hero + " especial atinge alvos reais");
-                if (hero == "arqueiro")
-                    Check(enemies[3].Health.Current == 1000f, "Flecha Perfurante limita a três alvos");
-                if (hero == "mago") Check(enemies[0].IsSlowed, "Pulso Rúnico aplica lentidão curta");
+                Capture("arqueiro_especial_768x432");
+                yield return new WaitForSeconds(.3f);
+                Check(enemies.Take(3).All(e => e != null && e.Health.Current < 1000f),
+                    "arqueiro especial atinge alvos reais");
+                Check(enemies[3].Health.Current == 1000f, "Flecha Perfurante limita a três alvos");
                 foreach (var e in enemies) if (e != null) Destroy(e.gameObject);
                 yield return null;
                 var barrier = new GameObject("BarreiraQA");
                 barrier.transform.position = new Vector3(1.5f, StageData.CreateT1().GroundTop + 1f, 0f);
                 var solid = barrier.AddComponent<BoxCollider2D>();
                 solid.size = new Vector2(.2f, 2f);
-                if (hero == "arqueiro")
-                    Arrow.Launch(player.transform, Vector2.right, AbilityData.CreateFlecha(), 12f,
-                        Vector3.zero, Color.white, 0f);
-                else
-                    ArcaneBolt.Launch(player.transform, Vector2.right, AbilityData.CreateOrbe(), 12f);
+                Arrow.Launch(player.transform, Vector2.right, AbilityData.CreateFlecha(), 12f,
+                    Vector3.zero, Color.white, 0f);
                 yield return new WaitForSeconds(.45f);
-                Check(GameObject.Find(hero == "arqueiro" ? "Flecha" : "OrbeArcano") == null,
-                    hero + " projétil para no terreno");
+                Check(GameObject.Find("Flecha") == null, "arqueiro projétil para no terreno");
                 Destroy(barrier);
                 var basicEnemy = SimpleEnemySpawner.SpawnAt(EnemyData.CreateAlienSkeleton(), player.transform,
                     StageData.CreateT1(), new Vector2(2.5f, StageData.CreateT1().GroundTop),
@@ -259,14 +345,14 @@ public class CombateHudSmoke : MonoBehaviour
                 basicEnemy.Health.Configure(1000f);
                 basicEnemy.enabled = false;
                 basicEnemy.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
-                var basic = typeof(PlayerCombat).GetMethod(hero == "arqueiro" ? "FireArcher" : "FireMage",
+                var basic = typeof(PlayerCombat).GetMethod("FireArcher",
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 basic.Invoke(combat, null);
                 yield return null;
                 Check(visual.GetComponent<SpriteRenderer>().sprite.texture.name == "ataque",
-                    hero + " anima ataque básico");
+                    "arqueiro anima ataque básico");
                 yield return new WaitForSeconds(.45f);
-                Check(basicEnemy.Health.Current < 1000f, hero + " ataque básico atinge alvo");
+                Check(basicEnemy.Health.Current < 1000f, "arqueiro ataque básico atinge alvo");
                 Destroy(basicEnemy.gameObject);
             }
             if (hero == "arqueiro")
@@ -373,8 +459,8 @@ public class CombateHudSmoke : MonoBehaviour
                 Capture("arqueiro_n3_voando");
                 yield return new WaitForSeconds(0.28f);
                 float dmgN3 = hpAfterN2 - targetDummy.Health.Current;
-                Check(dmgN1 > 0f && dmgN2 > dmgN1 && dmgN3 > dmgN2,
-                    $"Dano escala corretamente N1({dmgN1:F1}) < N2({dmgN2:F1}) < N3({dmgN3:F1})");
+                Check(Mathf.Abs(dmgN1 - 23.835f) < 0.25f && dmgN2 > 38f && dmgN2 < 43f && Mathf.Abs(dmgN3 - 59.5875f) < 0.25f,
+                    $"Escada de dano básico validada: N1({dmgN1:F1}) < Corte(40.5) ≈ N2({dmgN2:F1}) < PulsoMago(52.0) < N3({dmgN3:F1})");
                 Destroy(targetDummy.gameObject);
                 combat.enabled = true;
                 yield return new WaitForSeconds(0.35f);

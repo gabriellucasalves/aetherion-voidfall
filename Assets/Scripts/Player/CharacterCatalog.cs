@@ -52,21 +52,20 @@ public static class CharacterCatalog
         return new[]
         {
             Make("guerreiro", "Guerreiro", "Tank / combate físico",
-                "Armadura pesada e espada. Segura a linha enquanto o Vazio avança.",
-                150, 90, 20, 80, 30, 40,
+                "Armadura pesada e espada. Alta vida e escudo forte para segurar a linha de frente.",
+                160, 90, 20, 90, 30, 40,
                 "Corte de Energia", "Corte curto (J/clique). Especial L/Q/E: Feixe Infernal à frente, consome ESPECIAL, CD 6s. Escudo (S/K/direito) bloqueia.",
                 new Color(0.72f, 0.74f, 0.82f)),
-            // Kit: vida baixa, Power alto, alcance longo.
-            // Especial FASE 3: Núcleo Arcano (L/Q) — explosão em área, CD 6.5s.
-            Make("mago", "Mago", "Dano mágico / área",
-                "Manto e cajado. Orbe Arcano reto na facing; Campo de Magia (S/K) reduz dano; Núcleo Arcano explode em área.",
-                80, 20, 100, 20, 50, 60,
-                "Núcleo Arcano", "Especial (L/Q): explosão arcana em área, CD 6.5s. Orbe: clique / J. Campo (S/K/direito): hold reduz 55% do dano.",
+            // Kit novo do Mago: vida intermediária (115), Pulso Rúnico largo no básico (52) e Zona Rúnica persistente no especial (L/Q).
+            Make("mago", "Mago", "Pulso rúnico / controle de zona",
+                "Manto e cajado. Dispara Pulso Rúnico largo com impacto forte, cria Zona Rúnica no chão e canaliza Campo de Magia.",
+                115, 20, 100, 20, 50, 60,
+                "Pulso Rúnico & Zona Rúnica", "Básico (J/clique): Pulso Rúnico largo de alto impacto. Especial (L/Q): Zona Rúnica no chão (dano contínuo + lentidão, CD 6.5s). Campo (S/K/direito): hold reduz 55% do dano.",
                 new Color(0.45f, 0.55f, 0.95f)),
-            Make("arqueiro", "Arqueiro", "Mobilidade / equilíbrio",
-                "Capuz arcano, arco de cristal e aljava de luz. Carrega disparos precisos e esquiva.",
-                100, 50, 65, 45, 100, 80,
-                "Flecha Arcana", "Clique/J: segura para carregar e solta para atirar. L/Q: flecha perfurante (até 3 alvos, para no terreno). Shift: dash.",
+            Make("arqueiro", "Arqueiro", "Artilheiro arcano / alto dano",
+                "Capuz arcano e arco de cristal. Menos vida, mas carrega disparos de altíssimo dano à distância e esquiva rápido.",
+                70, 50, 65, 45, 100, 80,
+                "Flecha Arcana Carregada", "Clique/J: segura para carregar (N3 causa o maior dano básico) e solta para atirar 1 flecha. L/Q: flecha perfurante (até 3 alvos, para no terreno, CD 6.5s). Shift: dash.",
                 new Color(0.93f, 0.82f, 0.42f))
         };
     }

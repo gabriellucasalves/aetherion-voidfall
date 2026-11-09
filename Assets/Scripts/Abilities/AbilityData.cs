@@ -33,16 +33,15 @@ public class AbilityData : ScriptableObject
     {
         var data = CreateInstance<AbilityData>();
         data.Id = "orbe";
-        data.DisplayName = "Orbe Arcano";
-        // Kit mago: tiro reto na facing (ArcaneBolt), alcance longo, Power alto.
-        // CD real ≈ Cooldown * (40 / AttackSpeed). Sem homing / lock de alvo.
+        data.DisplayName = "Pulso Rúnico";
+        // Kit mago: Pulso Rúnico largo na facing (ArcaneBolt), alto impacto (100 * 0.52 = 52), sem lentidão.
         data.Range = 9.2f;
         data.Cooldown = 0.55f;
         data.ProjectileSpeed = 13f;
         data.Lifetime = 1.55f;
-        data.ProjectileSize = new Vector2(0.55f, 0.55f);
-        data.DamageScale = 0.36f; // dano = Power * DamageScale (100 → 36); Guerreiro melee ainda bate mais forte
-        data.Color = new Color(0.4f, 0.78f, 1f);
+        data.ProjectileSize = new Vector2(0.90f, 0.90f);
+        data.DamageScale = 0.52f; // dano = Power * DamageScale (100 -> 52)
+        data.Color = new Color(0.45f, 0.82f, 1f);
         return data;
     }
 
@@ -50,14 +49,14 @@ public class AbilityData : ScriptableObject
     {
         var data = CreateInstance<AbilityData>();
         data.Id = "nucleo_arcano";
-        data.DisplayName = "Núcleo Arcano";
+        data.DisplayName = "Zona Rúnica";
         data.Range = 9.2f;
-        data.Cooldown = 6.5f; // especial — CD fixo no PlayerCombat.MageSpecialCooldown
+        data.Cooldown = 6.5f; // especial — CD fixo em PlayerCombat.MageSpecialCooldown
         data.ProjectileSpeed = 0f;
-        data.Lifetime = 0.42f;
-        data.ProjectileSize = new Vector2(3.4f, 3.4f);
-        data.DamageScale = 0.95f; // dano = Power * DamageScale
-        data.Color = new Color(0.4f, 0.75f, 1f);
+        data.Lifetime = 3.5f;
+        data.ProjectileSize = new Vector2(2.8f, 2.8f);
+        data.DamageScale = 0.16f; // dano por tick = Power * 0.16 (100 -> 16)
+        data.Color = new Color(0.45f, 0.80f, 1f);
         return data;
     }
 
@@ -92,7 +91,7 @@ public class AbilityData : ScriptableObject
         data.Lifetime = 0.52f;
         // Escala visual da flecha pixel (silhueta alongada; não é mais retângulo branco).
         data.ProjectileSize = new Vector2(1.05f, 0.48f);
-        data.DamageScale = 0.36f;
+        data.DamageScale = 1.05f;
         data.Color = new Color(1f, 0.82f, 0.35f);
         return data;
     }
