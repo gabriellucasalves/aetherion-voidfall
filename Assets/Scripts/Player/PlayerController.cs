@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D _body;
     HealthSystem _health;
     bool _locked;
+    public bool IsLocked => _locked;
     Vector2 _facing = Vector2.right;
     float _coyote;
     float _jumpBuffer;
@@ -156,12 +157,18 @@ public class PlayerController : MonoBehaviour
         ClampX();
     }
 
-    void FaceVisual()
+    public void FaceVisual()
     {
         float sign = _facing.x >= 0f ? 1f : -1f;
         var scale = transform.localScale;
         scale.x = Mathf.Abs(scale.x) * sign;
         transform.localScale = scale;
+    }
+
+    public void FaceVisual(bool right)
+    {
+        _facing = right ? Vector2.right : Vector2.left;
+        FaceVisual();
     }
 
     void ClampX()

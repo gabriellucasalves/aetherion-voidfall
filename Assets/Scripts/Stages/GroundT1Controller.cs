@@ -22,6 +22,17 @@ public class GroundT1Controller : MonoBehaviour
     Image _shieldFill;
     Image _resonanceFill;
     Text _resonanceText;
+    Image _supremeGlow;
+    Image _supremeParticles;
+    Image _supremeBanner;
+    Sprite _specialNormalSprite;
+    Sprite _specialReadySprite;
+    Sprite[] _supremeFullFrames;
+    Sprite[] _glowFrames;
+    Sprite[] _particleFrames;
+    Sprite[] _bannerKeyFrames;
+    Sprite[] _bannerTouchFrames;
+    Sprite _supremeNormalSprite;
     SpecialController _special;
     GameObject _shieldTrack;
     Image _specialFill;
@@ -123,6 +134,7 @@ public class GroundT1Controller : MonoBehaviour
 
         // Barra de carregamento do especial (todos os herois) tica com o tempo.
         RefreshSpecialBar();
+        RefreshResonanceBar();
         // Com a Ressonância cheia, o "PRONTO!" pulsa todo frame.
         bool resonanceLive = _special != null && (_special.Ready || _special.CooldownLeft > 0f);
         if (_showWard || resonanceLive)
@@ -136,7 +148,14 @@ public class GroundT1Controller : MonoBehaviour
             return;
 
         int total = _spawner != null ? _spawner.TotalWaves : SimpleEnemySpawner.DemoWaveCount;
-        _waveBanner.text = "ONDA " + wave + "/" + total + "   ·   " + enemyName.ToUpper();
+        if (_stage != null && _stage.Id == "t3")
+        {
+            _waveBanner.text = "Onda " + wave + " — " + enemyName;
+        }
+        else
+        {
+            _waveBanner.text = "ONDA " + wave + "/" + total + "   ·   " + enemyName.ToUpper();
+        }
         _waveBanner.gameObject.SetActive(true);
         _waveBannerLeft = 2.4f;
     }
@@ -376,7 +395,19 @@ public class GroundT1Controller : MonoBehaviour
         _shieldLabel = hud.DefenseLabel;
         _shieldTrack = hud.Defense != null ? hud.Defense.transform.parent.gameObject : null;
         _specialFill = hud.Special; _specialText = hud.SpecialValue;
-        _resonanceText = hud.Supreme;
+        _resonanceFill = hud.Supreme;
+        _resonanceText = hud.SupremeValueText;
+        _supremeGlow = hud.SupremeGlow;
+        _supremeParticles = hud.SupremeParticles;
+        _supremeBanner = hud.SupremeBanner;
+        _specialNormalSprite = hud.SpecialNormal;
+        _specialReadySprite = hud.SpecialReadySprite;
+        _supremeFullFrames = hud.SupremeFullFrames;
+        _glowFrames = hud.GlowFrames;
+        _particleFrames = hud.ParticleFrames;
+        _bannerKeyFrames = hud.BannerKeyFrames;
+        _bannerTouchFrames = hud.BannerTouchFrames;
+        if (_resonanceFill != null) _supremeNormalSprite = _resonanceFill.sprite;
         _showWard = hero != null && hero.Id == "mago";
 
         _special = _player != null ? _player.GetComponent<SpecialController>() : null;
@@ -391,37 +422,12 @@ public class GroundT1Controller : MonoBehaviour
 
         BuildPhaseTitleCard(canvas.transform);
 
-        _pausePanel = UiKit.Panel(canvas.transform, "Pausa", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.62f)).gameObject;
-        UiKit.Panel(_pausePanel.transform, "Caixa", new Vector2(520f, 390f), Vector2.zero, MenuTheme.Panel);
-        UiKit.Label(_pausePanel.transform, "PAUSA", 36, new Vector2(0f, 70f), MenuTheme.CelestialGold, new Vector2(400f, 50f));
-        UiKit.Button(_pausePanel.transform, "CONTINUAR", new Vector2(0f, -10f), new Vector2(240f, 58f), TogglePause);
-        UiKit.Button(_pausePanel.transform, "MENU", new Vector2(0f, -85f), new Vector2(240f, 58f), BackToMenu);
-        if (WorldMapProgress.HighestCompleted > 0)
-            UiKit.Button(_pausePanel.transform, "MAPA", new Vector2(0f, -155f), new Vector2(240f, 58f), BackToMap);
-        _pausePanel.SetActive(false);
-
-        _defeatPanel = UiKit.Panel(canvas.transform, "Derrota", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.72f)).gameObject;
-        UiKit.Panel(_defeatPanel.transform, "Caixa", new Vector2(560f, 380f), Vector2.zero, MenuTheme.Panel);
-        UiKit.Label(_defeatPanel.transform, "VOCÊ CAIU", 36, new Vector2(0f, 85f), MenuTheme.CelestialGold, new Vector2(500f, 50f));
-        _retryButton = UiKit.Button(_defeatPanel.transform, "TENTAR DE NOVO", new Vector2(0f, 15f), new Vector2(240f, 54f), RetryBoss);
-        _retryButton.gameObject.SetActive(false);
-        UiKit.Button(_defeatPanel.transform, "MENU", new Vector2(0f, -50f), new Vector2(240f, 54f), BackToMenu);
-        if (WorldMapProgress.HighestCompleted > 0)
-            UiKit.Button(_defeatPanel.transform, "MAPA", new Vector2(0f, -115f), new Vector2(240f, 54f), BackToMap);
-        _defeatPanel.SetActive(false);
-
-        _demoCompletePanel = UiKit.Panel(canvas.transform, "DemoFim", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.78f)).gameObject;
-        UiKit.Panel(_demoCompletePanel.transform, "Caixa", new Vector2(720f, 360f), Vector2.zero, MenuTheme.Panel);
-        UiKit.Label(_demoCompletePanel.transform, "PARABÉNS!", 40, new Vector2(0f, 110f), MenuTheme.CelestialGold, new Vector2(640f, 52f));
-        UiKit.Label(
-            _demoCompletePanel.transform,
-            "Você concluiu a demo de Aetherion: Voidfall.\nObrigado por jogar — novas fases e ajustes vêm a caminho.",
-            20,
-            new Vector2(0f, 20f),
-            MenuTheme.SoftIvory,
-            new Vector2(640f, 90f));
-        UiKit.Button(_demoCompletePanel.transform, "MENU", new Vector2(0f, -100f), new Vector2(240f, 58f), BackToMenu);
-        _demoCompletePanel.SetActive(false);
+        _pausePanel = MenuPanels.Pause(canvas.transform, TogglePause, BackToMenu,
+            WorldMapProgress.HighestCompleted > 0 ? (UnityEngine.Events.UnityAction)BackToMap : null);
+        _defeatPanel = MenuPanels.Defeat(canvas.transform, RetryBoss, BackToMenu,
+            WorldMapProgress.HighestCompleted > 0 ? (UnityEngine.Events.UnityAction)BackToMap : null, out _retryButton);
+        MenuPanels.SetRetryVisible(_defeatPanel, _retryButton, false);
+        _demoCompletePanel = MenuPanels.DemoComplete(canvas.transform, BackToMenu);
     }
 
     public void RegisterKill()
@@ -481,7 +487,7 @@ public class GroundT1Controller : MonoBehaviour
         RefreshResonanceBar();
     }
 
-    // Barra dedicada: enche conforme o especial recarrega; pulsa quando pronto.
+    // Barra dedicada: enche conforme o especial L/Q recarrega (para os 3 heróis).
     void RefreshSpecialBar()
     {
         if (_specialFill == null || _combat == null)
@@ -489,24 +495,19 @@ public class GroundT1Controller : MonoBehaviour
 
         float left = _combat.SpecialCooldownLeft;
         float max = _combat.SpecialCooldownMax;
-        var meter = _player != null ? _player.GetComponent<ResonanceMeter>() : null;
-        float ready = _combat.IsWarrior ? (meter != null ? meter.Normalized : 0f)
-            : (max > 0f ? 1f - Mathf.Clamp01(left / max) : 1f);
+        float ready = max > 0f ? 1f - Mathf.Clamp01(left / max) : 1f;
         UiKit.SetBar(_specialFill, ready, BarWidth);
+        _specialFill.color = Color.white;
 
-        Color color = SpecialColor(_player != null ? _player.Hero : null);
-        if (left <= 0.05f && _combat.SpecialReady)
+        if (_combat.SpecialReady)
         {
-            float pulse = 0.75f + 0.25f * Mathf.Sin(Time.unscaledTime * 6f);
-            _specialFill.color = Color.Lerp(color, Color.white, 1f - pulse);
-            if (_specialText != null)
-                _specialText.text = _combat.IsWarrior ? "PRONTO (L/Q/E)" : "PRONTO (L/Q)";
+            if (_specialReadySprite != null) _specialFill.sprite = _specialReadySprite;
+            if (_specialText != null) _specialText.text = "PRONTO (L/Q)";
         }
         else
         {
-            _specialFill.color = color;
-            if (_specialText != null)
-                _specialText.text = left > 0.05f ? left.ToString("0.0") + "s" : Mathf.CeilToInt(ready * 100f) + " / 100";
+            if (_specialNormalSprite != null) _specialFill.sprite = _specialNormalSprite;
+            if (_specialText != null) _specialText.text = left.ToString("0.0") + "s";
         }
     }
 
@@ -519,33 +520,88 @@ public class GroundT1Controller : MonoBehaviour
         return new Color(1f, 0.62f, 0.25f);
     }
 
+    static readonly int[] GlowPingPong = { 0, 1, 2, 3, 2, 1 };
+
     void RefreshResonanceBar()
     {
-        if (_player == null)
+        if (_player == null || _resonanceFill == null)
             return;
         var meter = _player.GetComponent<ResonanceMeter>();
         float resonance = meter != null ? meter.Normalized : 0f;
         UiKit.SetBar(_resonanceFill, resonance, BarWidth);
+        _resonanceFill.color = Color.white;
+
+        bool cinematic = SpecialController.IsCinematic || (_boss != null && _boss.Cutscene != null);
         bool supremeReady = _special != null && _special.Ready;
-        if (_resonanceText != null)
+
+        if (cinematic)
         {
-            if (supremeReady)
+            if (_supremeGlow != null) _supremeGlow.gameObject.SetActive(false);
+            if (_supremeParticles != null) _supremeParticles.gameObject.SetActive(false);
+            if (_supremeBanner != null) _supremeBanner.gameObject.SetActive(false);
+            if (_resonanceText != null) _resonanceText.gameObject.SetActive(true);
+            if (_supremeNormalSprite != null) _resonanceFill.sprite = _supremeNormalSprite;
+            MobileControls.SetSupremeVisible(false);
+            return;
+        }
+
+        if (supremeReady)
+        {
+            if (_supremeFullFrames != null && _supremeFullFrames.Length > 0)
+                _resonanceFill.sprite = _supremeFullFrames[(int)(Time.unscaledTime * 10f) % _supremeFullFrames.Length];
+
+            if (_supremeGlow != null)
             {
-                _resonanceText.text = "SUPREMO\nPRONTO [E]";
-                var pulse = ResonanceGold;
-                pulse.a = 0.4f + 0.6f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * 3f));
-                _resonanceText.color = pulse;
+                _supremeGlow.gameObject.SetActive(true);
+                if (_glowFrames != null && _glowFrames.Length > 0)
+                {
+                    int gIdx = GlowPingPong[(int)(Time.unscaledTime * 8f) % GlowPingPong.Length];
+                    if (gIdx < _glowFrames.Length) _supremeGlow.sprite = _glowFrames[gIdx];
+                }
             }
-            else if (meter != null && meter.IsFull && _special != null && _special.CooldownLeft > 0.05f)
+
+            if (_supremeParticles != null)
             {
-                _resonanceText.color = ResonanceGold;
-                _resonanceText.text = "SUPREMO\n" + _special.CooldownLeft.ToString("0.0") + "s";
+                _supremeParticles.gameObject.SetActive(true);
+                if (_particleFrames != null && _particleFrames.Length > 0)
+                    _supremeParticles.sprite = _particleFrames[(int)(Time.unscaledTime * 12f) % _particleFrames.Length];
             }
-            else
+
+            if (_supremeBanner != null)
             {
+                _supremeBanner.gameObject.SetActive(true);
+                var bFrames = MobileControls.IsVisible ? _bannerTouchFrames : _bannerKeyFrames;
+                if (bFrames != null && bFrames.Length > 0)
+                    _supremeBanner.sprite = bFrames[(int)(Time.unscaledTime / 0.35f) % bFrames.Length];
+            }
+
+            if (_resonanceText != null)
+                _resonanceText.gameObject.SetActive(false);
+        }
+        else
+        {
+            if (_supremeNormalSprite != null)
+                _resonanceFill.sprite = _supremeNormalSprite;
+            if (_supremeGlow != null)
+                _supremeGlow.gameObject.SetActive(false);
+            if (_supremeParticles != null)
+                _supremeParticles.gameObject.SetActive(false);
+            if (_supremeBanner != null)
+                _supremeBanner.gameObject.SetActive(false);
+
+            if (_resonanceText != null)
+            {
+                _resonanceText.gameObject.SetActive(true);
                 _resonanceText.color = MenuTheme.SoftIvory;
-                float current = meter != null ? meter.Current : 0f;
-                _resonanceText.text = "SUPREMO\n" + Mathf.CeilToInt(current) + " / 100";
+                if (meter != null && meter.IsFull && _special != null && _special.CooldownLeft > 0.05f)
+                {
+                    _resonanceText.text = "SUPREMO " + _special.CooldownLeft.ToString("0.0") + "s";
+                }
+                else
+                {
+                    float current = meter != null ? meter.Current : 0f;
+                    _resonanceText.text = Mathf.CeilToInt(current) + " / 100";
+                }
             }
         }
 
@@ -571,8 +627,7 @@ public class GroundT1Controller : MonoBehaviour
             _spawner.SetLocked(true);
         if (_defeatPanel != null)
         {
-            if (_retryButton != null)
-                _retryButton.gameObject.SetActive(_inBossArena && _stage != null && _stage.Id == "t3");
+            MenuPanels.SetRetryVisible(_defeatPanel, _retryButton, _inBossArena && _stage != null && _stage.Id == "t3");
             _defeatPanel.SetActive(true);
         }
     }

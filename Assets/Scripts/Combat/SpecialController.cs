@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// E/mobile: Guerreiro usa o mesmo Feixe de L/Q; outros heróis preservam seus Supremos.
+// E/mobile: Supremo de cada herói (Guerreiro = Lâmina Rubra: Cinco Luas de Fogo). L/Q fica no PlayerCombat.
 public class SpecialController : MonoBehaviour
 {
     public static bool IsCinematic { get; private set; }
@@ -18,8 +18,7 @@ public class SpecialController : MonoBehaviour
     bool _finished = true;
     bool _completed;
 
-    public float CooldownLeft => _hero != null && _hero.Id == "guerreiro" && _combat != null
-        ? _combat.SpecialCooldownLeft : Mathf.Max(0f, _cooldownLeft);
+    public float CooldownLeft => Mathf.Max(0f, _cooldownLeft);
     public SpecialData Data => _data;
     public ResonanceMeter Meter => _meter;
 
@@ -90,12 +89,6 @@ public class SpecialController : MonoBehaviour
         if (!Ready)
             return;
 
-        if (_hero != null && _hero.Id == "guerreiro")
-        {
-            if (WantsSupreme())
-                _combat.TryFireWarriorSpecial();
-            return;
-        }
         if (WantsSupreme() && _meter.TrySpend())
             StartCoroutine(Run());
     }
@@ -141,7 +134,7 @@ public class SpecialController : MonoBehaviour
             CinematicTime.End();
             SupremeFx.ClearAtmosphere();
 
-            // Mago age durante o tempo parado. Guerreiro fica enraizado.
+            // Mago age durante o tempo parado. Guerreiro fica enraizado durante a Lâmina Rubra.
             // Arqueiro é solto dentro do HunterStars para o salto.
             if (_hero != null && _hero.Id == "mago")
             {
@@ -155,6 +148,8 @@ public class SpecialController : MonoBehaviour
                 yield return VoidTimeStop.Run(transform, _hero);
             else if (_hero != null && _hero.Id == "arqueiro")
                 yield return HunterStars.Run(transform, _hero, _player, _combat);
+            else if (_hero != null && _hero.Id == "guerreiro")
+                yield return CrimsonCrescents.Run(transform, _hero, _player, _combat);
             else
                 yield break;
 
@@ -177,6 +172,7 @@ public class SpecialController : MonoBehaviour
         SupremeFx.ClearAtmosphere();
         VoidTimeStop.ReleaseAll();
         SupremeFx.ClearMarks();
+        CrimsonCrescents.EndPose();
 
         bool dead = _health != null && _health.IsDead;
         if (_health != null)

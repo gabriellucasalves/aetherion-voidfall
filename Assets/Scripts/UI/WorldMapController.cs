@@ -132,7 +132,7 @@ public class WorldMapController : MonoBehaviour
 
         string hero = GameManager.Instance != null ? GameManager.Instance.SelectedHeroId : WorldMapProgress.SelectedHeroId;
         if (string.IsNullOrEmpty(hero)) hero = "guerreiro";
-        var avatar = HeroPortrait.Attach(canvas.transform, hero, Vector2.zero, 86f);
+        var avatar = HeroPortrait.AttachFeet(canvas.transform, hero, Vector2.zero, 2);
         if (avatar != null)
         {
             _heroRect = avatar.rectTransform;
@@ -160,7 +160,7 @@ public class WorldMapController : MonoBehaviour
     {
         if (_heroRect != null)
             _heroRect.anchoredPosition = CanvasPoint(RoutePoint(_position)) +
-                (NearNode() != 0 ? new Vector2(-36f, 18f) : new Vector2(0f, 21f));
+                (NearNode() != 0 ? new Vector2(-43f, -21f) : new Vector2(-7f, -18f));
         for (int i = 0; i < 3; i++)
         {
             string state = WorldMapProgress.IsCompleted(i + 1) ? "cleared" : WorldMapProgress.IsUnlocked(i + 1) ? "unlocked" : "locked";
@@ -236,7 +236,8 @@ public class WorldMapController : MonoBehaviour
 }
 
 /// <summary>Idle and walk from the selected hero's current 7-column, 64px gameplay sheet.</summary>
-public class WorldMapHeroAnimator : MonoBehaviour
+public /// <summary>Idle e andar do herói escolhido com os modelos novos (Resources/TrioAnimations/<id>/idle|andar).</summary>
+class WorldMapHeroAnimator : MonoBehaviour
 {
     Image _image;
     Sprite[] _idle;
@@ -247,19 +248,8 @@ public class WorldMapHeroAnimator : MonoBehaviour
     public void Setup(Image image, string hero)
     {
         _image = image;
-        _idle = hero == "mago" ? HeroPortrait.MagoIdle() : hero == "arqueiro" ? HeroPortrait.ArqueiroIdle() : HeroPortrait.GuerreiroIdle();
-        string folder = hero == "mago" ? "Mago" : hero == "arqueiro" ? "Arqueiro" : "Guerreiro";
-        var sheet = Resources.Load<Texture2D>(folder + "/sheet");
-        if (sheet == null) return;
-        sheet.filterMode = FilterMode.Point;
-        _walk = new Sprite[6];
-        for (int i = 0; i < _walk.Length; i++)
-        {
-            int cell = i + 4;
-            _walk[i] = Sprite.Create(sheet,
-                new Rect((cell % 7) * 64, sheet.height - (cell / 7 + 1) * 64, 64, 64),
-                new Vector2(0.5f, 0.5f), 64f, 0, SpriteMeshType.FullRect);
-        }
+        _idle = HeroPortrait.IdleFrames(hero) ?? HeroPortrait.GuerreiroIdle();
+        _walk = HeroPortrait.WalkFrames(hero);   // TrioAnimations/<herói>/andar.png (6 frames 64x64, mesmo alinhamento do idle)
     }
 
     public void SetWalking(bool walking, float direction)

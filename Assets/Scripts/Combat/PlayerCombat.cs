@@ -16,6 +16,7 @@ public class PlayerCombat : MonoBehaviour
     float _specialAnimLeft;
     float _attackLeft;
     bool _locked;
+    public bool IsLocked => _locked;
     bool _blocking;
 
     // Estado da nova mecânica de Tiro Carregado do Arqueiro Arcano (Puxar -> Carregar -> Soltar -> Recuo)
@@ -53,8 +54,7 @@ public class PlayerCombat : MonoBehaviour
     public float SpecialCooldownLeft => Mathf.Max(0f, _specialCooldownLeft);
     public float SpecialCooldownMax =>
         IsArcher ? ArcherSpecialCooldown : (IsMage ? MageSpecialCooldown : WarriorSpecialCooldown);
-    public bool SpecialReady => _specialCooldownLeft <= 0f && (!IsWarrior ||
-        (GetComponent<ResonanceMeter>() != null && GetComponent<ResonanceMeter>().IsFull));
+    public bool SpecialReady => _specialCooldownLeft <= 0f;
     public bool IsCastingSpecial => _specialAnimLeft > 0f;
     public bool IsSpecialAttacking => _specialAnimLeft > 0f;
     public ShieldSystem Shield => _shield;
@@ -413,9 +413,8 @@ public class PlayerCombat : MonoBehaviour
 
     public bool TryFireWarriorSpecial()
     {
-        var meter = GetComponent<ResonanceMeter>();
         if (!IsWarrior || _locked || IsBlocking || _specialCooldownLeft > 0f ||
-            Time.timeScale <= 0f || (_health != null && _health.IsDead) || meter == null || !meter.TrySpend())
+            Time.timeScale <= 0f || (_health != null && _health.IsDead))
             return false;
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         InfernalBeam.Launch(transform, facing, _hero.Strength * InfernalBeam.DamageScale);

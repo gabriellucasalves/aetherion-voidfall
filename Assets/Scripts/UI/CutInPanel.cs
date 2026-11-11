@@ -19,6 +19,8 @@ public class CutInPanel : MonoBehaviour
 
     Image _eyes;
     Image _bust;
+    public Image BustImage => _bust;
+    public Image EyesImage => _eyes;
     GameObject _shoutRoot;
     Text _shout;
     GameObject _bannerRoot;
@@ -107,9 +109,12 @@ public class CutInPanel : MonoBehaviour
         bottomBar.enabled = false;
     }
 
+    static bool IsNewArt(Sprite s) => s != null && s.name.StartsWith("cutin_");
+
     IEnumerator PlayEyes(string heroId)
     {
-        Place(_eyes.rectTransform, 0f, 30f, Scaled(_eyes.sprite, PixelScale + 2));
+        int eyeScale = IsNewArt(_eyes.sprite) ? 12 : (PixelScale + 2);
+        Place(_eyes.rectTransform, 0f, 30f, Scaled(_eyes.sprite, eyeScale));
         float clock = 0f;
         float flip = 0f;
         bool bright = false;
@@ -150,10 +155,22 @@ public class CutInPanel : MonoBehaviour
     {
         var eyesFrom = _eyes.rectTransform.anchoredPosition;
         var eyesFromSize = _eyes.rectTransform.sizeDelta;
-        var eyesTo = new Vector2(0f, 300f);
-        var eyesToSize = Scaled(_eyes.sprite, 4);
-        var bustSize = Scaled(_bust.sprite, 8);
-        Place(_bust.rectTransform, 0f, 10f, bustSize);
+        Vector2 eyesTo;
+        Vector2 eyesToSize;
+        if (IsNewArt(_eyes.sprite))
+        {
+            eyesTo = new Vector2(0f, 330f);
+            eyesToSize = Scaled(_eyes.sprite, 6);
+            int bustScale = Mathf.Max(1, Mathf.FloorToInt(420f / _bust.sprite.rect.height));
+            Place(_bust.rectTransform, 0f, 40f, Scaled(_bust.sprite, bustScale));
+        }
+        else
+        {
+            eyesTo = new Vector2(0f, 300f);
+            eyesToSize = Scaled(_eyes.sprite, 4);
+            var bustSize = Scaled(_bust.sprite, 8);
+            Place(_bust.rectTransform, 0f, 10f, bustSize);
+        }
         _bust.gameObject.SetActive(true);
         _bust.color = new Color(1f, 1f, 1f, 0f);
         _shoutRoot.SetActive(true);

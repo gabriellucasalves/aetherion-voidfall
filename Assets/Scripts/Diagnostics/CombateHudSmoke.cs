@@ -233,24 +233,101 @@ public class CombateHudSmoke : MonoBehaviour
                 Destroy(highGolem.gameObject);
                 player.transform.position = new Vector3(0f, StageData.CreateT1().GroundTop + .7f, 0f);
                 var meter = player.GetComponent<ResonanceMeter>();
-                var specialFill = hud.GetComponentsInChildren<Image>()
-                    .First(i => i.name == "bar_fill_especial_68x6").rectTransform;
-                meter.Add(50f);
+                var images = hud.GetComponentsInChildren<Image>(true);
+                var especialImg = images.FirstOrDefault(i => i.name == "bar_fill_especial_68x6");
+                var supremoImg = images.FirstOrDefault(i => i.name == "bar_fill_supremo_68x6");
+                Check(especialImg != null && supremoImg != null, "HUD_EspecialESupremo: Barras ESPECIAL e SUPREMO existem no HUD");
+
+                var frameSupremo = images.FirstOrDefault(i => i.name == "bar_frame_supremo_76x12");
+                var labelSupremo = images.FirstOrDefault(i => i.name == "label_supremo_29x7");
+                Check(frameSupremo != null && labelSupremo != null, "HUD_EspecialESupremo: Frame e label do SUPREMO existem");
+
+                var lifeRt = images.FirstOrDefault(i => i.name == "bar_fill_vida_68x6")?.rectTransform;
+                var defRt = images.FirstOrDefault(i => i.name == "bar_fill_escudo_68x6")?.rectTransform ?? images.FirstOrDefault(i => i.name == "bar_frame_desabilitada_72x10")?.rectTransform;
+                var espRt = especialImg.rectTransform;
+                var supRt = supremoImg.rectTransform;
+                bool noOverlap = true;
+                if (lifeRt != null && defRt != null && espRt != null && supRt != null)
+                {
+                    noOverlap = (lifeRt.anchoredPosition.x + 360f <= defRt.anchoredPosition.x + 50f) &&
+                                (defRt.anchoredPosition.x + 360f <= espRt.anchoredPosition.x + 50f) &&
+                                (espRt.anchoredPosition.x + 360f <= supRt.anchoredPosition.x + 50f) &&
+                                (supRt.anchoredPosition.x + 380f <= 1920f);
+                }
+                Check(noOverlap, "HUD_EspecialESupremo: Slots de VIDA, ESCUDO, ESPECIAL e SUPREMO não se sobrepõem e cabem na tela");
+                Check(especialImg.color == Color.white && supremoImg.color == Color.white, "HUD_EspecialESupremo: Fill de Especial e Supremo são brancos sem tint");
+                Check(especialImg.sprite != null && especialImg.sprite.name.StartsWith("bar_fill_especial_" + hero), "HUD_EspecialESupremo: Sprite do ESPECIAL corresponde ao herói");
+
+                // Independência 1: meter.ForceSet(50f)
+                meter.ForceSet(50f);
                 yield return null;
-                Check(specialFill.rect.width > 0f && specialFill.rect.width < 340f,
-                    "ESPECIAL parcial acompanha Ressonância");
-                meter.Add(1000f);
+                float espWidthBefore = espRt.rect.width;
+                Check(supRt.rect.width >= 160f && supRt.rect.width <= 180f, "HUD_EspecialESupremo: SUPREMO a 50% fica entre 160 e 180 px");
+                Check(Mathf.Abs(espRt.rect.width - espWidthBefore) < 1f, "HUD_EspecialESupremo: ESPECIAL não mudou com alteração na Ressonância");
+
+                // Independência 2: dispare o especial L/Q
+                combat.TryFireWarriorSpecial();
                 yield return null;
-                Check(specialFill.rect.width >= 339f, "ESPECIAL cheio acompanha Ressonância");
+                Check(espRt.rect.width < 30f, "HUD_EspecialESupremo: ESPECIAL reiniciou (< 30 px) após disparo do especial L/Q");
+                Check(supRt.rect.width >= 160f && supRt.rect.width <= 180f && Mathf.Abs(meter.Current - 50f) < 0.01f, "HUD_EspecialESupremo: SUPREMO permaneceu inalterado após especial L/Q");
+
+                // Brilho, banner e partículas só no SUPREMO
+                var glow = hud.transform.Find("SupremoBrilho")?.gameObject ?? hud.transform.Find("HudHorizontalV1/SupremoBrilho")?.gameObject;
+                var parts = hud.transform.Find("SupremoParticulas")?.gameObject ?? hud.transform.Find("HudHorizontalV1/SupremoParticulas")?.gameObject;
+                var banner = hud.transform.Find("BannerSupremo")?.gameObject ?? hud.transform.Find("HudHorizontalV1/BannerSupremo")?.gameObject;
+                Check(glow != null && !glow.activeSelf && parts != null && !parts.activeSelf && banner != null && !banner.activeSelf,
+                    "HUD_EspecialESupremo: Brilho, partículas e banner inativos com SUPREMO incompleto");
+
+                meter.ForceSet(100f);
+                yield return null;
+                yield return null;
+                Check(glow != null && glow.activeSelf && parts != null && parts.activeSelf && banner != null && banner.activeSelf,
+                    "HUD_EspecialESupremo: Brilho, partículas e banner ativos com SUPREMO a 100%");
+                Check(supremoImg.sprite != null && supremoImg.sprite.name.StartsWith("bar_fill_supremo_cheio"),
+                    "HUD_EspecialESupremo: Sprite do SUPREMO usa bar_fill_supremo_cheio quando cheio");
+
+                var badSpecialFx = hud.GetComponentsInChildren<Transform>(true)
+                    .Any(t => (t.name.Contains("Brilho") || t.name.Contains("Particulas") || t.name.Contains("Banner")) &&
+                              !t.name.StartsWith("Supremo") && !t.name.StartsWith("BannerSupremo"));
+                Check(!badSpecialFx, "HUD_EspecialESupremo: Nenhum efeito de brilho/partícula/banner no slot ESPECIAL");
+
+                yield return new WaitForEndOfFrame();
+                Capture("hud_supremo_cheio");
+
+                // Gasta o supremo
+                meter.TrySpend();
+                yield return null;
+                Check(banner != null && !banner.activeSelf, "HUD_EspecialESupremo: Banner inativo após gastar SUPREMO");
+                Check(supRt.rect.width < 10f, "HUD_EspecialESupremo: SUPREMO voltou para perto de 0 após gastar");
+
+                // Feixe L/Q não consome ResonanceMeter e respeita CD 6s
+                var cdFieldCombat = typeof(PlayerCombat).GetField("_specialCooldownLeft", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (cdFieldCombat != null) cdFieldCombat.SetValue(combat, 0f);
+                meter.ForceSet(40f);
                 bool fired = combat.TryFireWarriorSpecial();
-                Check(fired && meter.Current == 0f && !combat.TryFireWarriorSpecial(),
-                    "Feixe consome barra exatamente uma vez");
+                Check(fired && Mathf.Abs(meter.Current - 40f) < 0.01f && !combat.TryFireWarriorSpecial()
+                      && combat.SpecialCooldownLeft > 5.9f, "Feixe L/Q não consome ResonanceMeter e respeita CD 6s");
                 yield return null;
                 Check(visual.GetComponent<SpriteRenderer>().sprite.texture.name == "especial_feixe",
                     "Guerreiro anima preparo do Feixe");
                 yield return new WaitForSeconds(.2f);
                 yield return new WaitForEndOfFrame();
                 Capture("guerreiro_feixe_768x432");
+
+                // Caso Guerreiro_EspecialSemMedidor
+                yield return new WaitForSeconds(6.1f);
+                meter.ForceSet(0f);
+                Check(combat.SpecialReady, "Guerreiro_EspecialSemMedidor: pronto mesmo com o medidor vazio");
+                Check(combat.TryFireWarriorSpecial() && meter.Current == 0f, "Guerreiro_EspecialSemMedidor: L/Q dispara com Ressonância 0 e não mexe nela");
+                Check(FindObjectsByType<FireCrescent>(FindObjectsSortMode.None).Length == 0 && !SpecialController.IsCinematic,
+                    "Guerreiro_EspecialSemMedidor: L/Q não abre cut-in nem rajada");
+
+                // Supremo_RetratoNovo (Guerreiro)
+                yield return TestSupremoRetratoNovo("guerreiro", player);
+
+                // Guerreiro_SupremoRajada
+                var stageCtrl = FindFirstObjectByType<GroundT1Controller>(FindObjectsInactive.Exclude);
+                yield return TestGuerreiroSupremoRajada(player, stageCtrl);
             }
             if (hero == "mago")
             {
@@ -341,6 +418,28 @@ public class CombateHudSmoke : MonoBehaviour
                 Check(Mathf.Approximately(pulseDmg, 52f) && !basicEnemy.IsSlowed,
                     $"Mago Pulso Rúnico básico causa 52 de dano ({pulseDmg:F1}) e NÃO aplica lentidão");
                 Destroy(basicEnemy.gameObject);
+
+                // Independência ESPECIAL e SUPREMO no Mago
+                var mMeter = player.GetComponent<ResonanceMeter>();
+                var mImages = hud.GetComponentsInChildren<Image>(true);
+                var mEspImg = mImages.FirstOrDefault(i => i.name == "bar_fill_especial_68x6");
+                var mSupImg = mImages.FirstOrDefault(i => i.name == "bar_fill_supremo_68x6");
+                Check(mEspImg != null && mSupImg != null, "Mago: Barras ESPECIAL e SUPREMO existem");
+                Check(mEspImg.sprite != null && mEspImg.sprite.name.StartsWith("bar_fill_especial_mago"), "Mago: Sprite do ESPECIAL é bar_fill_especial_mago");
+                mMeter.ForceSet(50f);
+                yield return null;
+                float mEspW = mEspImg.rectTransform.rect.width;
+                Check(mSupImg.rectTransform.rect.width >= 160f && mSupImg.rectTransform.rect.width <= 180f, "Mago: SUPREMO a 50% independente");
+                Check(Mathf.Abs(mEspImg.rectTransform.rect.width - mEspW) < 1f, "Mago: ESPECIAL independente da Ressonância");
+                var fireZone = typeof(PlayerCombat).GetMethod("FireMageSpecial", BindingFlags.Instance | BindingFlags.NonPublic);
+                fireZone.Invoke(combat, null);
+                yield return null;
+                Check(mEspImg.rectTransform.rect.width < 30f, "Mago: ESPECIAL reiniciou com especial L/Q");
+                Check(mSupImg.rectTransform.rect.width >= 160f && mSupImg.rectTransform.rect.width <= 180f && Mathf.Abs(mMeter.Current - 50f) < 0.01f, "Mago: SUPREMO inalterado após especial L/Q");
+                mMeter.TrySpend();
+
+                // Supremo_RetratoNovo (Mago)
+                yield return TestSupremoRetratoNovo("mago", player);
             }
             if (hero == "arqueiro")
             {
@@ -514,6 +613,28 @@ public class CombateHudSmoke : MonoBehaviour
                 typeof(GroundT1Controller).GetMethod("TogglePause", BindingFlags.Instance | BindingFlags.NonPublic)
                     .Invoke(stage, null);
                 Check(Time.timeScale == 1f, "Retorno da pausa preservado");
+
+                // Independência ESPECIAL e SUPREMO no Arqueiro
+                var aMeter = player.GetComponent<ResonanceMeter>();
+                var aImages = hud.GetComponentsInChildren<Image>(true);
+                var aEspImg = aImages.FirstOrDefault(i => i.name == "bar_fill_especial_68x6");
+                var aSupImg = aImages.FirstOrDefault(i => i.name == "bar_fill_supremo_68x6");
+                Check(aEspImg != null && aSupImg != null, "Arqueiro: Barras ESPECIAL e SUPREMO existem");
+                Check(aEspImg.sprite != null && aEspImg.sprite.name.StartsWith("bar_fill_especial_arqueiro"), "Arqueiro: Sprite do ESPECIAL é bar_fill_especial_arqueiro");
+                aMeter.ForceSet(50f);
+                yield return null;
+                float aEspW = aEspImg.rectTransform.rect.width;
+                Check(aSupImg.rectTransform.rect.width >= 160f && aSupImg.rectTransform.rect.width <= 180f, "Arqueiro: SUPREMO a 50% independente");
+                Check(Mathf.Abs(aEspImg.rectTransform.rect.width - aEspW) < 1f, "Arqueiro: ESPECIAL independente da Ressonância");
+                var fireArcher = typeof(PlayerCombat).GetMethod("FireArcherSpecial", BindingFlags.Instance | BindingFlags.NonPublic);
+                fireArcher.Invoke(combat, null);
+                yield return null;
+                Check(aEspImg.rectTransform.rect.width < 30f, "Arqueiro: ESPECIAL reiniciou com especial L/Q");
+                Check(aSupImg.rectTransform.rect.width >= 160f && aSupImg.rectTransform.rect.width <= 180f && Mathf.Abs(aMeter.Current - 50f) < 0.01f, "Arqueiro: SUPREMO inalterado após especial L/Q");
+                aMeter.TrySpend();
+
+                // Supremo_RetratoNovo (Arqueiro)
+                yield return TestSupremoRetratoNovo("arqueiro", player);
             }
             player.GetComponent<HealthSystem>().Kill();
             yield return new WaitForSecondsRealtime(.1f);
@@ -582,6 +703,15 @@ public class CombateHudSmoke : MonoBehaviour
         yield return new WaitForEndOfFrame();
         Capture("fase2_palacio_playmode_768x432");
         Capture("fase2_estilo3_caminho");
+        Capture("fase2_profundidade");
+
+        var met0 = GameObject.Find("MeteoroFundo_0");
+        if (met0 != null)
+        {
+            var srMet = met0.GetComponent<SpriteRenderer>();
+            Check(srMet != null && srMet.sortingOrder == -32,
+                "Fase 2 meteoros de fundo possuem sorting -32 (para não brigar com P3b)");
+        }
 
         // Meteoros no fundo + explosão de impacto visual
         var expTex = Resources.Load<Texture2D>("T2_Palace_Atmos/v3/fx/fx_impacto_explosao_6f_64x64");
@@ -683,11 +813,62 @@ public class CombateHudSmoke : MonoBehaviour
         Check(T3RuinsScenery.Built && T3RuinsFrontLevel.Built,
             "Fase 3 constrói cenário parallax P1..P5 + playfield de ruínas com abismos");
         Check(T3RuinsScenery.HasV3Layers,
-            "Fase 3 carrega as 5 camadas de paralaxe v3 (P1..P4b incluindo a névoa do chão)");
+            "Fase 3 carrega as camadas de paralaxe v3 (incluindo as névoas P2b e P3b)");
         Check(T3RuinsScenery.NoProceduralSprites,
             "Nenhum SpriteRenderer da Fase 3 usa textura procedural ou branca");
-        Check(t3Spawner != null && t3Spawner.TotalWaves == 3,
-            "Fase 3 possui 3 trechos de caminho antes da arena (TotalWaves == 3)");
+        Check(t3Spawner != null && t3Spawner.TotalWaves == 2,
+            "Fase 3 possui 2 ondas de inimigos antes da arena (TotalWaves == 2)");
+
+        // Case: F3_Inimigos_Onda
+        bool t1ConfigIntact = SimpleEnemySpawner.DemoWaveCount == 3 &&
+                              SimpleEnemySpawner.MaxAlive == 12 &&
+                              Mathf.Abs(SimpleEnemySpawner.Interval - 1.25f) < 0.01f;
+        Check(t1ConfigIntact, "F3_Inimigos_Onda: Configurações de ondas e spawn da Fase 1 e 2 permanecem inalteradas");
+
+        Check(t3Spawner != null && t3Spawner.CurrentMaxAlive == 3,
+            "F3_Inimigos_Onda: Fase 3 limita max vivos a 3 (MaxAlive == 3)");
+        Check(t3Spawner != null && t3Spawner.CurrentInterval >= 2.0f,
+            "F3_Inimigos_Onda: Fase 3 intervalo entre spawns é >= 2.0s");
+
+        int w1Knights = 0, w1Spitters = 0;
+        bool w1AllValid = true;
+        for (int i = 0; i < 6; i++)
+        {
+            var e = t3Spawner != null ? t3Spawner.GetNextT3Enemy(1, i) : null;
+            if (e != null && e.Id == "cavaleiro_corrompido") w1Knights++;
+            else if (e != null && e.Id == "cuspidor_vazio") w1Spitters++;
+            else w1AllValid = false;
+        }
+
+        int w2Knights = 0, w2Spitters = 0;
+        bool w2AllValid = true;
+        for (int i = 0; i < 6; i++)
+        {
+            var e = t3Spawner != null ? t3Spawner.GetNextT3Enemy(2, i) : null;
+            if (e != null && e.Id == "cavaleiro_corrompido") w2Knights++;
+            else if (e != null && e.Id == "cuspidor_vazio") w2Spitters++;
+            else w2AllValid = false;
+        }
+
+        bool enemiesValid = w1AllValid && w2AllValid && (w1Knights == 4 && w1Spitters == 2) && (w2Knights == 3 && w2Spitters == 3);
+        Check(enemiesValid,
+            "F3_Inimigos_Onda: Tipos pertencem a {Cavaleiro, Cuspidor}, Onda 1 possui 4+2 e Onda 2 possui 3+3");
+
+        // Spawn simulado da onda com banner ativo e no máximo 3 vivos para captura do print
+        t3Player.transform.position = new Vector3(-20.0f, t3Stage.Stage.GroundTop + 0.7f, 0f);
+        t3Stage.AnnounceWave(1, "Cavaleiros Corrompidos");
+        var waveEnemy1 = SimpleEnemySpawner.SpawnAt(EnemyData.CreateCorruptedKnight(), t3Player.transform, t3Stage.Stage, new Vector2(-15.5f, t3Stage.Stage.GroundTop));
+        var waveEnemy2 = SimpleEnemySpawner.SpawnAt(EnemyData.CreateCorruptedKnight(), t3Player.transform, t3Stage.Stage, new Vector2(-12.0f, t3Stage.Stage.GroundTop));
+        var waveEnemy3 = SimpleEnemySpawner.SpawnAt(EnemyData.CreateVoidSpitter(), t3Player.transform, t3Stage.Stage, new Vector2(-8.5f, t3Stage.Stage.GroundTop));
+        int aliveInSim = 0;
+        foreach (var ec in FindObjectsByType<EnemyController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) aliveInSim++;
+        Check(aliveInSim <= 3, "F3_Inimigos_Onda: Nunca há mais de 3 vivos ao mesmo tempo na Fase 3");
+        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForEndOfFrame();
+        Capture("fase3_inimigos_onda");
+        if (waveEnemy1 != null) Destroy(waveEnemy1.gameObject);
+        if (waveEnemy2 != null) Destroy(waveEnemy2.gameObject);
+        if (waveEnemy3 != null) Destroy(waveEnemy3.gameObject);
 
         var titleCardT3 = GameObject.Find("PhaseTitleCard");
         if (titleCardT3 != null) titleCardT3.SetActive(false);
@@ -824,7 +1005,90 @@ public class CombateHudSmoke : MonoBehaviour
         Check(boss != null && bossBar != null,
             "Entrada da arena do chefe trava o portão e instancia Devorador do Vazio com barra de vida");
 
-        if (boss != null) boss.ForceStateFlying();
+        // Case: Boss_Cutscene (expansão de Boss_FalaEntrada)
+        if (boss != null)
+        {
+            // Aos 0,4 s
+            yield return new WaitForSeconds(0.4f);
+            var cutsceneGo = GameObject.Find("BossIntroCutscene");
+            Check(cutsceneGo != null, "Boss_Cutscene: GameObject BossIntroCutscene existe aos 0.4s");
+            if (cutsceneGo != null)
+            {
+                string[] requiredChildren = { "LetterboxTopo", "LetterboxBase", "CaixaDialogo", "PlacaNome", "RetratoBoss", "MolduraRetrato", "FalaBoss" };
+                bool allChildren = requiredChildren.All(c => cutsceneGo.transform.Find(c) != null);
+                Check(allChildren, "Boss_Cutscene: BossIntroCutscene possui todos os filhos requeridos");
+
+                var topBox = cutsceneGo.transform.Find("LetterboxTopo")?.GetComponent<RectTransform>();
+                Check(topBox != null && topBox.rect.height >= 90f, "Boss_Cutscene: Altura de LetterboxTopo >= 90");
+            }
+
+            var hudGrp = GameObject.Find("HudHorizontalV1")?.GetComponent<CanvasGroup>();
+            Check(hudGrp != null && hudGrp.alpha < 0.05f, "Boss_Cutscene: Alfa do HudHorizontalV1 < 0.05");
+
+            var t3Combat = t3Player.GetComponent<PlayerCombat>();
+            Check(t3Player.IsLocked && (t3Combat == null || t3Combat.IsLocked), "Boss_Cutscene: Herói travado durante a cutscene");
+
+            Check(boss.transform.position.y < t3Stage.Stage.GroundTop + 4.8f,
+                "Boss_FalaEntrada: Boss emerge subindo do chão em direção à posição final");
+
+            float hpBeforeIntroDamage = boss.Health.Current;
+            boss.EnemyCtrl.ReceiveDamage(100f);
+            Check(Mathf.Abs(boss.Health.Current - hpBeforeIntroDamage) < 0.01f,
+                "Boss_FalaEntrada: Dano é completamente ignorado durante a Intro (boss invulnerável)");
+
+            // Aos 3.6 s desde a entrada (já passaram 0.4s, espera mais 3.2s)
+            yield return new WaitForSeconds(3.2f);
+            Check(boss.CurrentSpeechText == "Vocês pensaram que Aetherion cairia em silêncio... Eu sou o Devorador do Vazio.",
+                "Boss_Cutscene: Fala completa do Devorador do Vazio atingida aos 3.6s");
+
+            yield return new WaitForEndOfFrame();
+            Capture("boss_cutscene");
+            Capture("boss_fala_entrada");
+
+            // Depois da Intro (espera acabar o restante da duração de 6.0s)
+            yield return new WaitForSeconds(2.45f);
+            Check(GameObject.Find("BossIntroCutscene") == null, "Boss_Cutscene: BossIntroCutscene destruído após fim da Intro");
+            Check(hudGrp != null && Mathf.Abs(hudGrp.alpha - 1f) < 0.05f, "Boss_Cutscene: HUD alfa retornou a 1.0");
+            Check(!t3Player.IsLocked && (t3Combat == null || !t3Combat.IsLocked), "Boss_Cutscene: Herói destravado após fim da cutscene");
+
+            boss.ForceStateFlying();
+            Check(Mathf.Abs(boss.CurrentBossAlpha - 1f) < 0.05f && boss.transform.position.y >= t3Stage.Stage.GroundTop + 4.5f,
+                "Boss_FalaEntrada: Boss atinge posição final e alfa 1.0 ao concluir emergência");
+
+            // Retry e Skip
+            var dummyRetryBar = BossHealthBar.Create(bossBar != null ? bossBar.transform.parent : t3Stage.transform);
+            var retryBoss = VoidDevourerBoss.Spawn(new Vector3(48f, t3Stage.Stage.GroundTop, 0f), t3Player.transform, t3Stage.Stage, dummyRetryBar, isRetry: true);
+            yield return new WaitForSeconds(0.2f);
+
+            if (retryBoss != null && retryBoss.Cutscene != null)
+            {
+                retryBoss.Cutscene.RequestSkip(); // 1st: completa o texto na hora
+                Check(retryBoss.CurrentSpeechText.EndsWith("Eu sou o Devorador do Vazio."),
+                    "Boss_Cutscene: Retry utiliza fala curta que termina em 'Eu sou o Devorador do Vazio.'");
+                Check(retryBoss.CurrentSpeechText == "Eu sou o Devorador do Vazio.",
+                    "Boss_Cutscene: Primeiro skip completa o texto na hora");
+                retryBoss.Cutscene.RequestSkip(); // 2nd: SkipToEnd = true
+                yield return new WaitForSeconds(0.46f);
+                Check(retryBoss.CurrentState == VoidDevourerBoss.State.Flying || retryBoss.Cutscene == null,
+                    "Boss_Cutscene: Segundo skip encerra a Intro em <= 0.6s");
+            }
+            if (retryBoss != null)
+            {
+                if (retryBoss.HealthBar != null) Destroy(retryBoss.HealthBar.gameObject);
+                Destroy(retryBoss.gameObject);
+            }
+
+            // Caso Guerreiro_SupremoRajada_Boss
+            boss.Health.Configure(BossData.MaxHealth);
+            float hp0 = boss.Health.Current;
+            FireCrescent.Spawn(t3Player.transform, boss.transform.position + Vector3.left * 1.5f, 1f, 144f, true);
+            yield return new WaitForSeconds(0.3f);
+            Check(boss.Health.Current < hp0 && (hp0 - boss.Health.Current) <= 260f,
+                $"Guerreiro_SupremoRajada_Boss: boss perde HP, dentro do teto (perdeu {hp0 - boss.Health.Current:F1})");
+            Check(boss.CurrentState == VoidDevourerBoss.State.Flying,
+                "Guerreiro_SupremoRajada_Boss: boss não é empurrado nem atordoado");
+            boss.Health.Configure(BossData.MaxHealth);
+        }
 
         if (bossBar != null)
         {
@@ -838,6 +1102,7 @@ public class CombateHudSmoke : MonoBehaviour
             Capture("fase3_cenario_arena_boss");
             Capture("fase3_arena_barra_boss");
             Capture("fase3_arena_boss_plataformas");
+            Capture("fase3_profundidade");
 
             // (Regressão Fase 3) Frente nova v2 e herói em pé sobre plataforma flutuante da arena
             t3Player.transform.position = new Vector3(48.0f, t3Stage.Stage.GroundTop + 3.4f + 0.6f, 0f);
@@ -896,6 +1161,62 @@ public class CombateHudSmoke : MonoBehaviour
             Capture("fase3_descida_nucleo_dourado");
         }
 
+        // Case: Boss_TomaDano
+        if (boss != null && bossBar != null)
+        {
+            // 1. Exige que só exista 1 HealthSystem no GameObject do boss
+            var healthSystems = boss.GetComponents<HealthSystem>();
+            Check(healthSystems.Length == 1,
+                "Boss_TomaDano: Existe estritamente 1 HealthSystem no GameObject do boss (duplicação removida)");
+
+            // 2. Aplica 10 hits de herói no boss pelo EnemyController.ReceiveDamage
+            boss.Health.Configure(BossData.MaxHealth);
+            float hpBefore10Hits = boss.Health.Current;
+            for (int i = 0; i < 10; i++)
+            {
+                boss.EnemyCtrl.ReceiveDamage(25f);
+            }
+            bossBar.ForceSync();
+            yield return new WaitForSeconds(0.1f);
+
+            float hpAfter10Hits = boss.Health.Current;
+            float ratio = hpAfter10Hits / boss.Health.Max;
+            Check(hpAfter10Hits < hpBefore10Hits,
+                "Boss_TomaDano: Health.Current caiu após 10 hits de herói via EnemyController.ReceiveDamage");
+            Check(bossBar.FillAmount < 1.0f && Mathf.Abs(bossBar.FillAmount - ratio) <= 0.01f,
+                "Boss_TomaDano: Fill da barra do boss é < 1 e corresponde a Current/Max com tolerância de 0.01");
+
+            // Captura print boss_tomando_dano.png
+            yield return new WaitForEndOfFrame();
+            Capture("boss_tomando_dano");
+
+            // 3. Leva a vida a 65% e exige Fase 2
+            float dmgTo65 = boss.Health.Current - (boss.Health.Max * 0.65f);
+            if (dmgTo65 > 0f) DamageSystem.Apply(boss.Health, dmgTo65);
+            bossBar.ForceSync();
+            yield return null;
+            Check(boss.Phase == 2,
+                "Boss_TomaDano: Transição de fase para Fase 2 ocorre em <= 66% de vida");
+
+            // 4. Leva a vida a 32% e exige Fase 3
+            boss.ForceStateFlying();
+            float dmgTo32 = boss.Health.Current - (boss.Health.Max * 0.32f);
+            if (dmgTo32 > 0f) DamageSystem.Apply(boss.Health, dmgTo32);
+            bossBar.ForceSync();
+            yield return null;
+            Check(boss.Phase == 3,
+                "Boss_TomaDano: Transição de fase para Fase 3 ocorre em <= 33% de vida");
+
+            // 5. Leva a vida a 0 e exige que o boss não seja destruído antes da cutscene ou fala de derrota
+            DamageSystem.Apply(boss.Health, boss.Health.Current);
+            yield return new WaitForSeconds(0.1f);
+            Check(boss != null && boss.gameObject != null,
+                "Boss_TomaDano: Levar a vida a 0 não destrói o boss antes da cutscene e da fala de derrota");
+
+            var cutsceneRunning = FindFirstObjectByType<BossDefeatCutscene>();
+            if (cutsceneRunning != null) Destroy(cutsceneRunning.gameObject);
+        }
+
         // Cutscene de Derrota - Frase na tela
         var cutsceneCanvas = UiKit.CreateCanvas(t3Stage.transform, "TestCutsceneCanvas");
         var dark = UiKit.Panel(cutsceneCanvas.transform, "DarkOverlay", new Vector2(2400f, 1400f), Vector2.zero, new Color(0f, 0f, 0f, 0.72f));
@@ -946,11 +1267,7 @@ public class CombateHudSmoke : MonoBehaviour
         hoodGo.SetActive(false);
         clawL.SetActive(false);
         clawR.SetActive(false);
-        var endPanel = UiKit.Panel(cutsceneCanvas.transform, "EndPart1Panel", new Vector2(800f, 440f), Vector2.zero, MenuTheme.Panel);
-        UiKit.Label(endPanel.transform, "FIM DA PARTE 1", 42, new Vector2(0f, 130f), MenuTheme.CelestialGold, new Vector2(700f, 60f));
-        UiKit.Label(endPanel.transform, "A batalha continua nas estrelas…\nObrigado por jogar Aetherion: Voidfall!", 24, new Vector2(0f, 40f), MenuTheme.SoftIvory, new Vector2(700f, 80f));
-        UiKit.Button(endPanel.transform, "MAPA", new Vector2(0f, -60f), new Vector2(260f, 58f), null);
-        UiKit.Button(endPanel.transform, "MENU", new Vector2(0f, -135f), new Vector2(260f, 58f), null);
+        var endPanel = MenuPanels.EndPart1(cutsceneCanvas.transform, null, null);
         yield return new WaitForEndOfFrame();
         Capture("fase3_fim_da_parte_1");
         Destroy(cutsceneCanvas.gameObject);
@@ -968,12 +1285,244 @@ public class CombateHudSmoke : MonoBehaviour
         yield return new WaitForEndOfFrame();
         Capture("fase3_mapa_liberada_concluida");
 
+        yield return TestTelasInicio();
+
         File.WriteAllLines(Path.Combine(Output, "results.txt"), _results);
         Debug.Log("[Combate HUD QA] FINAL " + (_failures == 0 ? "PASS" : "FAIL") + " cases=" + _results.Count);
         if (Application.isBatchMode)
             EditorApplication.Exit(_failures == 0 ? 0 : 1);
         else
             EditorApplication.isPlaying = false;
+    }
+
+    IEnumerator TestSupremoRetratoNovo(string hero, PlayerController player)
+    {
+        var meter = player.GetComponent<ResonanceMeter>();
+        var spec = player.GetComponent<SpecialController>();
+        var cdField = typeof(SpecialController).GetField("_cooldownLeft", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (cdField != null) cdField.SetValue(spec, 0f);
+
+        meter.ForceSet(100f);
+        meter.TrySpend();
+        var runMethod = typeof(SpecialController).GetMethod("Run", BindingFlags.Instance | BindingFlags.NonPublic);
+        var routine = (IEnumerator)runMethod.Invoke(spec, null);
+        spec.StartCoroutine(routine);
+
+        yield return new WaitForSecondsRealtime(0.85f);
+        Check(CutInPanel.Current != null, "Supremo_RetratoNovo: CutInPanel ativo");
+        Image bustImg = null;
+        Image eyesImg = null;
+        if (CutInPanel.Current != null)
+        {
+            bustImg = CutInPanel.Current.BustImage;
+            eyesImg = CutInPanel.Current.EyesImage;
+        }
+        Check(bustImg != null && bustImg.sprite != null && bustImg.sprite.name.StartsWith("cutin_busto_" + hero),
+            "Supremo_RetratoNovo: Busto do " + hero + " carrega cutin_busto_" + hero);
+        Check(eyesImg != null && eyesImg.sprite != null && eyesImg.sprite.name.StartsWith("cutin_olhos_" + hero),
+            "Supremo_RetratoNovo: Olhos do " + hero + " carrega cutin_olhos_" + hero);
+
+        yield return new WaitForEndOfFrame();
+        if (hero == "guerreiro")
+            Capture("supremo_guerreiro_cutin");
+        else
+            Capture("supremo_" + hero);
+
+        float timeout = 15f;
+        while (SpecialController.IsCinematic && timeout > 0f)
+        {
+            timeout -= Time.unscaledDeltaTime;
+            yield return null;
+        }
+        Check(!SpecialController.IsCinematic, "Supremo_RetratoNovo: Cut-in e cinematic concluídos em tempo hábil");
+    }
+
+    IEnumerator TestGuerreiroSupremoRajada(PlayerController player, GroundT1Controller stageCtrl)
+    {
+        var spec = player.GetComponent<SpecialController>();
+        var meter = player.GetComponent<ResonanceMeter>();
+        var gVisual = player.GetComponentInChildren<GuerreiroVisual>();
+
+        var cdField = typeof(SpecialController).GetField("_cooldownLeft", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (cdField != null) cdField.SetValue(spec, 0f);
+
+        player.transform.position = new Vector3(0f, stageCtrl.Stage.GroundTop + 0.7f, 0f);
+        var pCtrl = player.GetComponent<PlayerController>();
+        pCtrl.FaceVisual(true);
+
+        var enemies = new List<EnemyController>();
+        float[] xs = { 2.0f, 3.5f, 5.0f };
+        for (int i = 0; i < xs.Length; i++)
+        {
+            var e = SimpleEnemySpawner.SpawnAt(EnemyData.CreateAlienSkeleton(), player.transform, stageCtrl.Stage, new Vector2(xs[i], stageCtrl.Stage.GroundTop));
+            e.Health.Configure(1000f);
+            e.enabled = false;
+            e.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+            enemies.Add(e);
+        }
+        var knight = SimpleEnemySpawner.SpawnAt(EnemyData.CreateCorruptedKnight(), player.transform, stageCtrl.Stage, new Vector2(7.5f, stageCtrl.Stage.GroundTop));
+        knight.Health.Configure(1000f);
+        knight.enabled = false;
+        knight.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+        enemies.Add(knight);
+
+        meter.ForceSet(100f);
+        meter.TrySpend();
+        var runMethod = typeof(SpecialController).GetMethod("Run", BindingFlags.Instance | BindingFlags.NonPublic);
+        spec.StartCoroutine((IEnumerator)runMethod.Invoke(spec, null));
+
+        yield return null;
+        Check(meter.Current == 0f, "Guerreiro_SupremoRajada: E com medidor cheio dispara e consome a Ressonância");
+
+        float waitCrescents = 4f;
+        while (waitCrescents > 0f)
+        {
+            waitCrescents -= Time.unscaledDeltaTime;
+            if (FindObjectsByType<FireCrescent>(FindObjectsSortMode.None).Length >= 3)
+                break;
+            yield return null;
+        }
+
+        yield return new WaitForEndOfFrame();
+        Capture("supremo_guerreiro");
+
+        float timeout = 8f;
+        while (SpecialController.IsCinematic && timeout > 0f)
+        {
+            timeout -= Time.deltaTime;
+            yield return null;
+        }
+
+        int hitCount = enemies.Count(e => e.Health.Current < 1000f);
+        Check(hitCount >= 3, "Guerreiro_SupremoRajada: Pelo menos 3 inimigos levaram dano das ondas");
+        Check(knight.Health.Current < 1000f, "Guerreiro_SupremoRajada: O inimigo mais longe (+7.5) levou dano (pierce até o fim)");
+
+        float dmgFirst = 1000f - enemies[0].Health.Current;
+        Check(dmgFirst >= 300f && dmgFirst <= 470f,
+            $"Guerreiro_SupremoRajada: Primeiro esqueleto perdeu entre 300 e 470 HP (perdeu {dmgFirst:F1})");
+
+        Check(gVisual == null || gVisual.enabled, "Guerreiro_SupremoRajada: GuerreiroVisual voltou a ficar enabled");
+        Check(FireCrescent.Alive == 0, "Guerreiro_SupremoRajada: FireCrescent.Alive == 0 após encerramento");
+
+        foreach (var e in enemies) if (e != null) Destroy(e.gameObject);
+    }
+
+    IEnumerator TestTelasInicio()
+    {
+        Time.timeScale = 1f;
+
+        // ---------- Título ----------
+        SceneManager.LoadScene(GameScenes.MainMenu);
+        yield return null;
+        MainMenuController.EnsureExists();
+        yield return new WaitForSeconds(0.8f);
+        var menu = MainMenuController.Instance;
+        Check(menu != null && FindFirstObjectByType<MenuAtmosBackground>() != null, "Menu_KitNovo: título com fundo pintado em camadas (parallax)");
+        Check(menu != null && menu.Buttons.Count >= 3 && menu.Buttons.All(b => b.GetComponent<MenuButtonFx>() != null),
+            "Menu_KitNovo: botões do kit novo com cursor/foco");
+        Check(GameObject.Find("titulo_fenda_brilho_80x213") != null, "Menu_KitNovo: fenda vertical do Vazio no céu");
+        int heroesOnTitle = FindObjectsByType<UiSpriteAnimator>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+        Check(heroesOnTitle >= 3, "Menu_KitNovo: trio de heróis animado no título (" + heroesOnTitle + ")");
+        var feet = GameObject.Find("Retrato_guerreiro");
+        Check(feet != null && Vector2.Distance(feet.GetComponent<RectTransform>().pivot, HeroPortrait.FeetPivot) < 0.001f,
+            "Menu_KitNovo: retrato com pivô nos pés");
+
+        // nome do jogo padronizado em tudo que aparece
+        bool logoOk = GameObject.Find("logo_aetherion_301x58") != null && GameObject.Find("subtitulo_apocalipse_130x19") != null;
+        bool noVoidfallText = FindObjectsByType<Text>(FindObjectsInactive.Include, FindObjectsSortMode.None).All(t => t.text.IndexOf("Voidfall", System.StringComparison.OrdinalIgnoreCase) < 0);
+        string[] sources =
+        {
+            "Assets/Scripts/Stages/GroundT1Controller.cs", "Assets/Scripts/Bosses/BossDefeatCutscene.cs",
+            "Assets/Scripts/UI/MainMenuController.cs", "Assets/Scripts/UI/IntroController.cs", "Assets/Scripts/UI/MenuPanels.cs",
+            "Assets/WebGLTemplates/Aetherion/index.html"
+        };
+        var dirty = sources.Where(p => File.Exists(p) && File.ReadAllText(p).IndexOf("Voidfall", System.StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
+        bool template = File.Exists("Assets/WebGLTemplates/Aetherion/index.html") && File.ReadAllText("Assets/WebGLTemplates/Aetherion/index.html").Contains("AETHERION: APOCALIPSE");
+        Check(logoOk && noVoidfallText && dirty.Length == 0 && template && MenuPanels.EndPart1Text.Contains("APOCALIPSE") && MenuPanels.DemoCompleteText.Contains("APOCALIPSE"),
+            "Titulo_Apocalipse: logo + subtítulo, nenhum texto visível com 'Voidfall'" + (dirty.Length > 0 ? " (sobrou em: " + string.Join(", ", dirty) + ")" : "") + (template ? "" : " (template WebGL sem AETHERION: APOCALIPSE)"));
+        yield return new WaitForEndOfFrame();
+        Capture("titulo_menu");
+
+        // configurações
+        if (menu != null)
+        {
+            menu.SettingsPanel.SetActive(true);
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            var overflow = menu.SettingsPanel.GetComponentsInChildren<Text>(true).Where(t => !MenuKit.Fits(t)).Select(t => t.text).ToArray();
+            Check(overflow.Length == 0, "Menu_KitNovo: CONFIGURAÇÕES sem texto vazando" + (overflow.Length > 0 ? " → " + string.Join(" | ", overflow) : ""));
+            Check(menu.SettingsPanel.GetComponentsInChildren<Text>(true).Any(t => t.text == "E"), "Menu_KitNovo: CONFIGURAÇÕES mostra Supremo no E");
+            Capture("config");
+            menu.SettingsPanel.SetActive(false);
+        }
+
+        // ---------- Intro ----------
+        SceneManager.LoadScene(GameScenes.Intro);
+        yield return null;
+        IntroController.EnsureExists();
+        yield return new WaitForSeconds(0.6f);
+        var intro = IntroController.Instance;
+        Check(intro != null, "Intro_Paineis: IntroController ativo");
+        if (intro != null)
+        {
+            bool allPanels = true, allFit = true;
+            for (int i = 0; i < IntroController.Pages.Length; i++)
+            {
+                allPanels &= Resources.Load<Texture2D>("Menu/intro/intro_painel_" + (i + 1) + "_320x180") != null;
+                intro.JumpTo(i);
+                yield return null;
+                if (!MenuKit.Fits(intro.Body)) { allFit = false; Debug.LogWarning("[Combate HUD QA] intro página " + (i + 1) + " vazou"); }
+                if (i == 0) { yield return new WaitForEndOfFrame(); Capture("intro_painel1"); }
+            }
+            Check(allPanels, "Intro_Paineis: 6 painéis pintados carregados");
+            Check(allFit, "Intro_Paineis: texto das 6 páginas cabe na caixa de diálogo");
+            var heroes = GameObject.Find("HeroisPainel6");
+            Check(heroes != null && heroes.activeInHierarchy && heroes.GetComponentsInChildren<UiSpriteAnimator>().Length == 3, "Intro_Paineis: painel 6 com os 3 heróis vivos");
+            Check(GameObject.Find("Botao_CONTINUAR") != null && GameObject.Find("Botao_PULAR") != null, "Intro_Paineis: CONTINUAR e PULAR presentes");
+            yield return new WaitForEndOfFrame();
+            Capture("intro_painel6");
+        }
+
+        // ---------- Seleção ----------
+        SceneManager.LoadScene(GameScenes.CharacterSelection);
+        yield return null;
+        CharacterSelectController.EnsureExists();
+        yield return new WaitForSeconds(0.6f);
+        var select = CharacterSelectController.Instance;
+        Check(select != null && select.Selected == null, "Selecao_Habilidades: abre sem herói escolhido");
+        Check(CharacterSelectController.Stats[0].Max == 160, "Selecao_Habilidades: VIDA máx. 160 (Guerreiro não estoura a barra)");
+        var g = HeroSkillInfo.Guerreiro;
+        string catalog = CharacterCatalog.ById("guerreiro") != null ? CharacterCatalog.ById("guerreiro").AbilityDescription : "";
+        Check(g.Skills[1].Key == "L/Q" && g.Skills[2].Key == "E" && !catalog.Contains("L/Q/E") && !catalog.Contains("consome ESPECIAL"),
+            "Selecao_Habilidades: Guerreiro — Especial L/Q sem medidor, Supremo no E");
+        if (select != null)
+        {
+            foreach (var hero in new[] { "guerreiro", "mago", "arqueiro" })
+            {
+                select.SelectById(hero);
+                yield return null;
+                yield return new WaitForEndOfFrame();
+                if (select.Selected == null || select.Selected.Id != hero) { Check(false, "Selecao_Habilidades " + hero + ": herói não está na seleção"); continue; }
+                var bad = select.OverflowingTexts();
+                Check(bad.Count == 0, "Selecao_Habilidades " + hero + ": BÁSICO/ESPECIAL/SUPREMO sem texto vazando" + (bad.Count > 0 ? " → " + string.Join(" | ", bad) : ""));
+                Capture("selecao_" + hero);
+            }
+        }
+
+        // ---------- Mapa: herói com modelo novo andando ----------
+        SceneManager.LoadScene(GameScenes.WorldMap);
+        yield return null;
+        WorldMapController.EnsureExists();
+        yield return new WaitForSeconds(0.5f);
+        var anim = FindFirstObjectByType<WorldMapHeroAnimator>();
+        var walkField = typeof(WorldMapHeroAnimator).GetField("_walk", BindingFlags.NonPublic | BindingFlags.Instance);
+        var walk = anim != null && walkField != null ? walkField.GetValue(anim) as Sprite[] : null;
+        Check(walk != null && walk.Length == 6 && walk[0] != null && walk[0].texture != null && walk[0].texture.name == "andar",
+            "Mapa_HeroiModeloNovo: mapa usa TrioAnimations/<herói>/andar (6 frames)");
+        var avatarImg = anim != null ? anim.GetComponent<Image>() : null;
+        Check(avatarImg != null && avatarImg.sprite != null && avatarImg.sprite.texture.name == "idle", "Mapa_HeroiModeloNovo: parado usa o idle do modelo novo");
+        yield return new WaitForEndOfFrame();
+        Capture("mapa_heroi");
     }
 
     static void Size(int width, int height)

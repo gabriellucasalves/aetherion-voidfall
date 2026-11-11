@@ -53,10 +53,10 @@ public class SpecialData : ScriptableObject
         }
         else
         {
-            data.Id = "feixe_infernal";
-            data.DisplayName = "FEIXE INFERNAL";
-            data.Callout = "O VAZIO\nNÃO PASSA!";
-            data.FinalShout = "FEIXE INFERNAL!";
+            data.Id = "cinco_luas";
+            data.DisplayName = "LÂMINA RUBRA: CINCO LUAS DE FOGO";
+            data.Callout = "Cinco luas…\num só incêndio!";
+            data.FinalShout = "LUA RUBRA!";
             data.BustFrame = 17;
             data.PanelDark = new Color(0.20f, 0.03f, 0.04f, 0.96f);
             data.PanelLight = new Color(0.55f, 0.08f, 0.06f, 0.5f);

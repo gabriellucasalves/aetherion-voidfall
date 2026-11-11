@@ -6,6 +6,8 @@ public class SimpleEnemySpawner : MonoBehaviour
     public const float Interval = 1.25f;
     public const int DemoWaveCount = 3;
     public const int EnemiesPerWave = 7;
+    public const int T3MaxAlive = 3;
+    public const float T3Interval = 2.2f;
 
     Transform _player;
     Collider2D _playerCollider;
@@ -28,9 +30,11 @@ public class SimpleEnemySpawner : MonoBehaviour
     bool IsT2 => _stage != null && _stage.Id == "t2";
     bool IsT3 => _stage != null && _stage.Id == "t3";
     public int Wave => _wave;
-    public int TotalWaves => IsT3 ? 3 : (IsT2 ? 2 : DemoWaveCount);
+    public int TotalWaves => IsT3 ? 2 : (IsT2 ? 2 : DemoWaveCount);
     public string WaveName => _waveType != null ? _waveType.DisplayName : "";
     public bool Finished => _finished;
+    public int CurrentMaxAlive => IsT3 ? T3MaxAlive : MaxAlive;
+    public float CurrentInterval => IsT3 ? T3Interval : Interval;
 
     public void Setup(Transform player, StageData stage)
     {
@@ -74,17 +78,17 @@ public class SimpleEnemySpawner : MonoBehaviour
                 if (_wave >= TotalWaves)
                     FinishDemo();
                 else
-                    _waveDelay = 2.4f;
+                    _waveDelay = IsT3 ? 2.0f : 2.4f;
             }
             return;
         }
 
         _timer += Time.deltaTime;
-        if (_timer < Interval)
+        if (_timer < (IsT3 ? T3Interval : Interval))
             return;
 
         _timer = 0f;
-        if (CountAlive() >= MaxAlive)
+        if (CountAlive() >= (IsT3 ? T3MaxAlive : MaxAlive))
             return;
 
         EnemyData toSpawnData = IsT3 ? GetNextT3Enemy(_wave, 6 - _toSpawn) : _waveType;
@@ -92,37 +96,25 @@ public class SimpleEnemySpawner : MonoBehaviour
             _toSpawn--;
     }
 
-    EnemyData GetNextT3Enemy(int wave, int spawnIndex)
+    public EnemyData GetNextT3Enemy(int wave, int spawnIndex)
     {
+        // T3 usa APENAS CavaleiroCorrompido e CuspidorDoVazio.
+        // Onda 1: 4 cavaleiros + 2 cuspidores = 6. Sequência: K, K, S, K, K, S.
+        // Onda 2: 3 cavaleiros + 3 cuspidores = 6. Sequência: K, S, K, S, K, S.
+        int idx = Mathf.Clamp(spawnIndex, 0, 5);
         if (wave == 1)
         {
-            // Trecho 1: Esqueleto Alien + Bicho + 1 Cuspidor
-            int mod = spawnIndex % 3;
-            if (mod == 0) return _skeleton;
-            if (mod == 1) return _beast;
-            return _spitter;
-        }
-        else if (wave == 2)
-        {
-            // Trecho 2: 2 Cavaleiros + 1 Cuspidor
-            int mod = spawnIndex % 3;
-            if (mod == 0 || mod == 1) return _knight;
-            return _spitter;
+            return (idx == 2 || idx == 5) ? _spitter : _knight;
         }
         else
         {
-            // Trecho 3: mistura + Golem de Ardósia só aqui
-            int mod = spawnIndex % 4;
-            if (mod == 0) return _golem;
-            if (mod == 1) return _knight;
-            if (mod == 2) return _spitter;
-            return _skeleton;
+            return (idx % 2 == 1) ? _spitter : _knight;
         }
     }
 
     // Fase 1: 3 ondas (Esqueleto Alien → Bicho → Golem de Ardósia, 7 cada).
     // Fase 2: 2 ondas (Sentinela de Escombro → Arauto de Brasa, 6 cada).
-    // Fase 3: 3 trechos de caminho antes da arena (Trecho 1: Esqueleto+Bicho+Cuspidor; Trecho 2: 2 Cavaleiros+Cuspidor; Trecho 3: Mix+Golem).
+    // Fase 3: 2 ondas determinísticas apenas com Cavaleiros e Cuspidores (Onda 1: 4+2; Onda 2: 3+3).
     void StartWave()
     {
         if (_wave >= TotalWaves)
@@ -134,9 +126,7 @@ public class SimpleEnemySpawner : MonoBehaviour
         _wave++;
         if (IsT3)
         {
-            if (_wave == 1) _waveType = _skeleton;
-            else if (_wave == 2) _waveType = _knight;
-            else _waveType = _golem;
+            _waveType = _wave == 1 ? _knight : _spitter;
             _toSpawn = 6;
         }
         else if (IsT2)
@@ -159,7 +149,12 @@ public class SimpleEnemySpawner : MonoBehaviour
 
         var stage = FindFirstObjectByType<GroundT1Controller>();
         if (stage != null)
-            stage.AnnounceWave(_wave, _waveType.DisplayName);
+        {
+            string bannerName = IsT3
+                ? (_wave == 1 ? "Cavaleiros Corrompidos" : "Cuspidores do Vazio")
+                : _waveType.DisplayName;
+            stage.AnnounceWave(_wave, bannerName);
+        }
     }
 
     void FinishDemo()

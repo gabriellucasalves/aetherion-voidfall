@@ -47,6 +47,16 @@ public class BossHealthBar : MonoBehaviour
     bool _isFillingIntro;
     float _introFillTimer;
 
+    public float FillAmount => _fill != null ? _fill.fillAmount : 0f;
+    public float TargetNormalized => _targetNormalized;
+
+    public void ForceSync()
+    {
+        _isFillingIntro = false;
+        _displayNormalized = _targetNormalized;
+        if (_fill != null) _fill.fillAmount = _targetNormalized;
+    }
+
     void Build()
     {
         // Title Text above bar

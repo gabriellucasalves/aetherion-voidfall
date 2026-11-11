@@ -15,6 +15,15 @@ public class CameraFollow : MonoBehaviour
     float _lockedY;
     bool _hasLockedY;
 
+    static float _shakeTimer;
+    static float _shakeMagnitude;
+
+    public static void Shake(float duration, float magnitude)
+    {
+        _shakeTimer = Mathf.Max(_shakeTimer, duration);
+        _shakeMagnitude = Mathf.Max(_shakeMagnitude, magnitude);
+    }
+
     public void Configure(Transform target, StageData stage)
     {
         _target = target;
@@ -60,6 +69,14 @@ public class CameraFollow : MonoBehaviour
             return;
 
         var next = Vector3.Lerp(transform.position, Clamped(TargetPoint()), Smooth * Time.deltaTime);
+        if (_shakeTimer > 0f)
+        {
+            _shakeTimer -= Time.deltaTime;
+            Vector2 offset = Random.insideUnitCircle * _shakeMagnitude;
+            next.x += offset.x;
+            next.y += offset.y;
+            if (_shakeTimer <= 0f) _shakeMagnitude = 0f;
+        }
         transform.position = (T1AtmosScenery.Built || T2PalaceScenery.Built || T3RuinsScenery.Built) ? AtmosV1Parallax.Snap(next) : next;
     }
 

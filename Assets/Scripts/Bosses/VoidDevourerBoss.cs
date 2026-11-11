@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class VoidDevourerBoss : MonoBehaviour
 {
@@ -91,6 +92,12 @@ public class VoidDevourerBoss : MonoBehaviour
     int _phase = 1; // 1 = 100-66%, 2 = 66-33%, 3 = 33-0%
     public int Phase => _phase;
 
+    public HealthSystem Health => _health;
+    public EnemyController EnemyCtrl => _enemyController;
+    public BossIntroCutscene Cutscene => _cutscene;
+    public string CurrentSpeechText => _cutscene != null && _cutscene.SpeechText != null ? _cutscene.SpeechText.text : (_introMainText != null ? _introMainText.text : "");
+    public float CurrentBossAlpha => _sr != null ? _sr.color.a : 1f;
+
     float _stateTimer;
     float _flightBobClock;
     float _nextContactDamageTime;
@@ -114,6 +121,17 @@ public class VoidDevourerBoss : MonoBehaviour
     float _flashTimer;
     float _defeatTimer;
 
+    // Intro dramatic speech & emergence
+    float _introTotalDuration;
+    string _introSpeechText;
+    BossIntroCutscene _cutscene;
+    GameObject _introSpeechGo;
+    Text _introMainText;
+    Text _introGlowText;
+    CanvasGroup _introCanvasGroup;
+    float _introStartY;
+    float _introTargetY;
+
     // Active attack instances to cancel on transition
     List<BossLaser> _activeLasers = new List<BossLaser>();
     List<GroundTentacle> _activeTentacles = new List<GroundTentacle>();
@@ -135,10 +153,6 @@ public class VoidDevourerBoss : MonoBehaviour
         _bodyHurtbox.size = new Vector2(3.5f, 3.5f);
         _bodyHurtbox.offset = Vector2.zero;
 
-        _health = gameObject.AddComponent<HealthSystem>();
-        _health.Configure(BossData.MaxHealth);
-        _health.Died += OnBossDied;
-
         _enemyController = gameObject.AddComponent<EnemyController>();
         _enemyController.ExternalBrain = true;
         _enemyController.DamageFilter = FilterIncomingDamage;
@@ -151,6 +165,11 @@ public class VoidDevourerBoss : MonoBehaviour
         dummyData.Color = new Color(0.75f, 0.15f, 0.45f);
         _enemyController.Setup(dummyData, _target, _stage);
 
+        _health = _enemyController.Health;
+        _health.Configure(BossData.MaxHealth);
+        _health.Died += OnBossDied;
+        _health.Changed += OnHealthChanged;
+
         // Child object for the exposed nucleus
         var nucGo = new GameObject("NucleoExposto");
         nucGo.transform.SetParent(transform, false);
@@ -161,15 +180,57 @@ public class VoidDevourerBoss : MonoBehaviour
         StartIntro();
     }
 
+    void OnHealthChanged(HealthSystem h)
+    {
+        if (_healthBar != null)
+            _healthBar.SetHealth(h.Current, h.Max);
+        CheckPhaseThresholds();
+    }
+
     void StartIntro()
     {
         _state = State.Intro;
-        _stateTimer = _isRetry ? BossData.IntroDurationShort : BossData.IntroDurationFull;
+        _introTotalDuration = _isRetry ? BossData.IntroDurationShort : BossData.IntroDurationFull;
+        _stateTimer = _introTotalDuration;
+
+        if (_health != null)
+            _health.IsInvulnerable = true;
+
+        _introTargetY = _stage != null ? _stage.GroundTop + 4.8f : 3.0f;
+        _introStartY = _introTargetY - 3.0f;
+
+        transform.position = new Vector3(transform.position.x, _introStartY, 0f);
+        SetBossAlpha(0f);
+
+        _introSpeechText = _isRetry
+            ? "Eu sou o Devorador do Vazio."
+            : "Vocês pensaram que Aetherion cairia em silêncio... Eu sou o Devorador do Vazio.";
+
+        CreateIntroSpeechUi();
+
         if (_healthBar != null)
         {
-            float fillDelay = _isRetry ? 1.0f : 5.0f;
+            float fillDelay = _isRetry ? 0.6f : 4.5f;
             StartCoroutine(IntroBarRoutine(fillDelay));
         }
+    }
+
+    void SetBossAlpha(float a)
+    {
+        foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
+        {
+            if (sr == null) continue;
+            var c = sr.color;
+            c.a = a;
+            sr.color = c;
+        }
+    }
+
+    void CreateIntroSpeechUi()
+    {
+        _cutscene = BossIntroCutscene.Create(_introSpeechText, _isRetry, _introTotalDuration);
+        if (_cutscene != null)
+            _introMainText = _cutscene.SpeechText;
     }
 
     IEnumerator IntroBarRoutine(float delay)
@@ -193,6 +254,12 @@ public class VoidDevourerBoss : MonoBehaviour
         UpdateSupremeCapTimer();
         CheckPlayerContact();
 
+        if (_health != null)
+        {
+            _healthBar?.SetHealth(_health.Current, _health.Max);
+            CheckPhaseThresholds();
+        }
+
         switch (_state)
         {
             case State.Intro:
@@ -213,11 +280,44 @@ public class VoidDevourerBoss : MonoBehaviour
     void UpdateIntro()
     {
         _stateTimer -= Time.deltaTime;
-        float bob = Mathf.Sin(Time.time * 3f) * 0.15f;
-        transform.position = new Vector3(transform.position.x, (_stage != null ? _stage.GroundTop + 4.8f : 3.0f) + bob, 0f);
+        float elapsed = _introTotalDuration - _stateTimer;
+        float progress = Mathf.Clamp01(elapsed / _introTotalDuration);
+
+        // 1. Interpolação Y com ease-out
+        float ease = 1f - Mathf.Pow(1f - progress, 2.5f);
+        float currentY = Mathf.Lerp(_introStartY, _introTargetY, ease);
+        float bob = Mathf.Sin(Time.time * 3f) * 0.15f * ease;
+        transform.position = new Vector3(transform.position.x, currentY + bob, 0f);
+
+        // 2. Fade-in do alfa nos SpriteRenderers do boss (0 a 1)
+        float bossAlpha = Mathf.Clamp01(progress / 0.75f);
+        SetBossAlpha(bossAlpha);
+
+        // 3. Camera shake leve durante a subida (0.08 - 0.12 u) decaindo
+        if (progress < 0.65f)
+        {
+            float shakeAmp = Mathf.Lerp(0.11f, 0.02f, progress / 0.65f);
+            CameraFollow.Shake(0.04f, shakeAmp);
+        }
+
+        // 4. Cutscene do boss
+        if (_cutscene != null)
+        {
+            _cutscene.Tick(elapsed);
+            if (_cutscene.SkipToEnd)
+                _stateTimer = Mathf.Min(_stateTimer, 0.45f);
+        }
 
         if (_stateTimer <= 0f)
         {
+            _cutscene?.Close();
+            _cutscene = null;
+            if (_introSpeechGo != null)
+                Destroy(_introSpeechGo);
+            SetBossAlpha(1f);
+            transform.position = new Vector3(transform.position.x, _introTargetY, 0f);
+            if (_health != null)
+                _health.IsInvulnerable = false;
             _state = State.Flying;
             _stateTimer = 1.0f; // Initial rest before first attack
         }
@@ -623,10 +723,31 @@ public class VoidDevourerBoss : MonoBehaviour
 
     public void ForceStateFlying()
     {
+        _cutscene?.Close();
+        _cutscene = null;
+        if (_introSpeechGo != null)
+            Destroy(_introSpeechGo);
+        SetBossAlpha(1f);
+        if (_health != null)
+            _health.IsInvulnerable = false;
+        transform.position = new Vector3(transform.position.x, _introTargetY > 0f ? _introTargetY : (_stage != null ? _stage.GroundTop + 4.8f : 3.0f), 0f);
         _isChargingLaser = false;
         _isFiringLaser = false;
         _state = State.Flying;
         _stateTimer = 2.0f;
+    }
+
+    void OnDestroy()
+    {
+        _cutscene?.Close();
+        _cutscene = null;
+        if (_introSpeechGo != null)
+            Destroy(_introSpeechGo);
+        if (_health != null)
+        {
+            _health.Died -= OnBossDied;
+            _health.Changed -= OnHealthChanged;
+        }
     }
 
     public void ForwardTentacleDamage(float amount)

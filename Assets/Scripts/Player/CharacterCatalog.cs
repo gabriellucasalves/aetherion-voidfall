@@ -52,9 +52,9 @@ public static class CharacterCatalog
         return new[]
         {
             Make("guerreiro", "Guerreiro", "Tank / combate físico",
-                "Armadura pesada e espada. Alta vida e escudo forte para segurar a linha de frente.",
+                "Armadura pesada e espada. Muita vida e escudo forte (S/K) para segurar a linha de frente.",
                 160, 90, 20, 90, 30, 40,
-                "Corte de Energia", "Corte curto (J/clique). Especial L/Q/E: Feixe Infernal à frente, consome ESPECIAL, CD 6s. Escudo (S/K/direito) bloqueia.",
+                "Corte de Energia", "Corte curto (J/clique). Especial (L/Q): Feixe Infernal à frente, só recarga de 6 s (não gasta medidor). Supremo (E): Lâmina Rubra, usa o medidor SUPREMO. Escudo (S/K/direito) bloqueia.",
                 new Color(0.72f, 0.74f, 0.82f)),
             // Kit novo do Mago: vida intermediária (115), Pulso Rúnico largo no básico (52) e Zona Rúnica persistente no especial (L/Q).
             Make("mago", "Mago", "Pulso rúnico / controle de zona",

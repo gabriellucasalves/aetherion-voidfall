@@ -49,8 +49,35 @@ public static class HeroCutInSprites
         return sprite;
     }
 
+    public static Sprite CutInArt(string file)
+    {
+        if (string.IsNullOrEmpty(file)) return null;
+        string key = "cutin:" + file;
+        if (Cache.TryGetValue(key, out var cached) && cached != null)
+            return cached;
+
+        var tex = Resources.Load<Texture2D>("CutInRetratos/" + file);
+        if (tex == null) return null;
+
+        tex.filterMode = FilterMode.Point;
+        tex.wrapMode = TextureWrapMode.Clamp;
+        var sprite = Sprite.Create(
+            tex,
+            new Rect(0, 0, tex.width, tex.height),
+            new Vector2(0.5f, 0.5f),
+            Ppu,
+            0,
+            SpriteMeshType.FullRect);
+        sprite.name = file;
+        Cache[key] = sprite;
+        return sprite;
+    }
+
     public static Sprite Bust(string heroId, int index)
     {
+        var art = CutInArt("cutin_busto_" + heroId);
+        if (art != null) return art;
+
         string key = "bust:" + heroId + ":" + index;
         if (Cache.TryGetValue(key, out var cached) && cached != null)
             return cached;
@@ -65,6 +92,9 @@ public static class HeroCutInSprites
 
     public static Sprite Eyes(string heroId, bool bright)
     {
+        var art = CutInArt("cutin_olhos_" + heroId + (bright ? "_brilho" : ""));
+        if (art != null) return art;
+
         string key = "eyes:" + heroId + ":" + (bright ? "1" : "0");
         if (Cache.TryGetValue(key, out var cached) && cached != null)
             return cached;

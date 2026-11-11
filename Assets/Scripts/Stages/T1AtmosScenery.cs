@@ -198,13 +198,15 @@ public static class T2PalaceScenery
         {
             "P1_ceu_caos_native",
             "P2_palacio_desabando_native",
+            "P2b_nevoa_distante_native",
             "P3_salao_ruinas_native",
+            "P3b_nevoa_media_native",
             "P4_estatuas_destruidas_native",
             "P4b_nevoa_fumaca_native",
             "P6_silhuetas_frente_native"
         };
-        float[] factors = { 0.08f, 0.22f, 0.40f, 0.62f, 0.62f, 1.25f };
-        int[] orders = { -50, -40, -30, -20, -15, 20 };
+        float[] factors = { 0.08f, 0.22f, 0.30f, 0.40f, 0.50f, 0.62f, 0.62f, 1.25f };
+        int[] orders = { -50, -40, -35, -30, -25, -20, -15, 20 };
 
         var sprites = new Sprite[layerNames.Length];
         for (int i = 0; i < layerNames.Length; i++)
@@ -587,7 +589,7 @@ public static class T2PalaceFrontLevel
                 var metGo = new GameObject("MeteoroFundo_" + i);
                 metGo.transform.SetParent(fxRoot.transform, false);
                 var sr = metGo.AddComponent<SpriteRenderer>();
-                sr.sortingOrder = -25;
+                sr.sortingOrder = -32;
                 metGo.AddComponent<AmbientSpriteAnimator>().Setup(meteoroFrames, 14f, loop: true);
                 metGo.AddComponent<AmbientMeteorVisual>().Setup(
                     meteoroFrames, impactoFrames, fumacaFrames, stage.GroundTop, fxRoot.transform);
@@ -1228,22 +1230,26 @@ public static class T3RuinsScenery
     {
         Reset();
 
-        // 5 camadas oficiais v3 do MANIFEST:
+        // 7 camadas oficiais v3 com névoas adicionais:
         // P1_ceu_fenda (opaca, 0.08, -50)
         // P2_cidadela (0.22, -40)
+        // P2b_nevoa_fenda (0.30, -35)
         // P3_salao (0.40, -30)
+        // P3b_nevoa_media (0.50, -25)
         // P4_tentaculos_estatuas (0.62, -20)
         // P4b_nevoa_chao (semitransparente, 0.62, -15) <-- Névoa que destaca os inimigos dos tentáculos
         var layerNames = new[]
         {
             "P1_ceu_fenda_native",
             "P2_cidadela_native",
+            "P2b_nevoa_fenda_native",
             "P3_salao_native",
+            "P3b_nevoa_media_native",
             "P4_tentaculos_estatuas_native",
             "P4b_nevoa_chao_native"
         };
-        float[] factors = { 0.08f, 0.22f, 0.40f, 0.62f, 0.62f };
-        int[] orders = { -50, -40, -30, -20, -15 };
+        float[] factors = { 0.08f, 0.22f, 0.30f, 0.40f, 0.50f, 0.62f, 0.62f };
+        int[] orders = { -50, -40, -35, -30, -25, -20, -15 };
 
         var sprites = new Sprite[layerNames.Length];
         for (int i = 0; i < layerNames.Length; i++)

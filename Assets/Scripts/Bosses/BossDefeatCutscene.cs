@@ -267,19 +267,9 @@ public class BossDefeatCutscene : MonoBehaviour
 
     void ShowEndDemoPanel(Transform canvas)
     {
-        var panelGo = UiKit.Panel(canvas, "EndPart1Panel", new Vector2(800f, 440f), Vector2.zero, MenuTheme.Panel);
-        UiKit.Label(panelGo.transform, "FIM DA PARTE 1", 42, new Vector2(0f, 130f), MenuTheme.CelestialGold, new Vector2(700f, 60f));
-        UiKit.Label(panelGo.transform, "A batalha continua nas estrelas…\nObrigado por jogar Aetherion: Voidfall!", 24, new Vector2(0f, 40f), MenuTheme.SoftIvory, new Vector2(700f, 80f));
-
-        UiKit.Button(panelGo.transform, "MAPA", new Vector2(0f, -60f), new Vector2(260f, 58f), () =>
-        {
-            SceneTransitionManager.Instance.Load(GameScenes.WorldMap);
-        });
-
-        UiKit.Button(panelGo.transform, "MENU", new Vector2(0f, -135f), new Vector2(260f, 58f), () =>
-        {
-            SceneTransitionManager.Instance.Load(GameScenes.MainMenu);
-        });
+        MenuPanels.EndPart1(canvas,
+            () => SceneTransitionManager.Instance.Load(GameScenes.WorldMap),
+            () => SceneTransitionManager.Instance.Load(GameScenes.MainMenu));
     }
 }
 
