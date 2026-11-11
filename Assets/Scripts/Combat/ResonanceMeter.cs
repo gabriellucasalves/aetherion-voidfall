@@ -80,4 +80,10 @@ public class ResonanceMeter : MonoBehaviour
         Changed?.Invoke(this);
         return true;
     }
+
+    public void ForceSet(float value)
+    {
+        Current = Mathf.Clamp(value, 0f, Max);
+        Changed?.Invoke(this);
+    }
 }

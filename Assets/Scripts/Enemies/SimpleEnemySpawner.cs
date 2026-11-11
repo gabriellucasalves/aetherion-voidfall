@@ -13,6 +13,10 @@ public class SimpleEnemySpawner : MonoBehaviour
     EnemyData _skeleton;
     EnemyData _beast;
     EnemyData _golem;
+    EnemyData _sentinel;
+    EnemyData _herald;
+    EnemyData _knight;
+    EnemyData _spitter;
     float _timer;
     bool _locked;
     bool _finished;
@@ -21,8 +25,10 @@ public class SimpleEnemySpawner : MonoBehaviour
     float _waveDelay;
     EnemyData _waveType;
 
+    bool IsT2 => _stage != null && _stage.Id == "t2";
+    bool IsT3 => _stage != null && _stage.Id == "t3";
     public int Wave => _wave;
-    public int TotalWaves => DemoWaveCount;
+    public int TotalWaves => IsT3 ? 3 : (IsT2 ? 2 : DemoWaveCount);
     public string WaveName => _waveType != null ? _waveType.DisplayName : "";
     public bool Finished => _finished;
 
@@ -34,6 +40,10 @@ public class SimpleEnemySpawner : MonoBehaviour
         _skeleton = EnemyData.CreateAlienSkeleton();
         _beast = EnemyData.CreateBeast();
         _golem = EnemyData.CreateSlateGolem();
+        _sentinel = EnemyData.CreateRubbleSentinel();
+        _herald = EnemyData.CreateEmberHerald();
+        _knight = EnemyData.CreateCorruptedKnight();
+        _spitter = EnemyData.CreateVoidSpitter();
         _waveDelay = 1.4f; // respiro antes da primeira onda
     }
 
@@ -61,7 +71,7 @@ public class SimpleEnemySpawner : MonoBehaviour
         {
             if (CountAlive() == 0)
             {
-                if (_wave >= DemoWaveCount)
+                if (_wave >= TotalWaves)
                     FinishDemo();
                 else
                     _waveDelay = 2.4f;
@@ -77,29 +87,75 @@ public class SimpleEnemySpawner : MonoBehaviour
         if (CountAlive() >= MaxAlive)
             return;
 
-        if (Spawn(_waveType))
+        EnemyData toSpawnData = IsT3 ? GetNextT3Enemy(_wave, 6 - _toSpawn) : _waveType;
+        if (Spawn(toSpawnData))
             _toSpawn--;
     }
 
-    // Três ondas: Esqueleto Alien → Bicho → Golem de Ardósia (7 cada).
+    EnemyData GetNextT3Enemy(int wave, int spawnIndex)
+    {
+        if (wave == 1)
+        {
+            // Trecho 1: Esqueleto Alien + Bicho + 1 Cuspidor
+            int mod = spawnIndex % 3;
+            if (mod == 0) return _skeleton;
+            if (mod == 1) return _beast;
+            return _spitter;
+        }
+        else if (wave == 2)
+        {
+            // Trecho 2: 2 Cavaleiros + 1 Cuspidor
+            int mod = spawnIndex % 3;
+            if (mod == 0 || mod == 1) return _knight;
+            return _spitter;
+        }
+        else
+        {
+            // Trecho 3: mistura + Golem de Ardósia só aqui
+            int mod = spawnIndex % 4;
+            if (mod == 0) return _golem;
+            if (mod == 1) return _knight;
+            if (mod == 2) return _spitter;
+            return _skeleton;
+        }
+    }
+
+    // Fase 1: 3 ondas (Esqueleto Alien → Bicho → Golem de Ardósia, 7 cada).
+    // Fase 2: 2 ondas (Sentinela de Escombro → Arauto de Brasa, 6 cada).
+    // Fase 3: 3 trechos de caminho antes da arena (Trecho 1: Esqueleto+Bicho+Cuspidor; Trecho 2: 2 Cavaleiros+Cuspidor; Trecho 3: Mix+Golem).
     void StartWave()
     {
-        if (_wave >= DemoWaveCount)
+        if (_wave >= TotalWaves)
         {
             FinishDemo();
             return;
         }
 
         _wave++;
-        int cycle = (_wave - 1) % 3;
-        if (cycle == 0)
-            _waveType = _skeleton;
-        else if (cycle == 1)
-            _waveType = _beast;
+        if (IsT3)
+        {
+            if (_wave == 1) _waveType = _skeleton;
+            else if (_wave == 2) _waveType = _knight;
+            else _waveType = _golem;
+            _toSpawn = 6;
+        }
+        else if (IsT2)
+        {
+            _waveType = _wave == 1 ? _sentinel : _herald;
+            _toSpawn = 6;
+        }
         else
-            _waveType = _golem;
+        {
+            int cycle = (_wave - 1) % 3;
+            if (cycle == 0)
+                _waveType = _skeleton;
+            else if (cycle == 1)
+                _waveType = _beast;
+            else
+                _waveType = _golem;
 
-        _toSpawn = EnemiesPerWave;
+            _toSpawn = EnemiesPerWave;
+        }
 
         var stage = FindFirstObjectByType<GroundT1Controller>();
         if (stage != null)
@@ -115,7 +171,10 @@ public class SimpleEnemySpawner : MonoBehaviour
         _locked = true;
         var stage = FindFirstObjectByType<GroundT1Controller>();
         if (stage != null)
-            stage.OpenExitPortal();
+        {
+            if (!IsT3)
+                stage.OpenExitPortal();
+        }
     }
 
     int CountAlive()
@@ -126,11 +185,13 @@ public class SimpleEnemySpawner : MonoBehaviour
     bool Spawn(EnemyData data)
     {
         // Nunca gera no ar: testa largura, espaço livre e apoio físico antes de consumir a vaga.
+        // Em T3, inimigos do caminho só podem spawnar antes da arena (x <= 34f).
+        float maxBoundary = IsT3 ? 34f : (_stage.HalfWidth - 1.2f);
         for (int attempt = 0; attempt < 24; attempt++)
         {
             float side = Random.value < 0.5f ? -1f : 1f;
             float x = Mathf.Clamp(_player.position.x + side * Random.Range(6f, 13f),
-                -_stage.HalfWidth + 1.2f, _stage.HalfWidth - 1.2f);
+                -_stage.HalfWidth + 1.2f, maxBoundary);
             if (!EnemyTraversal.TrySpawnPoint(x, _stage, data.Size, out var feet)) continue;
             SpawnAt(data, _player, _stage, feet, _playerCollider);
             return true;
@@ -142,11 +203,12 @@ public class SimpleEnemySpawner : MonoBehaviour
         Vector2 feet, Collider2D playerCollider = null)
     {
         var go = new GameObject(data.DisplayName);
-        go.transform.position = new Vector3(feet.x, feet.y, 0f);
+        bool flying = data != null && data.AttackKind == "ember_flyer";
+        go.transform.position = new Vector3(feet.x, feet.y + (flying ? 1.85f : 0f), 0f);
 
         var body = go.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Dynamic;
-        body.gravityScale = 1f;
+        body.gravityScale = flying ? 0f : 1f;
         body.freezeRotation = true;
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         body.constraints = RigidbodyConstraints2D.FreezeRotation;

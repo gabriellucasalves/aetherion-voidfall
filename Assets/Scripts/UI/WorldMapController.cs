@@ -24,7 +24,7 @@ public class WorldMapController : MonoBehaviour
         new Vector2(974.5f, 268.5f)
     };
     static readonly int[] NodeRouteIndex = { 0, 15, 24 };
-    static readonly string[] PhaseNames = { "FASE 1 · SANTUÁRIO", "FASE 2 · RUÍNAS", "FASE 3 · FORTALEZA" };
+    static readonly string[] PhaseNames = { "FASE 1 · SANTUÁRIO", "FASE 2 · O PALÁCIO EM QUEDA", "FASE 3 · AETHERION EM RUÍNAS" };
     const float MapScale = 1.25f; // 1280x720 plate -> 1600x900 in the 1920x1080 canvas.
     const float WalkSpeed = 118f; // plate pixels per second.
 
@@ -167,7 +167,16 @@ public class WorldMapController : MonoBehaviour
             _nodeIndicators[i].sprite = Resources.Load<Sprite>("WorldMap/node_" + state + "_32");
         }
         int node = NearNode();
-        _status.text = WorldMapProgress.HighestCompleted == 0 ? "FASE 1 LIBERADA" : "FASE 1 CONCLUÍDA   ·   FASE 2 " + (WorldMapProgress.IsUnlocked(2) ? "LIBERADA" : "BLOQUEADA");
+        if (WorldMapProgress.GameComplete)
+            _status.text = "PARTE 1 CONCLUÍDA";
+        else if (WorldMapProgress.HighestCompleted == 0)
+            _status.text = "FASE 1 LIBERADA";
+        else if (WorldMapProgress.HighestCompleted == 1)
+            _status.text = "FASE 1 CONCLUÍDA   ·   FASE 2 LIBERADA";
+        else if (WorldMapProgress.HighestCompleted == 2)
+            _status.text = "FASE 2 CONCLUÍDA   ·   FASE 3 LIBERADA";
+        else
+            _status.text = "FASE 3 CONCLUÍDA";
         _hint.text = node == 0 ? "Siga a trilha para o próximo destino" : PhaseNames[node - 1] + "  ·  " +
             (WorldMapProgress.IsCompleted(node) ? "CONCLUÍDA · REVISITAR" : WorldMapProgress.IsUnlocked(node) ? "LIBERADA" : "BLOQUEADA");
     }
@@ -182,14 +191,41 @@ public class WorldMapController : MonoBehaviour
             return;
         }
         WorldMapProgress.RememberNode(node);
-        string scene = node == 1 ? GameScenes.GroundT1 : node == 2 ? "Ground_T2" : "Ground_T3";
-        if (!Application.CanStreamedLevelBeLoaded(scene))
+        if (node == 1)
+        {
+            StageData.ActivePhase = 1;
+            _loading = true;
+            SceneTransitionManager.Instance.Load(GameScenes.GroundT1);
+            return;
+        }
+        if (node == 2)
+        {
+            StageData.ActivePhase = 2;
+            string scene = Application.CanStreamedLevelBeLoaded(GameScenes.GroundT2)
+                ? GameScenes.GroundT2
+                : GameScenes.GroundT1;
+            _loading = true;
+            SceneTransitionManager.Instance.Load(scene);
+            return;
+        }
+        if (node == 3)
+        {
+            StageData.ActivePhase = 3;
+            string scene = Application.CanStreamedLevelBeLoaded(GameScenes.GroundT3)
+                ? GameScenes.GroundT3
+                : GameScenes.GroundT1;
+            _loading = true;
+            SceneTransitionManager.Instance.Load(scene);
+            return;
+        }
+        string targetScene = "Ground_T3";
+        if (!Application.CanStreamedLevelBeLoaded(targetScene))
         {
             ShowNotice("FASE " + node + " · EM DESENVOLVIMENTO");
             return;
         }
         _loading = true;
-        SceneTransitionManager.Instance.Load(scene);
+        SceneTransitionManager.Instance.Load(targetScene);
     }
 
     void ShowNotice(string message)

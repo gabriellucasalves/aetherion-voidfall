@@ -8,6 +8,8 @@ public class AtmosV1Root : MonoBehaviour
     void OnDestroy()
     {
         T1AtmosScenery.ClearIfOwner(gameObject);
+        T2PalaceScenery.ClearIfOwner(gameObject);
+        T3RuinsScenery.ClearIfOwner(gameObject);
         foreach (var material in _materials) if (material != null) Destroy(material);
     }
 }

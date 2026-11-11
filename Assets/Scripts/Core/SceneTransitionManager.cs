@@ -56,7 +56,7 @@ public class SceneTransitionManager : MonoBehaviour
             IntroController.EnsureExists();
         else if (sceneName == GameScenes.CharacterSelection)
             CharacterSelectController.EnsureExists();
-        else if (sceneName == GameScenes.GroundT1)
+        else if (sceneName == GameScenes.GroundT1 || sceneName == GameScenes.GroundT2 || sceneName == GameScenes.GroundT3)
             GroundT1Controller.EnsureExists();
         else if (sceneName == GameScenes.WorldMap)
             WorldMapController.EnsureExists();

@@ -49,6 +49,7 @@ public class ArcaneBolt : MonoBehaviour
     float _speed;
     float _lifetime;
     float _damage;
+    public float Damage => _damage;
     float _age;
     float _trailClock;
     Color _fxColor;

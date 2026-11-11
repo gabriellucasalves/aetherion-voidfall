@@ -30,6 +30,7 @@ public static class AetherionProjectSetup
         "Assets/Scripts/Managers",
         "Assets/ScriptableObjects",
         "Assets/Scripts/Stages",
+        "Assets/Scripts/Bosses",
         "Assets/UI"
     };
 
@@ -47,7 +48,7 @@ public static class AetherionProjectSetup
             EnsureFolder(folder);
 
         var boot = AssetDatabase.LoadAssetAtPath<SceneAsset>(BootPath);
-        if (boot != null)
+        if (boot != null && !SessionState.GetBool("CombateHudQA.Enabled", false))
             EditorSceneManager.playModeStartScene = boot;
 
         EditorBuildSettings.scenes = new[]
@@ -56,7 +57,10 @@ public static class AetherionProjectSetup
             new EditorBuildSettingsScene("Assets/Scenes/MainMenu.unity", true),
             new EditorBuildSettingsScene("Assets/Scenes/Intro.unity", true),
             new EditorBuildSettingsScene("Assets/Scenes/CharacterSelection.unity", true),
+            new EditorBuildSettingsScene("Assets/Scenes/WorldMap.unity", true),
             new EditorBuildSettingsScene("Assets/Scenes/Ground_T1.unity", true),
+            new EditorBuildSettingsScene("Assets/Scenes/Ground_T2.unity", true),
+            new EditorBuildSettingsScene("Assets/Scenes/Ground_T3.unity", true),
             new EditorBuildSettingsScene("Assets/Scenes/Pong.unity", false)
         };
     }

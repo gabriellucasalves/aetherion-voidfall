@@ -37,10 +37,19 @@ public class GroundT1Controller : MonoBehaviour
     bool _demoDone;
     int _kills;
 
+    bool _inBossArena;
+    public bool InBossArena => _inBossArena;
+    public Text WaveBanner => _waveBanner;
+    float _savedResonance;
+    VoidDevourerBoss _boss;
+    Transform _canvasTransform;
+    Button _retryButton;
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void AutoAttach()
     {
-        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != GameScenes.GroundT1)
+        string scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (scene != GameScenes.GroundT1 && scene != GameScenes.GroundT2 && scene != GameScenes.GroundT3)
             return;
 
         EnsureExists();
@@ -63,8 +72,24 @@ public class GroundT1Controller : MonoBehaviour
             SceneTransitionManager.Instance.ClearFade();
 
         Physics2D.gravity = new Vector2(0f, -32f);
-        _stage = StageData.CreateT1();
-        if (T1AtmosScenery.Enabled) T1AtmosScenery.ConfigureStage(_stage);
+        string activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        bool isT3 = activeScene == GameScenes.GroundT3 || StageData.ActivePhase == 3;
+        bool isT2 = activeScene == GameScenes.GroundT2 || StageData.ActivePhase == 2;
+        if (isT3)
+        {
+            _stage = StageData.CreateT3();
+            if (T3RuinsScenery.Enabled) T3RuinsScenery.ConfigureStage(_stage);
+        }
+        else if (isT2)
+        {
+            _stage = StageData.CreateT2();
+            if (T2PalaceScenery.Enabled) T2PalaceScenery.ConfigureStage(_stage);
+        }
+        else
+        {
+            _stage = StageData.CreateT1();
+            if (T1AtmosScenery.Enabled) T1AtmosScenery.ConfigureStage(_stage);
+        }
         var hero = ResolveHero();
         BuildStage();
         _player = SpawnHero(hero);
@@ -85,6 +110,11 @@ public class GroundT1Controller : MonoBehaviour
                 _waveBanner.gameObject.SetActive(false);
         }
 
+        if (_stage != null && _stage.Id == "t3" && !_inBossArena && _player != null && _player.transform.position.x >= 37.5f)
+        {
+            EnterBossArena();
+        }
+
         if (_dead || _demoDone)
             return;
 
@@ -102,7 +132,7 @@ public class GroundT1Controller : MonoBehaviour
     public void AnnounceWave(int wave, string enemyName)
     {
         RefreshHud();
-        if (_waveBanner == null)
+        if (_waveBanner == null || _inBossArena)
             return;
 
         int total = _spawner != null ? _spawner.TotalWaves : SimpleEnemySpawner.DemoWaveCount;
@@ -114,20 +144,23 @@ public class GroundT1Controller : MonoBehaviour
     public void OpenExitPortal()
     {
         if (_dead || _demoDone || FindFirstObjectByType<F1ExitPortal>() != null) return;
+        bool isT2 = _stage != null && _stage.Id == "t2";
         F1ExitPortal.Spawn(this, new Vector2(32.5f, _stage.GroundTop));
         if (_player != null)
         {
             float px = _player.transform.position.x;
             float nearX = Mathf.Clamp(px + 4.5f, -33f, 29f);
-            // Evita abrir em cima dos dois gaps (-28.5..-26 e -21.625..-18.5)
-            if (nearX > -29.2f && nearX < -25.2f) nearX = -24.2f;
-            if (nearX > -22.3f && nearX < -17.8f) nearX = -16.5f;
+            // Evita abrir em cima dos gaps
+            if (!isT2 && nearX > -29.2f && nearX < -25.2f) nearX = -24.2f;
+            if (nearX > -22.5f && nearX < -17.6f) nearX = -16.5f;
             if (Mathf.Abs(nearX - 32.5f) > 3f)
                 F1ExitPortal.Spawn(this, new Vector2(nearX, _stage.GroundTop));
         }
         if (_waveBanner != null)
         {
-            _waveBanner.text = "PORTAL ANCESTRAL ABERTO — ATRAVESSE PARA CONCLUIR A FASE I";
+            _waveBanner.text = isT2
+                ? "PORTAL REAL ABERTO — ATRAVESSE PARA CONCLUIR A FASE II"
+                : "PORTAL ANCESTRAL ABERTO — ATRAVESSE PARA CONCLUIR A FASE I";
             _waveBanner.gameObject.SetActive(true);
             _waveBannerLeft = 8f;
         }
@@ -139,7 +172,9 @@ public class GroundT1Controller : MonoBehaviour
             return;
 
         _demoDone = true;
-        WorldMapProgress.Complete(1);
+        bool isT2 = _stage != null && _stage.Id == "t2";
+        WorldMapProgress.Complete(isT2 ? 2 : 1);
+        StageData.ActivePhase = 1;
         SpecialController.AbortActive();
         CinematicTime.End();
         Time.timeScale = 1f;
@@ -191,6 +226,20 @@ public class GroundT1Controller : MonoBehaviour
     {
         T1FrontLevel.Reset();
         T1AtmosScenery.Reset();
+        T2PalaceFrontLevel.Reset();
+        T2PalaceScenery.Reset();
+        T3RuinsFrontLevel.Reset();
+        T3RuinsScenery.Reset();
+        if (_stage != null && _stage.Id == "t3")
+        {
+            T3RuinsScenery.Build(_stage);
+            return;
+        }
+        if (_stage != null && _stage.Id == "t2")
+        {
+            T2PalaceScenery.Build(_stage);
+            return;
+        }
         if (T1AtmosScenery.Enabled)
         {
             if (T1AtmosScenery.Build(_stage)) return;
@@ -203,8 +252,8 @@ public class GroundT1Controller : MonoBehaviour
 
     void BuildPlayfield()
     {
-        // Fundo híbrido com o kit da frente: chão em segmentos já montado pelo T1FrontLevel.
-        if (T1AtmosScenery.Built || T1FrontLevel.Built)
+        // Fundo híbrido com o kit da frente: chão em segmentos já montado pelo T1FrontLevel / T2PalaceFrontLevel / T3RuinsFrontLevel.
+        if (T1AtmosScenery.Built || T1FrontLevel.Built || T2PalaceScenery.Built || T2PalaceFrontLevel.Built || T3RuinsScenery.Built || T3RuinsFrontLevel.Built)
             return;
         if (T1AtmosScenery.Enabled && !T1AtmosScenery.AllowLegacyFallback)
             return;
@@ -257,7 +306,8 @@ public class GroundT1Controller : MonoBehaviour
             camera.gameObject.AddComponent<PixelPresentation>();
         camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = _stage.SkyColor;
-        camera.transform.position = new Vector3(-31f, 0.6f, -10f);
+        float camX = (_stage != null && _stage.Id == "t3") ? -55f : -31f;
+        camera.transform.position = new Vector3(camX, 0.6f, -10f);
         if (camera.GetComponent<CameraFollow>() == null)
             camera.gameObject.AddComponent<CameraFollow>();
     }
@@ -265,7 +315,8 @@ public class GroundT1Controller : MonoBehaviour
     PlayerController SpawnHero(CharacterData hero)
     {
         var go = new GameObject(hero != null ? hero.DisplayName : "Heroi");
-        go.transform.position = new Vector3(-31f, _stage.GroundTop + 0.7f, 0f);
+        float spawnX = (_stage != null && _stage.Id == "t3") ? -55f : -31f;
+        go.transform.position = new Vector3(spawnX, _stage.GroundTop + 0.7f, 0f);
 
         var body = go.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Dynamic;
@@ -301,7 +352,7 @@ public class GroundT1Controller : MonoBehaviour
             ward.Changed += _ => RefreshHud();
 
         HeroAppearance.Build(go.transform, hero);
-        if (T1AtmosScenery.Built)
+        if (T1AtmosScenery.Built || T2PalaceScenery.Built || T3RuinsScenery.Built)
             foreach (var renderer in go.GetComponentsInChildren<SpriteRenderer>(true))
                 if (renderer.sortingOrder == 12 || renderer.sortingOrder == 11) renderer.sortingOrder -= 2;
         return player;
@@ -317,6 +368,7 @@ public class GroundT1Controller : MonoBehaviour
     void BuildHud(CharacterData hero)
     {
         var canvas = UiKit.CreateCanvas(transform, "HudT1");
+        _canvasTransform = canvas.transform;
         var hud = StageHud.Build(canvas.transform, hero, _stage.DisplayName);
         _hudName = hud.Name;
         _lifeFill = hud.Life; _lifeText = hud.LifeValue;
@@ -334,7 +386,7 @@ public class GroundT1Controller : MonoBehaviour
         MobileControls.SetDefenseIcon(_showWard);
         RefreshHud();
 
-        _waveBanner = UiKit.Label(canvas.transform, "", 32, new Vector2(0f, 290f), MenuTheme.CelestialGold, new Vector2(1000f, 48f));
+        _waveBanner = UiKit.Label(canvas.transform, "", 32, new Vector2(0f, 230f), MenuTheme.CelestialGold, new Vector2(1000f, 48f));
         _waveBanner.gameObject.SetActive(false);
 
         BuildPhaseTitleCard(canvas.transform);
@@ -349,11 +401,13 @@ public class GroundT1Controller : MonoBehaviour
         _pausePanel.SetActive(false);
 
         _defeatPanel = UiKit.Panel(canvas.transform, "Derrota", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.72f)).gameObject;
-        UiKit.Panel(_defeatPanel.transform, "Caixa", new Vector2(560f, 320f), Vector2.zero, MenuTheme.Panel);
-        UiKit.Label(_defeatPanel.transform, "VOCÊ CAIU", 36, new Vector2(0f, 50f), MenuTheme.CelestialGold, new Vector2(500f, 50f));
-        UiKit.Button(_defeatPanel.transform, "MENU", new Vector2(0f, -60f), new Vector2(240f, 58f), BackToMenu);
+        UiKit.Panel(_defeatPanel.transform, "Caixa", new Vector2(560f, 380f), Vector2.zero, MenuTheme.Panel);
+        UiKit.Label(_defeatPanel.transform, "VOCÊ CAIU", 36, new Vector2(0f, 85f), MenuTheme.CelestialGold, new Vector2(500f, 50f));
+        _retryButton = UiKit.Button(_defeatPanel.transform, "TENTAR DE NOVO", new Vector2(0f, 15f), new Vector2(240f, 54f), RetryBoss);
+        _retryButton.gameObject.SetActive(false);
+        UiKit.Button(_defeatPanel.transform, "MENU", new Vector2(0f, -50f), new Vector2(240f, 54f), BackToMenu);
         if (WorldMapProgress.HighestCompleted > 0)
-            UiKit.Button(_defeatPanel.transform, "MAPA", new Vector2(0f, -125f), new Vector2(240f, 58f), BackToMap);
+            UiKit.Button(_defeatPanel.transform, "MAPA", new Vector2(0f, -115f), new Vector2(240f, 54f), BackToMap);
         _defeatPanel.SetActive(false);
 
         _demoCompletePanel = UiKit.Panel(canvas.transform, "DemoFim", new Vector2(1920f, 1080f), Vector2.zero, new Color(0f, 0f, 0f, 0.78f)).gameObject;
@@ -516,7 +570,94 @@ public class GroundT1Controller : MonoBehaviour
         if (_spawner != null)
             _spawner.SetLocked(true);
         if (_defeatPanel != null)
+        {
+            if (_retryButton != null)
+                _retryButton.gameObject.SetActive(_inBossArena && _stage != null && _stage.Id == "t3");
             _defeatPanel.SetActive(true);
+        }
+    }
+
+    void EnterBossArena()
+    {
+        _inBossArena = true;
+        var gate = FindFirstObjectByType<RuinsArenaGate>();
+        if (gate != null) gate.LockArena();
+
+        var follow = Camera.main != null ? Camera.main.GetComponent<CameraFollow>() : null;
+        if (follow != null) follow.LockX(36f, 60f, _stage.GroundTop + 5.5f);
+
+        var meter = _player != null ? _player.GetComponent<ResonanceMeter>() : null;
+        _savedResonance = meter != null ? meter.Current : 0f;
+
+        if (_spawner != null) _spawner.SetLocked(true);
+
+        foreach (var enemy in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
+        {
+            if (enemy != null && enemy.gameObject != gameObject)
+            {
+                PixelBurst.Spawn(enemy.transform.position + Vector3.up * 0.5f, new Color(0.65f, 0.25f, 0.85f), 6);
+                Destroy(enemy.gameObject);
+            }
+        }
+
+        if (_waveBanner != null)
+        {
+            _waveBanner.gameObject.SetActive(false);
+            _waveBannerLeft = 0f;
+        }
+
+        var canvasParent = _canvasTransform != null ? _canvasTransform : FindFirstObjectByType<Canvas>()?.transform;
+        if (canvasParent != null)
+        {
+            var bar = BossHealthBar.Create(canvasParent);
+            _boss = VoidDevourerBoss.Spawn(new Vector3(48f, _stage.GroundTop, 0f), _player.transform, _stage, bar, isRetry: false);
+        }
+    }
+
+    void RetryBoss()
+    {
+        _dead = false;
+        Time.timeScale = 1f;
+
+        if (_defeatPanel != null)
+            _defeatPanel.SetActive(false);
+
+        if (_player != null)
+        {
+            _player.SetLocked(false);
+            _player.transform.position = new Vector3(38.5f, _stage.GroundTop + 0.7f, 0f);
+            var rb = _player.GetComponent<Rigidbody2D>();
+            if (rb != null) rb.linearVelocity = Vector2.zero;
+
+            var health = _player.GetComponent<HealthSystem>();
+            if (health != null) health.Configure(_player.Hero != null ? _player.Hero.MaxHealth : 100);
+
+            var combat = _player.GetComponent<PlayerCombat>();
+            if (combat != null) combat.SetLocked(false);
+
+            var meter = _player.GetComponent<ResonanceMeter>();
+            if (meter != null) meter.ForceSet(_savedResonance);
+        }
+
+        if (_boss != null)
+        {
+            if (_boss.HealthBar != null) Destroy(_boss.HealthBar.gameObject);
+            Destroy(_boss.gameObject);
+        }
+        foreach (var b in FindObjectsByType<VoidDevourerBoss>(FindObjectsSortMode.None))
+        {
+            if (b.HealthBar != null) Destroy(b.HealthBar.gameObject);
+            Destroy(b.gameObject);
+        }
+
+        var retryCanvasParent = _canvasTransform != null ? _canvasTransform : FindFirstObjectByType<Canvas>()?.transform;
+        if (retryCanvasParent != null)
+        {
+            var bar = BossHealthBar.Create(retryCanvasParent);
+            _boss = VoidDevourerBoss.Spawn(new Vector3(48f, _stage.GroundTop, 0f), _player.transform, _stage, bar, isRetry: true);
+        }
+
+        RefreshHud();
     }
 
     public void RequestPause()

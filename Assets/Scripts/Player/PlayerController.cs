@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour
 
         if (_jumpBuffer > 0f && _coyote > 0f)
         {
-            velocity.y = T1AtmosScenery.Built ? T1AtmosScenery.PlayerJumpSpeed : JumpSpeed;
+            velocity.y = (T1AtmosScenery.Built || T2PalaceScenery.Built || T3RuinsScenery.Built) ? T1AtmosScenery.PlayerJumpSpeed : JumpSpeed;
             _jumpBuffer = 0f;
             _coyote = 0f;
         }

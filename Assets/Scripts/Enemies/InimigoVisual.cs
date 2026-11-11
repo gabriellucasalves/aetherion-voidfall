@@ -25,6 +25,17 @@ public class InimigoVisual : MonoBehaviour
 
     public static bool Attach(GameObject owner, string id)
     {
+        if (id == "cavaleiro_corrompido")
+        {
+            owner.AddComponent<CavaleiroCorrompido>();
+            return true;
+        }
+        if (id == "cuspidor_vazio")
+        {
+            owner.AddComponent<CuspidorDoVazio>();
+            return true;
+        }
+
         var frames = Load(id);
         if (frames == null)
             return false;
@@ -35,7 +46,7 @@ public class InimigoVisual : MonoBehaviour
         visual._frames = frames;
         visual._renderer = go.AddComponent<SpriteRenderer>();
         visual._renderer.sprite = frames[0];
-        visual._renderer.sortingOrder = T1AtmosScenery.Built ? 9 : 8;
+        visual._renderer.sortingOrder = (T1AtmosScenery.Built || T2PalaceScenery.Built || T3RuinsScenery.Built) ? 9 : 8;
         visual._body = owner.GetComponent<Rigidbody2D>();
         visual._controller = owner.GetComponent<EnemyController>();
         visual._slowFrames = TrioAnimationFrames.Vfx("lentidao_marca", 8, 10, 3,
@@ -158,6 +169,52 @@ public class InimigoVisual : MonoBehaviour
         else
         {
             _renderer.color = Color.white;
+        }
+
+        if (_controller != null && _controller.Data != null)
+        {
+            string kind = _controller.Data.Id;
+            if (kind == "sentinela_escombro" && _frames.Length >= 9)
+            {
+                if (_controller.BurrowStage == 1)
+                {
+                    _renderer.sprite = _frames[4];
+                    return;
+                }
+                if (_controller.BurrowStage == 2)
+                {
+                    _renderer.sprite = _frames[5];
+                    return;
+                }
+                if (_controller.IsWindingUp)
+                {
+                    _renderer.sprite = _frames[6];
+                    return;
+                }
+                if (_controller.IsAttackingActive)
+                {
+                    _renderer.sprite = _frames[7];
+                    return;
+                }
+            }
+            else if (kind == "arauto_brasa" && _frames.Length >= 8)
+            {
+                if (_controller.IsWindingUp)
+                {
+                    _renderer.sprite = _frames[4];
+                    return;
+                }
+                if (_controller.IsDiving)
+                {
+                    _renderer.sprite = _frames[5];
+                    return;
+                }
+                if (_controller.IsShootingEmber)
+                {
+                    _renderer.sprite = _frames[6];
+                    return;
+                }
+            }
         }
 
         bool moving = _body != null && Mathf.Abs(_body.linearVelocity.x) > 0.15f;
