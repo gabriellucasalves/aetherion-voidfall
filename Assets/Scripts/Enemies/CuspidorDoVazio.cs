@@ -247,6 +247,7 @@ public class CuspidorDoVazio : MonoBehaviour
 
     void StartSpit()
     {
+        GameAudio.Emit(GameAudio.Cue.Spit, transform.position);
         _state = State.Spit;
         _stateTimer = 0.25f;
         _animTimer = 0f;

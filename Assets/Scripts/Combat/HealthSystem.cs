@@ -21,9 +21,17 @@ public class HealthSystem : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        if (IsDead || IsInvulnerable)
+        if (IsDead || IsInvulnerable || amount <= 0f)
             return;
 
+        // Centralize player defense here: melee, projectiles, boss hazards and
+        // direct damage all consume the same shield before touching health.
+        var combat = GetComponent<PlayerCombat>();
+        if (combat != null) combat.TryBlock(transform.position, amount, out amount);
+        if (amount <= 0f) return;
+
+        if (amount > 0f)
+            GameAudio.EmitHit(this);
         Current = Mathf.Max(0f, Current - amount);
         Changed?.Invoke(this);
         Damaged?.Invoke(this);

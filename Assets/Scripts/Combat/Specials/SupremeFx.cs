@@ -83,7 +83,7 @@ public static class SupremeFx
         go.transform.position = world;
         var mesh = go.AddComponent<TextMesh>();
         mesh.text = text;
-        mesh.font = UiKit.ResolveFont();
+        mesh.font = JapaneseText.For(text, UiKit.ResolveFont());
         mesh.fontSize = 42;
         mesh.characterSize = 0.065f;
         mesh.anchor = TextAnchor.MiddleCenter;

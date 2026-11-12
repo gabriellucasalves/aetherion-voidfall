@@ -39,6 +39,10 @@ public class BossHealthBar : MonoBehaviour
         return bar;
     }
 
+    readonly Image[] _frames = new Image[3];
+    readonly Image[] _fills = new Image[3];
+    public int RemainingBars => 4 - _form;
+    public int VisibleBars { get { int count = 0; foreach (var frame in _frames) if (frame != null && frame.gameObject.activeSelf) count++; return count; } }
     Image _frame;
     Image _fill;
     Text _nameText;
@@ -49,6 +53,19 @@ public class BossHealthBar : MonoBehaviour
 
     public float FillAmount => _fill != null ? _fill.fillAmount : 0f;
     public float TargetNormalized => _targetNormalized;
+
+    int _form = 1;
+    public void SetForm(int form)
+    {
+        _form = Mathf.Clamp(form, 1, 3);
+        if (_nameText != null) _nameText.text = BossData.DisplayName + " — FORMA " + _form + "/3 — " + RemainingBars + (RemainingBars == 1 ? " BARRA" : " BARRAS");
+        for (int i = 0; i < _frames.Length; i++)
+        {
+            if (_frames[i] == null) continue;
+            _frames[i].gameObject.SetActive(i < RemainingBars);
+            if (i > 0) _fills[i].fillAmount = 1f;
+        }
+    }
 
     public void ForceSync()
     {
@@ -70,35 +87,41 @@ public class BossHealthBar : MonoBehaviour
         _nameText.color = new Color(1f, 0.88f, 0.55f);
         var titleRt = titleGo.GetComponent<RectTransform>();
         titleRt.anchoredPosition = new Vector2(0f, 26f);
-        titleRt.sizeDelta = new Vector2(800f, 28f);
+        titleRt.sizeDelta = new Vector2(960f, 28f);
 
-        // Frame
-        var frameGo = new GameObject("BarFrame");
-        frameGo.transform.SetParent(transform, false);
-        _frame = frameGo.AddComponent<Image>();
-        _frame.sprite = _frameSprite;
-        _frame.raycastTarget = false;
-        var frameRt = frameGo.GetComponent<RectTransform>();
-        frameRt.anchoredPosition = Vector2.zero;
-        frameRt.sizeDelta = new Vector2(900f, 24f);
+        // Only remaining life pools are drawn. The top row is the current form;
+        // muted rows below it are the upcoming forms, not extra armor.
+        for (int i = 0; i < 3; i++)
+        {
+            var frameGo = new GameObject("BarFrame" + i);
+            frameGo.transform.SetParent(transform, false);
+            var frame = frameGo.AddComponent<Image>();
+            frame.sprite = _frameSprite;
+            frame.raycastTarget = false;
+            var frameRt = frameGo.GetComponent<RectTransform>();
+            frameRt.anchoredPosition = new Vector2(0f, -i * 22f);
+            frameRt.sizeDelta = new Vector2(900f, 20f);
+            frame.color = i == 0 ? Color.white : new Color(.70f, .63f, .85f, .80f);
+            _frames[i] = frame;
+            var fillGo = new GameObject("BarFill" + i);
+            fillGo.transform.SetParent(frameGo.transform, false);
+            var fill = fillGo.AddComponent<Image>();
+            fill.sprite = i == 0 ? _fillSprite : UiKit.WhiteSprite();
+            fill.type = Image.Type.Filled;
+            fill.fillMethod = Image.FillMethod.Horizontal;
+            fill.fillOrigin = 0;
+            fill.fillAmount = 1f;
+            fill.raycastTarget = false;
+            fill.color = i == 0 ? new Color(.92f, .18f, .28f) : new Color(.55f, .30f, .75f, .95f);
+            var fillRt = fillGo.GetComponent<RectTransform>();
+            fillRt.anchoredPosition = Vector2.zero;
+            fillRt.sizeDelta = new Vector2(888f, 10f);
+            _fills[i] = fill;
+        }
+        _frame = _frames[0];
+        _fill = _fills[0];
 
-        // Fill Track
-        var fillGo = new GameObject("BarFill");
-        fillGo.transform.SetParent(frameGo.transform, false);
-        _fill = fillGo.AddComponent<Image>();
-        _fill.sprite = _fillSprite;
-        _fill.type = Image.Type.Filled;
-        _fill.fillMethod = Image.FillMethod.Horizontal;
-        _fill.fillOrigin = 0; // Left
-        _fill.raycastTarget = false;
-        _fill.color = new Color(0.92f, 0.18f, 0.28f);
-        var fillRt = fillGo.GetComponent<RectTransform>();
-        fillRt.anchoredPosition = Vector2.zero;
-        fillRt.sizeDelta = new Vector2(888f, 14f);
-
-        // Tick marks at 66% and 33%
-        CreateTickMark(frameGo.transform, 0.33f);
-        CreateTickMark(frameGo.transform, 0.66f);
+        SetForm(1);
     }
 
     void CreateTickMark(Transform parent, float normalized)
@@ -150,12 +173,12 @@ public class BossHealthBar : MonoBehaviour
             _fill.fillAmount = _displayNormalized;
 
             // Subtle color tint shifts with phase
-            if (_displayNormalized <= 0.33f)
+            if (_form == 3)
             {
                 // Phase 3 Fúria: deep crimson
                 _fill.color = new Color(1f, 0.12f, 0.20f);
             }
-            else if (_displayNormalized <= 0.66f)
+            else if (_form == 2)
             {
                 // Phase 2: vibrant scarlet
                 _fill.color = new Color(0.95f, 0.22f, 0.32f);

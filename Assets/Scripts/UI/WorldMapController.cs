@@ -38,6 +38,12 @@ public class WorldMapController : MonoBehaviour
     Image[] _nodeIndicators;
     GameObject _notice;
     Text _noticeText;
+    WorldMapTouchControls _touchControls;
+    RectTransform _footer;
+    Text _controlLegend;
+    bool _touchLayout;
+    public float RouteDistance => _position;
+    public int CurrentDestination => NearNode();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void AutoAttach()
@@ -67,15 +73,18 @@ public class WorldMapController : MonoBehaviour
     void Update()
     {
         if (_loading || _notice == null) return;
+        if (_touchControls != null && _touchControls.Visible != _touchLayout)
+            ApplyControlLayout(_touchControls.Visible);
         if (_notice.activeSelf)
         {
             if (_heroAnimator != null) _heroAnimator.SetWalking(false, 0f);
             if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Return))
-                _notice.SetActive(false);
+                CloseNotice();
             return;
         }
 
-        float direction = Input.GetAxisRaw("Horizontal");
+        float direction = _touchControls != null && Mathf.Abs(_touchControls.Move) > .01f
+            ? _touchControls.Move : Input.GetAxisRaw("Horizontal");
         bool moved = false;
         if (Mathf.Abs(direction) > 0.01f)
         {
@@ -91,7 +100,7 @@ public class WorldMapController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
             Confirm();
         if (Input.GetKeyDown(KeyCode.Escape))
-            SceneTransitionManager.Instance.Load(GameScenes.MainMenu);
+            BackToMenu();
     }
 
     static Vector2 CanvasPoint(Vector2 platePoint) => new Vector2((platePoint.x - 640f) * MapScale, (360f - platePoint.y) * MapScale);
@@ -132,7 +141,7 @@ public class WorldMapController : MonoBehaviour
 
         string hero = GameManager.Instance != null ? GameManager.Instance.SelectedHeroId : WorldMapProgress.SelectedHeroId;
         if (string.IsNullOrEmpty(hero)) hero = "guerreiro";
-        var avatar = HeroPortrait.AttachFeet(canvas.transform, hero, Vector2.zero, 2);
+        var avatar = HeroPortrait.AttachFeet(canvas.transform, hero, Vector2.zero, 3);
         if (avatar != null)
         {
             _heroRect = avatar.rectTransform;
@@ -147,13 +156,26 @@ public class WorldMapController : MonoBehaviour
         _status = UiKit.Label(header.transform, "", 19, new Vector2(0f, -25f), MenuTheme.SoftIvory, new Vector2(800f, 32f));
 
         var footer = UiKit.Panel(canvas.transform, "Controles", new Vector2(1140f, 92f), new Vector2(0f, -475f), MenuTheme.Panel);
+        _footer = footer.rectTransform;
         _hint = UiKit.Label(footer.transform, "", 21, new Vector2(0f, 20f), MenuTheme.SoftIvory, new Vector2(1070f, 38f));
-        UiKit.Label(footer.transform, "A / D ou ← / →  CAMINHAR     ENTER / ESPAÇO  ENTRAR     ESC  MENU", 17, new Vector2(0f, -22f), MenuTheme.CelestialGold, new Vector2(1070f, 30f));
+        _controlLegend = UiKit.Label(footer.transform, "A / D ou ← / →  CAMINHAR     ENTER / ESPAÇO  ENTRAR     ESC  MENU", 17, new Vector2(0f, -22f), MenuTheme.CelestialGold, new Vector2(1070f, 30f));
 
         _notice = UiKit.Panel(canvas.transform, "Aviso", new Vector2(750f, 260f), Vector2.zero, new Color(0.05f, 0.04f, 0.1f, 0.98f)).gameObject;
         _noticeText = UiKit.Label(_notice.transform, "", 29, new Vector2(0f, 35f), MenuTheme.SoftIvory, new Vector2(700f, 100f));
-        UiKit.Button(_notice.transform, "VOLTAR AO MAPA", new Vector2(0f, -72f), new Vector2(320f, 62f), () => _notice.SetActive(false));
+        UiKit.Button(_notice.transform, "VOLTAR AO MAPA", new Vector2(0f, -72f), new Vector2(320f, 62f), CloseNotice);
         _notice.SetActive(false);
+        _touchControls = WorldMapTouchControls.Attach(transform, Confirm, BackToMenu);
+        ApplyControlLayout(_touchControls.Visible);
+    }
+
+    void ApplyControlLayout(bool touch)
+    {
+        _touchLayout = touch;
+        _footer.sizeDelta = new Vector2(touch ? 800f : 1140f, 92f);
+        _hint.rectTransform.sizeDelta = new Vector2(touch ? 760f : 1070f, 46f);
+        _hint.fontSize = touch ? 26 : 21;
+        _controlLegend.rectTransform.sizeDelta = new Vector2(touch ? 760f : 1070f, 30f);
+        _controlLegend.text = touch ? "SEGURE AS SETAS PARA CAMINHAR" : "A / D ou ← / →  CAMINHAR     ENTER / ESPAÇO  ENTRAR     ESC  MENU";
     }
 
     void Refresh()
@@ -167,6 +189,7 @@ public class WorldMapController : MonoBehaviour
             _nodeIndicators[i].sprite = Resources.Load<Sprite>("WorldMap/node_" + state + "_32");
         }
         int node = NearNode();
+        _touchControls?.SetCanEnter(node != 0 && WorldMapProgress.IsUnlocked(node));
         if (WorldMapProgress.GameComplete)
             _status.text = "PARTE 1 CONCLUÍDA";
         else if (WorldMapProgress.HighestCompleted == 0)
@@ -183,6 +206,7 @@ public class WorldMapController : MonoBehaviour
 
     void Confirm()
     {
+        if (_loading || (_notice != null && _notice.activeSelf)) return;
         int node = NearNode();
         if (node == 0) return;
         if (!WorldMapProgress.IsUnlocked(node))
@@ -195,6 +219,7 @@ public class WorldMapController : MonoBehaviour
         {
             StageData.ActivePhase = 1;
             _loading = true;
+            _touchControls?.SetBlocked(true);
             SceneTransitionManager.Instance.Load(GameScenes.GroundT1);
             return;
         }
@@ -205,6 +230,7 @@ public class WorldMapController : MonoBehaviour
                 ? GameScenes.GroundT2
                 : GameScenes.GroundT1;
             _loading = true;
+            _touchControls?.SetBlocked(true);
             SceneTransitionManager.Instance.Load(scene);
             return;
         }
@@ -215,6 +241,7 @@ public class WorldMapController : MonoBehaviour
                 ? GameScenes.GroundT3
                 : GameScenes.GroundT1;
             _loading = true;
+            _touchControls?.SetBlocked(true);
             SceneTransitionManager.Instance.Load(scene);
             return;
         }
@@ -228,16 +255,31 @@ public class WorldMapController : MonoBehaviour
         SceneTransitionManager.Instance.Load(targetScene);
     }
 
+    void BackToMenu()
+    {
+        if (_loading) return;
+        _loading = true;
+        _touchControls?.SetBlocked(true);
+        SceneTransitionManager.Instance.Load(GameScenes.MainMenu);
+    }
+
+    void CloseNotice()
+    {
+        _notice.SetActive(false);
+        _touchControls?.SetBlocked(false);
+        Refresh();
+    }
+
     void ShowNotice(string message)
     {
+        _touchControls?.SetBlocked(true);
         _noticeText.text = message;
         _notice.SetActive(true);
     }
 }
 
-/// <summary>Idle and walk from the selected hero's current 7-column, 64px gameplay sheet.</summary>
-public /// <summary>Idle e andar do herói escolhido com os modelos novos (Resources/TrioAnimations/<id>/idle|andar).</summary>
-class WorldMapHeroAnimator : MonoBehaviour
+/// <summary>Idle and walk from the selected hero's current animation sheets.</summary>
+public class WorldMapHeroAnimator : MonoBehaviour
 {
     Image _image;
     Sprite[] _idle;

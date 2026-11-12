@@ -24,12 +24,14 @@ public static class WorldMapProgress
         if (phase > HighestCompleted)
         {
             PlayerPrefs.SetInt(CompletedKey, phase);
-            PlayerPrefs.SetInt(NodeKey, phase);
-            PlayerPrefs.Save();
         }
+        // A replay returns to the phase just completed, even if a later node was saved.
+        // Unlock progress remains monotonic, while the return position follows this run.
+        PlayerPrefs.SetInt(NodeKey, phase);
+        PlayerPrefs.Save();
     }
 
-    // Reserved for the future real Phase 3 boss victory hook. No current scene calls it.
+    // Called only after the third boss form and its final defeat dialogue.
     public static void ConfirmFinalBossDefeated()
     {
         if (!IsCompleted(3)) return;

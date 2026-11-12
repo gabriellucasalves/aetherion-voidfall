@@ -6,17 +6,20 @@ using UnityEngine.UI;
 // Cada um devolve o GameObject raiz (overlay escuro em tela cheia) — os controllers continuam só ligando/desligando.
 public static class MenuPanels
 {
-    public const string EndPart1Text = "A batalha continua nas estrelas…\nObrigado por jogar AETHERION: APOCALIPSE!";
+    public const string EndPart1Text = "Nazor foi derrotado. Aetherion resistiu.\nObrigado por jogar AETHERION: APOCALIPSE!";
     public const string DemoCompleteText = "Você concluiu a demo de AETHERION: APOCALIPSE.\nObrigado por jogar — novas fases e ajustes vêm a caminho.";
 
     public static GameObject Pause(Transform canvas, UnityAction onContinue, UnityAction onMenu, UnityAction onMap)
     {
         bool map = onMap != null;
-        var go = MenuKit.Modal(canvas, "Pausa", "PAUSA", 120, map ? 96 : 76, out var box, 0.62f);
+        var go = MenuKit.Modal(canvas, "Pausa", "PAUSA", 210, map ? 148 : 128, out var box, 0.62f);
         var first = MenuKit.ModalButton(box, "CONTINUAR", 30, 0, onContinue);
         if (map) MenuKit.ModalButton(box, "MAPA", 30, 1, onMap);
-        MenuKit.ModalButton(box, "MENU", 30, map ? 2 : 1, onMenu);
+        var last = MenuKit.ModalButton(box, "MENU", 30, map ? 2 : 1, onMenu);
+        var music = AudioVolumeControls.Add(box, "MÚSICA", map ? 94 : 74, 210, true);
+        var effects = AudioVolumeControls.Add(box, "EFEITOS", map ? 115 : 95, 210, false);
         Finish(go, box, first);
+        AudioVolumeControls.Link(first, music, effects, last);
         return go;
     }
 
@@ -43,7 +46,7 @@ public static class MenuPanels
 
     public static GameObject EndPart1(Transform canvas, UnityAction onMap, UnityAction onMenu)
     {
-        var go = MenuKit.Modal(canvas, "EndPart1Panel", "FIM DA PARTE 1", 240, 128, out var box, 0.55f);
+        var go = MenuKit.Modal(canvas, "EndPart1Panel", "VITÓRIA", 240, 128, out var box, 0.55f);
         MenuKit.Label(box, EndPart1Text, MenuKit.BodyFont, 36, MenuKit.Ivory, 12, 30, 216, 40, TextAnchor.MiddleCenter, true, 0.9f);
         var map = MenuKit.ModalButton(box, "MAPA", 78, 0, onMap);
         MenuKit.ModalButton(box, "MENU", 78, 1, onMenu);

@@ -1,0 +1,207 @@
+PASS SFX Sword carregado
+PASS SFX Bow carregado
+PASS SFX Magic carregado
+PASS SFX WarriorSpecial carregado
+PASS SFX ArcherSpecial carregado
+PASS SFX MageSpecial carregado
+PASS SFX SupremeWarrior carregado
+PASS SFX SupremeArcher carregado
+PASS SFX SupremeMage carregado
+PASS SFX Claws carregado
+PASS SFX Bone carregado
+PASS SFX Slam carregado
+PASS SFX Charge carregado
+PASS SFX Spit carregado
+PASS SFX Ember carregado
+PASS SFX Hit carregado
+PASS SFX Hurt carregado
+PASS SFX Block carregado
+PASS SFX BossWarning carregado
+PASS SFX BossBeam carregado
+PASS SFX BossRoar carregado
+PASS SFX Defeat carregado
+PASS SFX Victory carregado
+PASS SFX BowDraw carregado
+PASS SFX KnightCharge carregado
+PASS SFX KnightSlam carregado
+PASS SFX EmberDive carregado
+PASS SFX Tentacle carregado
+PASS SFX SelectWarrior carregado
+PASS SFX SelectMage carregado
+PASS SFX SelectArcher carregado
+PASS SFX WarriorCrescent carregado
+PASS SFX WarriorFinal carregado
+PASS SFX ArcherStar carregado
+PASS SFX MageTimeBreak carregado
+PASS SFX WarriorHurt carregado
+PASS SFX MageHurt carregado
+PASS SFX ArcherHurt carregado
+PASS SFX SkeletonHit carregado
+PASS SFX BeastHit carregado
+PASS SFX GolemHit carregado
+PASS SFX SentinelHit carregado
+PASS SFX EmberHit carregado
+PASS SFX KnightHit carregado
+PASS SFX SpitterHit carregado
+PASS SFX BossHit carregado
+PASS SFX WarriorRelease carregado
+PASS SFX MageRelease carregado
+PASS SFX ArcherRelease carregado
+PASS SFX MageNova carregado
+PASS SFX ArcherNova carregado
+PASS SFX ProloguePeace carregado
+PASS SFX PrologueOmen carregado
+PASS SFX PrologueRupture carregado
+PASS SFX PrologueVoid carregado
+PASS SFX PrologueMemory carregado
+PASS SFX PrologueResolve carregado
+PASS SFX WarriorCallout carregado
+PASS SFX MageCallout carregado
+PASS SFX ArcherCallout carregado
+PASS SFX WarriorImpactCallout carregado
+PASS SFX MageImpactCallout carregado
+PASS SFX ArcherImpactCallout carregado
+PASS SFX WarriorChannelLoop carregado
+PASS SFX MageChannelLoop carregado
+PASS SFX ArcherChannelLoop carregado
+PASS SFX MageGuard carregado
+PASS SFX ArcherGuard carregado
+PASS SFX BossSonicCharge carregado
+PASS SFX BossSonicWave carregado
+PASS SFX BossVoidMark carregado
+PASS SFX BossVoidImpact carregado
+PASS Fonte japonesa está incluída no jogo
+PASS Nome, canalização e impacto usam o texto japonês de guerreiro
+PASS Fonte contém todos os caracteres de guerreiro
+PASS Seleção exibe nome japonês de guerreiro
+PASS Nome, canalização e impacto usam o texto japonês de mago
+PASS Fonte contém todos os caracteres de mago
+PASS Seleção exibe nome japonês de mago
+PASS Nome, canalização e impacto usam o texto japonês de arqueiro
+PASS Fonte contém todos os caracteres de arqueiro
+PASS Seleção exibe nome japonês de arqueiro
+PASS Prólogo começa calmo
+PASS Completar a digitação não reinicia efeito do painel
+PASS Ambiência acompanha painel 1
+PASS Efeito narrativo exclusivo ProloguePeace
+PASS Ambiência acompanha painel 2
+PASS Efeito narrativo exclusivo PrologueOmen
+PASS Ambiência acompanha painel 3
+PASS Efeito narrativo exclusivo PrologueRupture
+PASS Ambiência acompanha painel 4
+PASS Efeito narrativo exclusivo PrologueVoid
+PASS Ambiência acompanha painel 5
+PASS Efeito narrativo exclusivo PrologueMemory
+PASS Ambiência acompanha painel 6
+PASS Efeito narrativo exclusivo PrologueResolve
+PASS Pular prólogo encerra ambiências e explosões
+PASS Seleção tem efeitos próprios sem iniciar música
+PASS Selecionar guerreiro toca SelectWarrior
+PASS Selecionar mago toca SelectMage
+PASS Selecionar arqueiro toca SelectArcher
+PASS Fase 1 possui um único sistema de áudio
+PASS Fase 1 toca a faixa correta
+PASS Música em loop e duas vozes para transição
+PASS Escudo mantém sprite do guerreiro atual
+PASS Todos os quadros de bloqueio preservam modelo e alinhamento atuais
+PASS Soltar escudo volta ao idle atual
+PASS Ataque do herói dispara SFX na fase 1
+PASS Especial dispara SFX na fase 1
+PASS Supremo exclusivo dispara SupremeWarrior
+PASS Supremo usa gravação completa fornecida sem alterar tom na fase 1
+PASS Pausa suspende a nova gravação na fase 1
+PASS Retomar continua a voz do supremo na fase 1
+PASS Canalização japonesa cabe no painel de guerreiro
+PASS Supremo completo encerra normalmente na fase 1
+PASS Fala japonesa sincronizada dispara WarriorCallout
+PASS Gravação fornecida não é cortada nem sobreposta pela voz antiga na fase 1
+PASS Trilha abaixa automaticamente durante supremo na fase 1
+PASS Trilha retorna ao volume configurado depois do supremo na fase 1
+PASS Painel japonês foi apresentado para guerreiro
+PASS Canalização libera poder com WarriorRelease
+PASS Final do supremo tem impacto WarriorFinal
+PASS Interromper supremo encerra fala e canalização
+PASS Dano recebido usa material do herói WarriorHurt
+PASS Pausa suspende música e efeitos
+PASS Pausa tem controles independentes de volume
+PASS Volumes salvam e aplicam independentemente
+PASS Continuar retoma a faixa
+PASS Ataque de Esqueleto Alien toca Bone
+PASS Impacto exclusivo de Esqueleto Alien
+PASS Ataque de Bicho toca Claws
+PASS Impacto exclusivo de Bicho
+PASS Ataque de Golem de Ardósia toca Charge
+PASS Impacto exclusivo de Golem de Ardósia
+PASS Ataque de Sentinela de Escombro toca Slam
+PASS Impacto exclusivo de Sentinela de Escombro
+PASS Ataque de Arauto de Brasa toca EmberDive
+PASS Arauto distingue bola de brasa do mergulho
+PASS Impacto exclusivo de Arauto de Brasa
+PASS Investida do cavaleiro toca som
+PASS Ataque de Cavaleiro Corrompido toca KnightSlam
+PASS Impacto exclusivo de Cavaleiro Corrompido
+PASS Ataque de Cuspidor do Vazio toca Spit
+PASS Impacto exclusivo de Cuspidor do Vazio
+PASS Silenciar efeitos também silencia vozes em execução
+PASS Fase 2 possui um único sistema de áudio
+PASS Fase 2 toca a faixa correta
+PASS Música em loop e duas vozes para transição
+PASS Ataque do herói dispara SFX na fase 2
+PASS Especial dispara SFX na fase 2
+PASS Supremo exclusivo dispara SupremeMage
+PASS Supremo usa gravação completa fornecida sem alterar tom na fase 2
+PASS Pausa suspende a nova gravação na fase 2
+PASS Retomar continua a voz do supremo na fase 2
+PASS Canalização japonesa cabe no painel de mago
+PASS Supremo completo encerra normalmente na fase 2
+PASS Fala japonesa sincronizada dispara MageCallout
+PASS Gravação fornecida não é cortada nem sobreposta pela voz antiga na fase 2
+PASS Trilha abaixa automaticamente durante supremo na fase 2
+PASS Trilha retorna ao volume configurado depois do supremo na fase 2
+PASS Painel japonês foi apresentado para mago
+PASS Canalização libera poder com MageRelease
+PASS Final do supremo tem impacto MageNova
+PASS Interromper supremo encerra fala e canalização
+PASS Dano recebido usa material do herói MageHurt
+PASS Pausa suspende música e efeitos
+PASS Pausa tem controles independentes de volume
+PASS Continuar retoma a faixa
+PASS Fase 3 possui um único sistema de áudio
+PASS Fase 3 toca a faixa correta
+PASS Música em loop e duas vozes para transição
+PASS Arqueiro toca puxada antes do disparo
+PASS Cancelar carga interrompe puxada sem disparar
+PASS Soltar o arco encerra a puxada
+PASS Ataque do herói dispara SFX na fase 3
+PASS Especial dispara SFX na fase 3
+PASS Supremo exclusivo dispara SupremeArcher
+PASS Supremo usa gravação completa fornecida sem alterar tom na fase 3
+PASS Pausa suspende a nova gravação na fase 3
+PASS Retomar continua a voz do supremo na fase 3
+PASS Canalização japonesa cabe no painel de arqueiro
+PASS Supremo completo encerra normalmente na fase 3
+PASS Fala japonesa sincronizada dispara ArcherCallout
+PASS Gravação fornecida não é cortada nem sobreposta pela voz antiga na fase 3
+PASS Trilha abaixa automaticamente durante supremo na fase 3
+PASS Trilha retorna ao volume configurado depois do supremo na fase 3
+PASS Painel japonês foi apresentado para arqueiro
+PASS Canalização libera poder com ArcherRelease
+PASS Final do supremo tem impacto ArcherNova
+PASS Interromper supremo encerra fala e canalização
+PASS Dano recebido usa material do herói ArcherHurt
+PASS Pausa suspende música e efeitos
+PASS Pausa tem controles independentes de volume
+PASS Continuar retoma a faixa
+PASS Arena troca trilha da fase pela trilha exclusiva do boss
+PASS Entrada do boss dispara rugido
+PASS Transição encerra a faixa anterior sem sobreposição permanente
+PASS Derrota toca mesmo com timeScale zero
+PASS Derrota encerra trilha de combate
+PASS Tentar novamente reinicia a música do boss
+PASS Primeira forma viva não dispara vitória antecipada
+PASS Voltar ao menu toca Infernal Loop
+PASS Voltar ao menu elimina música e efeitos da fase sem duplicar áudio
+PASS Infernal Loop toca em loop na tela inicial
+PASS Volume de música também controla a trilha do menu
+PASS Configurações do menu oferecem música e efeitos
+FAILURES=0

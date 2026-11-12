@@ -348,6 +348,11 @@ public class EnemyController : MonoBehaviour
 
     void Strike()
     {
+        if (_data.AttackKind != "ember_flyer")
+            GameAudio.Emit(_data.AttackKind == "bone" ? GameAudio.Cue.Bone
+            : _data.AttackKind == "charge" ? GameAudio.Cue.Charge
+            : _data.AttackKind == "burrow_slam" ? GameAudio.Cue.Slam
+            : GameAudio.Cue.Claws, transform.position);
         if (_data.AttackKind == "bone")
         {
             var mouth = transform.position + new Vector3(_faceDir * 0.55f, _data.Size.y * 0.65f, 0f);
@@ -374,6 +379,7 @@ public class EnemyController : MonoBehaviour
             {
                 _phase = Phase.Active;
                 _phaseLeft = 0.36f;
+                GameAudio.Emit(GameAudio.Cue.Ember, transform.position);
                 _isShootingEmber = true;
                 _isDiving = false;
                 var origin = transform.position + new Vector3(_faceDir * 0.55f, 0.52f, 0f);
@@ -383,6 +389,7 @@ public class EnemyController : MonoBehaviour
             {
                 _phase = Phase.Active;
                 _phaseLeft = 0.48f;
+                GameAudio.Emit(GameAudio.Cue.EmberDive, transform.position);
                 _isDiving = true;
                 _isShootingEmber = false;
                 _diveVelocity = new Vector2(_faceDir * 6.8f, -3.4f);
@@ -496,23 +503,11 @@ public class EnemyController : MonoBehaviour
             return;
 
         var health = target.GetComponent<HealthSystem>();
-        var combat = target.GetComponent<PlayerCombat>();
         var player = target.GetComponent<PlayerController>();
-        float incoming = amount;
-        if (combat != null)
-            combat.TryBlock(from, incoming, out incoming);
-
-        // Campo de Magia do Mago (FASE 2) — mitigação omnidirecional, distinta do escudo.
-        if (combat != null && incoming > 0f)
-            combat.TryWard(incoming, out incoming);
-
-        if (incoming > 0f)
-        {
-            int defense = player != null && player.Hero != null ? player.Hero.Defense : 0;
-            if (combat != null && combat.IsBlocking)
-                defense += 40;
-            DamageSystem.Apply(health, incoming, defense);
-        }
+        int defense = player != null && player.Hero != null ? player.Hero.Defense : 0;
+        // Armor determines the effective hit; HealthSystem routes that hit into
+        // the active shield exactly once, then applies any overflow to life.
+        DamageSystem.Apply(health, amount, defense);
     }
 
     // todo dano do jogador nos inimigos passa por aqui pra aplicar a resistência:

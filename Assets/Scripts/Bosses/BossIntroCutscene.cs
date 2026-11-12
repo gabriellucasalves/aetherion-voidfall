@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class BossIntroCutscene : MonoBehaviour
 {
+    public static BossIntroCutscene Current { get; private set; }
     public Text SpeechText => _falaText;
     public bool SkipToEnd { get; private set; }
 
@@ -14,6 +15,7 @@ public class BossIntroCutscene : MonoBehaviour
     static Sprite _placaSprite;
     static Texture2D _fileteTexture;
 
+    Sprite _formPortrait;
     string _fullSpeech;
     bool _isRetry;
     float _totalDuration;
@@ -38,7 +40,7 @@ public class BossIntroCutscene : MonoBehaviour
     CanvasGroup _portraitGroup;
     CanvasGroup _hudGroup;
 
-    public static BossIntroCutscene Create(string speechText, bool isRetry, float totalDuration)
+    public static BossIntroCutscene Create(string speechText, bool isRetry, float totalDuration, Sprite portrait = null)
     {
         EnsureAssets();
 
@@ -47,6 +49,8 @@ public class BossIntroCutscene : MonoBehaviour
         canvas.sortingOrder = 450;
 
         var cutscene = canvas.gameObject.AddComponent<BossIntroCutscene>();
+        cutscene._formPortrait = portrait;
+        Current = cutscene;
         cutscene.Setup(speechText, isRetry, totalDuration);
         return cutscene;
     }
@@ -156,7 +160,10 @@ public class BossIntroCutscene : MonoBehaviour
         _dialogGroup = _caixaDialogo.gameObject.AddComponent<CanvasGroup>();
 
         // 7. PlacaNome (468x52)
-        _placaNome = CreateImage("PlacaNome", _placaSprite, 908, -736, 468, 52, Color.white);
+        _placaNome = CreateImage("PlacaNome", null, 908, -736, 468, 52, Color.white);
+        _placaNome.color = new Color(.14f, .04f, .20f, .98f);
+        var name = UiKit.Label(_placaNome.transform, BossDialogue.Name, 30, Vector2.zero, new Color(1f, .78f, .46f), new Vector2(450f, 48f));
+        name.font = JapaneseText.Font;
         var placaGroup = _placaNome.gameObject.AddComponent<CanvasGroup>();
 
         // 8. FalaBoss (1216x136)
@@ -169,7 +176,7 @@ public class BossIntroCutscene : MonoBehaviour
         frt.sizeDelta = new Vector2(1216, 136);
 
         _falaText = falaGo.GetComponent<Text>();
-        _falaText.font = UiKit.ResolveFont();
+        _falaText.font = JapaneseText.Font;
         _falaText.fontSize = 34;
         _falaText.color = new Color(246f / 255f, 238f / 255f, 222f / 255f);
         _falaText.alignment = TextAnchor.UpperLeft;
@@ -188,7 +195,8 @@ public class BossIntroCutscene : MonoBehaviour
         _setaContinuar.gameObject.SetActive(false);
 
         // 10. RetratoBoss (384x384)
-        _retratoBoss = CreateImage("RetratoBoss", _retratoFrames != null && _retratoFrames.Length > 0 ? _retratoFrames[0] : null, 1920, -560, 384, 384, Color.white);
+        _retratoBoss = CreateImage("RetratoBoss", _formPortrait != null ? _formPortrait : _retratoFrames != null && _retratoFrames.Length > 0 ? _retratoFrames[0] : null, 1920, -560, 384, 384, Color.white);
+        _retratoBoss.preserveAspect = true;
         _portraitGroup = _retratoBoss.gameObject.AddComponent<CanvasGroup>();
 
         // 11. MolduraRetrato (416x416)
@@ -250,7 +258,7 @@ public class BossIntroCutscene : MonoBehaviour
     void Update()
     {
         // Pular se pressionar Espaço, Enter, E, J ou toque/clique
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) ||
+        if (GamepadControls.Down(GamepadControls.Jump) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) ||
             Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.J) ||
             Input.GetMouseButtonDown(0))
         {
@@ -266,7 +274,7 @@ public class BossIntroCutscene : MonoBehaviour
             _skipRequestedOnce = true;
             if (_setaContinuar != null) _setaContinuar.gameObject.SetActive(true);
             if (_retratoFrames != null && _retratoFrames.Length > 2 && _retratoBoss != null)
-                _retratoBoss.sprite = _retratoFrames[2];
+                _retratoBoss.sprite = _formPortrait != null ? _formPortrait : _retratoFrames[2];
         }
         else
         {
@@ -278,13 +286,15 @@ public class BossIntroCutscene : MonoBehaviour
     {
         if (_closed) return;
 
+        // Keep the authored entrance choreography, sized to the complete recording.
+        float timeline = elapsed * (_isRetry ? 2f : 6f) / Mathf.Max(.1f, _totalDuration);
         if (_isRetry)
         {
-            TickRetry(elapsed);
+            TickRetry(timeline);
         }
         else
         {
-            TickFull(elapsed);
+            TickFull(timeline);
         }
     }
 
@@ -349,7 +359,7 @@ public class BossIntroCutscene : MonoBehaviour
             if (_falaText != null) _falaText.text = cur;
 
             // Retrato e animações
-            if (cur.Contains("Eu sou o Devorador do Vazio."))
+            if (cur.Contains(BossDialogue.Name))
             {
                 if (!_didShake)
                 {
@@ -357,13 +367,13 @@ public class BossIntroCutscene : MonoBehaviour
                     CameraFollow.Shake(0.25f, 0.12f);
                 }
                 if (_retratoFrames != null && _retratoFrames.Length > 2 && _retratoBoss != null)
-                    _retratoBoss.sprite = _retratoFrames[2];
+                    _retratoBoss.sprite = _formPortrait != null ? _formPortrait : _retratoFrames[2];
             }
             else
             {
                 int frame = (int)(elapsed / 0.12f) % 2;
                 if (_retratoFrames != null && _retratoFrames.Length > frame && _retratoBoss != null)
-                    _retratoBoss.sprite = _retratoFrames[frame];
+                    _retratoBoss.sprite = _formPortrait != null ? _formPortrait : _retratoFrames[frame];
             }
 
             if (count >= _fullSpeech.Length)
@@ -453,7 +463,7 @@ public class BossIntroCutscene : MonoBehaviour
                 if (_falaText != null) _falaText.text = cur;
 
                 if (_retratoFrames != null && _retratoFrames.Length > 2 && _retratoBoss != null)
-                    _retratoBoss.sprite = _retratoFrames[2];
+                    _retratoBoss.sprite = _formPortrait != null ? _formPortrait : _retratoFrames[2];
 
                 if (count >= _fullSpeech.Length)
                 {
@@ -487,6 +497,8 @@ public class BossIntroCutscene : MonoBehaviour
     {
         if (_closed) return;
         _closed = true;
+        if (Current != this) { Destroy(gameObject); return; }
+        Current = null;
 
         // Destravar herói
         var player = FindFirstObjectByType<PlayerController>();

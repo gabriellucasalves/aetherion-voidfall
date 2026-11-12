@@ -26,6 +26,7 @@ public class CutInPanel : MonoBehaviour
     GameObject _bannerRoot;
     Text _name;
     RectTransform _panel;
+    string _heroId;
     Image _speed;
 
     public static void Cancel()
@@ -57,6 +58,7 @@ public class CutInPanel : MonoBehaviour
         string heroId = data != null && !string.IsNullOrEmpty(data.HeroId)
             ? data.HeroId
             : hero != null ? hero.Id : "guerreiro";
+        _heroId = heroId;
         var accent = data != null ? data.Accent : new Color(1f, 0.84f, 0.25f);
         var dark = data != null ? data.PanelDark : new Color(0.16f, 0.03f, 0.04f, 0.96f);
         var light = data != null ? data.PanelLight : new Color(0.5f, 0.08f, 0.06f, 0.45f);
@@ -174,10 +176,12 @@ public class CutInPanel : MonoBehaviour
         _bust.gameObject.SetActive(true);
         _bust.color = new Color(1f, 1f, 1f, 0f);
         _shoutRoot.SetActive(true);
+        float voiceLength = GameAudio.Instance != null ? GameAudio.Instance.PlaySupremeCallout(_heroId) : 0f;
+        float bustDuration = Mathf.Max(BeatBust, voiceLength - BeatName - SlideTime - .10f);
 
         float clock = 0f;
         const float intro = 0.14f;
-        while (clock < BeatBust)
+        while (clock < bustDuration)
         {
             clock += Time.unscaledDeltaTime;
             float u = Mathf.Clamp01(clock / intro);
@@ -284,10 +288,13 @@ public class CutInPanel : MonoBehaviour
 
     static GameObject ShoutBubble(Transform parent, Color accent)
     {
-        var frame = UiKit.Panel(parent, "Balao", new Vector2(528f, 138f), new Vector2(0f, -170f), accent);
-        var bg = UiKit.Panel(frame.transform, "Miolo", new Vector2(512f, 122f), Vector2.zero, Color.white);
+        var frame = UiKit.Panel(parent, "Balao", new Vector2(528f, 190f), new Vector2(0f, -170f), accent);
+        var bg = UiKit.Panel(frame.transform, "Miolo", new Vector2(512f, 174f), Vector2.zero, Color.white);
         bg.raycastTarget = false;
-        var label = UiKit.Label(bg.transform, "Grito", 32, Vector2.zero, new Color(0.08f, 0.05f, 0.06f), new Vector2(480f, 108f));
+        var label = UiKit.Label(bg.transform, "Grito", 28, Vector2.zero, new Color(0.08f, 0.05f, 0.06f), new Vector2(480f, 168f));
+        label.font = JapaneseText.Font;
+        label.lineSpacing = 1f;
+        label.verticalOverflow = VerticalWrapMode.Truncate;
         label.raycastTarget = false;
         return frame.gameObject;
     }
@@ -298,6 +305,7 @@ public class CutInPanel : MonoBehaviour
         var line = UiKit.Panel(bg.transform, "Filete", new Vector2(560f, 6f), new Vector2(0f, 58f), accent);
         line.raycastTarget = false;
         name = UiKit.Label(bg.transform, "Nome", 30, new Vector2(0f, -8f), accent, new Vector2(560f, 110f));
+        name.font = JapaneseText.Font;
         name.raycastTarget = false;
         name.horizontalOverflow = HorizontalWrapMode.Wrap;
         name.verticalOverflow = VerticalWrapMode.Overflow;

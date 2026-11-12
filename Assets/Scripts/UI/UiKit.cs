@@ -35,6 +35,8 @@ public static class UiKit
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
         scaler.matchWidthOrHeight = 0.5f;
+        if (MobileControls.ShouldShow())
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         go.AddComponent<GraphicRaycaster>();
         go.AddComponent<SafeAreaFit>();
         EnsureEventSystem();

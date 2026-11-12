@@ -15,6 +15,7 @@ public class ArqueiroVisual : MonoBehaviour
 
     static readonly int[] Idle = { 0, 1, 2, 3 };
     static readonly int[] Walk = { 4, 5, 6, 7, 8, 9 };
+    static readonly int[] Guard = { 13, 14 };
     static readonly int[] ReleaseRecoil = { 38, 39 };
     static readonly int[] Dash = { 16, 17 };
     static readonly int[] Hurt = { 19, 20 };
@@ -77,6 +78,13 @@ public class ArqueiroVisual : MonoBehaviour
         {
             UpdateChargeIndicator(0);
             Play("death", Death, 7f, false);
+            return;
+        }
+
+        if (_combat != null && _combat.IsBlocking)
+        {
+            UpdateChargeIndicator(0);
+            Play("crystal-guard", Guard, 7f, false);
             return;
         }
 

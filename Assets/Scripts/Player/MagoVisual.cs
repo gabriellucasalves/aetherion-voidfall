@@ -24,6 +24,7 @@ public class MagoVisual : MonoBehaviour
 
     static readonly int[] Idle = { 0, 1, 2, 3 };
     static readonly int[] Walk = { 4, 5, 6, 7, 8, 9 };
+    static readonly int[] Guard = { 13, 14 };
     static readonly int[] Cast = { 13, 14, 15, 16 };
     static readonly int[] Special = { 17, 18, 19, 20 };
     static readonly int[] Hurt = { 21, 22 };
@@ -73,6 +74,14 @@ public class MagoVisual : MonoBehaviour
 
         if (_health != null && _health.IsDead) { Play("death", Death, 7f, false); return; }
 
+        if (_combat != null && _combat.IsBlocking)
+        {
+            Play("ward-guard", Guard, 7f, false);
+            ApplyWardTint(true);
+            return;
+        }
+        ApplyWardTint(false);
+
         if (_hurtLeft > 0f)
             _hurtLeft -= Time.deltaTime;
 
@@ -93,25 +102,6 @@ public class MagoVisual : MonoBehaviour
         if (_combat != null && _combat.IsAttacking)
         {
             Play("cast", Cast, 8.3f, false);
-            return;
-        }
-
-        // Campo de Magia ativo: idle/walk com tint ciano-roxo (feedback no sprite).
-        if (_combat != null && _combat.IsWarding)
-        {
-            bool groundedWard = _player != null && _player.Grounded;
-            Vector2 velWard = _player != null ? _player.Velocity : Vector2.zero;
-            bool walkingWard = Mathf.Abs(velWard.x) > 0.12f || (_player != null && _player.WantsMove);
-            if (!groundedWard || velWard.y > 1.6f)
-            {
-                Show(JumpFrame(velWard.y));
-                _clip = "ward-jump";
-            }
-            else if (walkingWard)
-                Play("ward-walk", Walk, 10f, true);
-            else
-                Play("ward-idle", Idle, 4f, true);
-            ApplyWardTint(true);
             return;
         }
 

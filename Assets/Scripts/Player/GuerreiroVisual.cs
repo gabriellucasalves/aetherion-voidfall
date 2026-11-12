@@ -67,7 +67,7 @@ public class GuerreiroVisual : MonoBehaviour
         Bind();
 
         bool blocking = _combat != null && _combat.IsBlocking;
-        UpdateAura(blocking);
+        UpdateAura(false); // Physical shield lift is rendered by HeroGuardVisual.
 
         if (_health != null && _health.IsDead) { Play("death", Death, 7f, false); return; }
 
@@ -83,7 +83,7 @@ public class GuerreiroVisual : MonoBehaviour
         // bloqueio tem prioridade sobre o ataque
         if (blocking)
         {
-            Play("block", Block, 5f, true);
+            Play("block", Block, 8f, false);
             return;
         }
 
@@ -193,6 +193,12 @@ public class GuerreiroVisual : MonoBehaviour
         TrioAnimationFrames.Copy(frames, 4, "guerreiro", "andar", 6);
         TrioAnimationFrames.Copy(frames, 10, "guerreiro", "pulo", 3);
         TrioAnimationFrames.Copy(frames, 13, "guerreiro", "ataque", 4);
+        // Raise the current model's arm into a braced weapon pose, paired with
+        // the physical shield lift. A dedicated defense strip can override it later.
+        var guard = TrioAnimationFrames.Load("guerreiro", "ataque", 4);
+        frames[17] = guard != null ? guard[0] : frames[0];
+        frames[18] = guard != null ? guard[1] : frames[1];
+        TrioAnimationFrames.Copy(frames, 17, "guerreiro", "defesa", 2);
         TrioAnimationFrames.Copy(frames, 19, "guerreiro", "dano", 2);
         TrioAnimationFrames.Copy(frames, 21, "guerreiro", "especial_feixe", 4);
         TrioAnimationFrames.Copy(frames, 25, "guerreiro", "morte", 5);

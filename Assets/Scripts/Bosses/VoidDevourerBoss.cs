@@ -89,7 +89,7 @@ public class VoidDevourerBoss : MonoBehaviour
 
     State _state = State.Intro;
     public State CurrentState => _state;
-    int _phase = 1; // 1 = 100-66%, 2 = 66-33%, 3 = 33-0%
+    int _phase = 1; // Each form has its own complete health pool.
     public int Phase => _phase;
 
     public HealthSystem Health => _health;
@@ -120,6 +120,9 @@ public class VoidDevourerBoss : MonoBehaviour
     float _attackSubTimer;
     float _flashTimer;
     float _defeatTimer;
+    public bool IsDissolving { get; set; }
+    public bool IsChargingAttack => _isChargingLaser;
+    public bool IsDamageFlashing => _flashTimer > 0f;
 
     // Intro dramatic speech & emergence
     float _introTotalDuration;
@@ -177,6 +180,8 @@ public class VoidDevourerBoss : MonoBehaviour
         _nucleus = nucGo.AddComponent<BossNucleus>();
         _nucleus.Setup(this);
 
+        gameObject.AddComponent<BossFormVisual>().Setup(this);
+        _healthBar?.SetForm(1);
         StartIntro();
     }
 
@@ -189,8 +194,10 @@ public class VoidDevourerBoss : MonoBehaviour
 
     void StartIntro()
     {
+        GameAudio.Instance?.BeginBoss();
         _state = State.Intro;
-        _introTotalDuration = _isRetry ? BossData.IntroDurationShort : BossData.IntroDurationFull;
+        float voiceLength = GameAudio.Instance != null ? GameAudio.Instance.PlayBossVoice(_isRetry ? "BossRetry" : "BossIntro") : 0f;
+        _introTotalDuration = Mathf.Max(_isRetry ? BossData.IntroDurationShort : BossData.IntroDurationFull, voiceLength + .8f);
         _stateTimer = _introTotalDuration;
 
         if (_health != null)
@@ -202,15 +209,14 @@ public class VoidDevourerBoss : MonoBehaviour
         transform.position = new Vector3(transform.position.x, _introStartY, 0f);
         SetBossAlpha(0f);
 
-        _introSpeechText = _isRetry
-            ? "Eu sou o Devorador do Vazio."
-            : "Vocês pensaram que Aetherion cairia em silêncio... Eu sou o Devorador do Vazio.";
+        _introSpeechText = _isRetry ? BossDialogue.Retry : BossDialogue.Intro;
 
+        if (_target != null) _target.GetComponent<HealthSystem>().IsInvulnerable = true;
         CreateIntroSpeechUi();
 
         if (_healthBar != null)
         {
-            float fillDelay = _isRetry ? 0.6f : 4.5f;
+            float fillDelay = Mathf.Max(.3f, _introTotalDuration - 1.5f);
             StartCoroutine(IntroBarRoutine(fillDelay));
         }
     }
@@ -318,7 +324,9 @@ public class VoidDevourerBoss : MonoBehaviour
             transform.position = new Vector3(transform.position.x, _introTargetY, 0f);
             if (_health != null)
                 _health.IsInvulnerable = false;
+            if (_target != null) _target.GetComponent<HealthSystem>().IsInvulnerable = false;
             _state = State.Flying;
+            GameAudio.Instance?.BossCombatStarted();
             _stateTimer = 1.0f; // Initial rest before first attack
         }
     }
@@ -336,7 +344,7 @@ public class VoidDevourerBoss : MonoBehaviour
             targetX = _target.position.x < 48f ? 52.5f : 43.5f;
         }
 
-        float curX = Mathf.MoveTowards(transform.position.x, targetX, 2.8f * Time.deltaTime);
+        float curX = Mathf.MoveTowards(transform.position.x, targetX, 2.8f * BossData.FormCadence(_phase) * Time.deltaTime);
         float baseY = _stage != null ? _stage.GroundTop + 4.8f : 3.0f;
         float curY = baseY + Mathf.Sin(_flightBobClock) * 0.35f;
         transform.position = new Vector3(curX, curY, 0f);
@@ -354,7 +362,14 @@ public class VoidDevourerBoss : MonoBehaviour
         }
     }
 
-    float CadenceMultiplier => (_enemyController != null && _enemyController.IsSlowed) ? 0.85f : 1.0f;
+    float CadenceMultiplier => BossData.FormCadence(_phase) * ((_enemyController != null && _enemyController.IsSlowed) ? .85f : 1f);
+    public float AttackDamageMultiplier => BossData.FormDamage(_phase);
+    public NazorPose AnimationPose { get; private set; }
+    float _poseStarted;
+    public float PoseElapsed => Mathf.Max(0f, Time.time - _poseStarted);
+    public int FiredVolleys { get; private set; }
+    public int DiveLaunches { get; private set; }
+    public void SetAnimationPose(NazorPose pose) { AnimationPose = pose; _poseStarted = Time.time; }
 
     void ChooseNextAttack()
     {
@@ -362,48 +377,138 @@ public class VoidDevourerBoss : MonoBehaviour
 
         if (_phase == 1)
         {
-            // F1: Olhar Duplo -> Erupção (3) -> Varredura Rubra -> Descida (Núcleo)
-            switch (_cycleIndex % 4)
+            // Re-aimed volleys, ground control, a crossing dive, then a punish window.
+            switch (_cycleIndex % 5)
             {
-                case 0: StartCoroutine(AttackDoubleGlare(volleys: 1, warningTime: 0.75f)); break;
+                case 0: StartCoroutine(AttackDoubleGlare(volleys: 2, warningTime: 0.75f)); break;
                 case 1: StartCoroutine(AttackTentacleEruption(count: 3, warningTime: 1.0f)); break;
-                case 2: StartCoroutine(AttackRedSweep(sweepBack: false, warningTime: 0.90f, dmg: 22f)); break;
-                case 3: StartCoroutine(AttackDescentExposed(duration: 3.0f)); break;
+                case 2: StartCoroutine(AttackDive()); break;
+                case 3: StartCoroutine(AttackRedSweep(sweepBack: true, warningTime: 0.85f, dmg: 22f)); break;
+                case 4: StartCoroutine(AttackDescentExposed(duration: 2.6f)); break;
             }
             _cycleIndex++;
         }
         else if (_phase == 2)
         {
-            // F2: Invocação -> Olhar Duplo -> Erupção (4) -> Varredura Rubra (ida e volta) -> Descida
-            switch (_cycleIndex % 5)
+            // The winged beast replaces eye lasers with jumpable sonic volleys.
+            switch (_cycleIndex++ % 4)
             {
-                case 0:
-                    if (CanSummon()) StartCoroutine(AttackSummonMinions());
-                    else StartCoroutine(AttackDoubleGlare(volleys: 1, warningTime: 0.75f));
-                    break;
-                case 1: StartCoroutine(AttackDoubleGlare(volleys: 1, warningTime: 0.75f)); break;
-                case 2: StartCoroutine(AttackTentacleEruption(count: 4, warningTime: 1.0f)); break;
-                case 3: StartCoroutine(AttackRedSweep(sweepBack: true, warningTime: 0.90f, dmg: 22f)); break;
-                case 4: StartCoroutine(AttackDescentExposed(duration: 2.6f)); break;
+                case 0: StartCoroutine(AttackSonicBurst()); break;
+                case 1: StartCoroutine(AttackTentacleEruption(4, .95f)); break;
+                case 2: StartCoroutine(AttackDive()); break;
+                case 3: StartCoroutine(AttackDescentExposed(2.6f)); break;
             }
-            _cycleIndex++;
         }
         else
         {
-            // F3 (Fúria): Olhar Duplo (2) -> Erupção (5) -> Varredura Rubra (ida e volta) -> Invocação -> Descida
-            switch (_cycleIndex % 5)
+            // The crowned final form calls down telegraphed eclipse projectiles.
+            switch (_cycleIndex++ % 4)
             {
-                case 0: StartCoroutine(AttackDoubleGlare(volleys: 2, warningTime: 0.60f)); break;
-                case 1: StartCoroutine(AttackTentacleEruption(count: 5, warningTime: 0.85f, waveDelay: 0.35f)); break;
-                case 2: StartCoroutine(AttackRedSweep(sweepBack: true, warningTime: 0.75f, dmg: 24f)); break;
-                case 3:
-                    if (CanSummon()) StartCoroutine(AttackSummonMinions());
-                    else StartCoroutine(AttackDoubleGlare(volleys: 2, warningTime: 0.60f));
-                    break;
-                case 4: StartCoroutine(AttackDescentExposed(duration: 2.2f)); break;
+                case 0: StartCoroutine(AttackEclipseRain()); break;
+                case 1: StartCoroutine(AttackTentacleEruption(5, .85f, .35f)); break;
+                case 2: StartCoroutine(AttackDive()); break;
+                case 3: StartCoroutine(AttackDescentExposed(2.2f)); break;
             }
-            _cycleIndex++;
         }
+    }
+
+    IEnumerator AttackSonicBurst()
+    {
+        SetAnimationPose(NazorPose.Roar);
+        _isChargingLaser = true;
+        GameAudio.Emit(GameAudio.Cue.BossSonicCharge, transform.position);
+        for (float t = 0f; t < .95f; t += Time.deltaTime)
+        {
+            if (Mathf.FloorToInt(t * 10f) != Mathf.FloorToInt((t - Time.deltaTime) * 10f))
+                PixelBurst.Spawn(transform.position + Vector3.up * .8f, new Color(.85f, .40f, 1f), 2);
+            yield return null;
+        }
+        _isChargingLaser = false;
+        for (int i = 0; i < 2; i++)
+        {
+            if (_state != State.Attacking) yield break;
+            float ground = _stage != null ? _stage.GroundTop : -2f;
+            float direction = _target != null && _target.position.x < transform.position.x ? -1f : 1f;
+            Vector3 origin = new Vector3(transform.position.x + direction * 1.4f, ground + .85f, 0f);
+            SetAnimationPose(NazorPose.Release);
+            NazorHazard.Sonic(this, origin, direction, 20f * AttackDamageMultiplier);
+            GameAudio.Emit(GameAudio.Cue.BossSonicWave, origin);
+            CameraFollow.Shake(.09f, .06f);
+            yield return new WaitForSeconds(.65f);
+            SetAnimationPose(NazorPose.Roar);
+            yield return new WaitForSeconds(.30f);
+        }
+        FinishAttack(.55f);
+    }
+
+    IEnumerator AttackEclipseRain()
+    {
+        SetAnimationPose(NazorPose.Conjure);
+        _isChargingLaser = true;
+        for (int volley = 0; volley < 2; volley++)
+        {
+            if (_state != State.Attacking) yield break;
+            float ground = _stage != null ? _stage.GroundTop : -2f;
+            // Mark positions once: moving out of the rune always avoids that bolt.
+            float target = Mathf.Clamp(_target != null ? _target.position.x : 48f, 40f, 56f);
+            foreach (float offset in new[] { -4f, 0f, 4f })
+                NazorHazard.Eclipse(this, new Vector3(Mathf.Clamp(target + offset, 38f, 58f), ground, 0f), 24f * AttackDamageMultiplier);
+            GameAudio.Emit(GameAudio.Cue.BossVoidMark, transform.position);
+            yield return new WaitForSeconds(1.05f);
+            SetAnimationPose(NazorPose.Release);
+            yield return new WaitForSeconds(.60f);
+            SetAnimationPose(NazorPose.Conjure);
+        }
+        _isChargingLaser = false;
+        FinishAttack(.8f);
+    }
+
+    IEnumerator AttackDive()
+    {
+        if (_state != State.Attacking) yield break;
+        SetAnimationPose(NazorPose.Windup);
+        _isChargingLaser = true;
+        float ground = _stage != null ? _stage.GroundTop : -2f;
+        Vector3 start = transform.position;
+        Vector3 target = new Vector3(Mathf.Clamp(_target != null ? _target.position.x : 48f, 39.5f, 56.5f), ground + 1.6f, 0);
+        Vector2 direction = (target - start).normalized;
+        var warning = BossLaser.SpawnAimLine(null, start, direction, Vector3.Distance(start, target) + 2f, .85f);
+        _activeAims.Add(warning);
+        GameAudio.Emit(GameAudio.Cue.BossWarning, transform.position, .9f);
+        // The marked dive is locked from the start; it never homes after launch.
+        for (float t = 0; t < .85f; t += Time.deltaTime)
+        {
+            transform.position = start + new Vector3(0f, Mathf.Sin(t / .85f * Mathf.PI) * .45f, 0f);
+            yield return null;
+        }
+        _activeAims.Remove(warning);
+        if (warning != null) Destroy(warning);
+        _isChargingLaser = false;
+        SetAnimationPose(NazorPose.Dive);
+        DiveLaunches++;
+        GameAudio.Emit(GameAudio.Cue.BossRoar, transform.position, .8f);
+        float side = Mathf.Sign(target.x - start.x);
+        Vector3 end = new Vector3(Mathf.Clamp(target.x + side * 3f, 38.5f, 57.5f), ground + 1.9f, 0);
+        for (float t = 0; t < .70f; t += Time.deltaTime)
+        {
+            float u = Mathf.SmoothStep(0f, 1f, t / .70f);
+            transform.position = Vector3.Lerp(start, end, u);
+            CheckBiteHit();
+            yield return null;
+        }
+        transform.position = end;
+        SetAnimationPose(NazorPose.Recover);
+        // A melee-reachable punish window follows every successful/evaded dive.
+        _nucleus?.SetActive(true);
+        yield return new WaitForSeconds(.75f);
+        _nucleus?.SetActive(false);
+        Vector3 flight = new Vector3(Mathf.Clamp(end.x, 41f, 55f), ground + 4.8f, 0);
+        for (float t = 0; t < .65f; t += Time.deltaTime)
+        {
+            transform.position = Vector3.Lerp(end, flight, Mathf.SmoothStep(0f, 1f, t / .65f));
+            yield return null;
+        }
+        FinishAttack(.45f);
     }
 
     bool CanSummon()
@@ -431,16 +536,27 @@ public class VoidDevourerBoss : MonoBehaviour
             Vector2 dirL = (targetPos - eyeL).normalized;
             Vector2 dirR = (targetPos - eyeR).normalized;
 
+            SetAnimationPose(NazorPose.Focus);
             var aimL = BossLaser.SpawnAimLine(transform.parent, eyeL, dirL, 25f, warningTime);
             var aimR = BossLaser.SpawnAimLine(transform.parent, eyeR, dirR, 25f, warningTime);
             _activeAims.Add(aimL);
             _activeAims.Add(aimR);
 
+            GameAudio.Emit(GameAudio.Cue.BossWarning, transform.position, 0.8f);
             _isChargingLaser = true;
             _attackSubTimer = 0f;
             for (float t = 0f; t < warningTime; t += Time.deltaTime)
             {
                 _attackSubTimer += Time.deltaTime;
+                // Track early, then lock visibly for a fair 0.32 s dodge window.
+                if (t < warningTime - .32f && _target != null)
+                {
+                    targetPos = _target.position + Vector3.up * .4f;
+                    dirL = (targetPos - eyeL).normalized;
+                    dirR = (targetPos - eyeR).normalized;
+                    if (aimL != null) aimL.transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(dirL.y, dirL.x) * Mathf.Rad2Deg);
+                    if (aimR != null) aimR.transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(dirR.y, dirR.x) * Mathf.Rad2Deg);
+                }
                 yield return null;
             }
             _activeAims.Remove(aimL);
@@ -454,8 +570,11 @@ public class VoidDevourerBoss : MonoBehaviour
 
             _isChargingLaser = false;
             _isFiringLaser = true;
-            var beamL = BossLaser.FireDoubleGlareBeam(eyeL, dirL, 16f, 0.5f);
-            var beamR = BossLaser.FireDoubleGlareBeam(eyeR, dirR, 16f, 0.5f);
+            SetAnimationPose(NazorPose.Release);
+            FiredVolleys++;
+            GameAudio.Emit(GameAudio.Cue.BossBeam, transform.position);
+            var beamL = BossLaser.FireDoubleGlareBeam(eyeL, dirL, 16f * AttackDamageMultiplier, 0.5f);
+            var beamR = BossLaser.FireDoubleGlareBeam(eyeR, dirR, 16f * AttackDamageMultiplier, 0.5f);
             _activeLasers.Add(beamL);
             _activeLasers.Add(beamR);
 
@@ -465,7 +584,7 @@ public class VoidDevourerBoss : MonoBehaviour
             _activeLasers.Remove(beamR);
 
             if (volleys > 1 && v < volleys - 1)
-                yield return new WaitForSeconds(0.25f);
+                yield return new WaitForSeconds(0.18f);
         }
 
         _isChargingLaser = false;
@@ -481,7 +600,9 @@ public class VoidDevourerBoss : MonoBehaviour
         float startX = (_target != null && _target.position.x < 48f) ? 58.5f : 37.5f;
         float endX = startX > 48f ? 37.5f : 58.5f;
 
+        GameAudio.Emit(GameAudio.Cue.BossWarning, transform.position, 0.8f);
         // Warning spark on ground
+        SetAnimationPose(NazorPose.Focus);
         _isChargingLaser = true;
         _attackSubTimer = 0f;
         for (float t = 0f; t < warningTime; t += Time.deltaTime)
@@ -502,7 +623,9 @@ public class VoidDevourerBoss : MonoBehaviour
         _isFiringLaser = true;
 
         // Forward sweep
-        var sweepBeam = BossLaser.FireRedSweepBeam(transform, new Vector3(startX, groundY, 0f), dmg);
+        SetAnimationPose(NazorPose.Release);
+        GameAudio.Emit(GameAudio.Cue.BossBeam, transform.position);
+        var sweepBeam = BossLaser.FireRedSweepBeam(transform, new Vector3(startX, groundY, 0f), dmg * AttackDamageMultiplier);
         _activeLasers.Add(sweepBeam);
 
         float sweepDuration = 1.6f;
@@ -548,6 +671,8 @@ public class VoidDevourerBoss : MonoBehaviour
 
     IEnumerator AttackTentacleEruption(int count, float warningTime, float waveDelay = 0f)
     {
+        SetAnimationPose(NazorPose.Conjure);
+        GameAudio.Emit(GameAudio.Cue.BossWarning, transform.position, 0.8f);
         if (_state != State.Attacking) yield break;
 
         float groundY = _stage != null ? _stage.GroundTop : -2.0f;
@@ -598,9 +723,10 @@ public class VoidDevourerBoss : MonoBehaviour
 
     IEnumerator AttackSummonMinions()
     {
+        GameAudio.Emit(GameAudio.Cue.BossRoar, transform.position, 0.8f);
         if (_state != State.Attacking) yield break;
 
-        _summonCooldown = Time.time + 14f;
+        _summonCooldown = Time.time + (_phase >= 3 ? 10f : 13f);
 
         // Warning void rifts on floor
         float groundY = _stage != null ? _stage.GroundTop : -2.0f;
@@ -628,6 +754,7 @@ public class VoidDevourerBoss : MonoBehaviour
         if (_state != State.Attacking) yield break;
 
         _state = State.Descending;
+        SetAnimationPose(NazorPose.Recover);
 
         // Descend until nucleus is ~2 u above ground (reachable by melee and runic zone)
         float groundY = _stage != null ? _stage.GroundTop : -2.0f;
@@ -662,6 +789,7 @@ public class VoidDevourerBoss : MonoBehaviour
         if (_nucleus != null) _nucleus.SetActive(false);
 
         // 0.6s warning -> Mordida (bite lunge)
+        SetAnimationPose(NazorPose.Windup);
         for (float t = 0f; t < 0.6f; t += Time.deltaTime)
         {
             if (_state != State.Descending) yield break;
@@ -671,6 +799,7 @@ public class VoidDevourerBoss : MonoBehaviour
         }
 
         // Bite lunge forward 3 units
+        SetAnimationPose(NazorPose.Dive);
         float dir = _target != null ? Mathf.Sign(_target.position.x - transform.position.x) : 1f;
         Vector3 biteStart = transform.position;
         Vector3 biteEnd = biteStart + new Vector3(dir * 3.2f, -0.4f, 0f);
@@ -700,13 +829,15 @@ public class VoidDevourerBoss : MonoBehaviour
 
     void CheckBiteHit()
     {
+        if (Time.time < _nextContactDamageTime) return;
         var center = transform.position + Vector3.down * 0.4f;
         foreach (var col in Physics2D.OverlapBoxAll(center, new Vector2(2.5f, 2.0f), 0f))
         {
             var player = col.GetComponentInParent<PlayerController>();
             if (player != null)
             {
-                EnemyController.DamagePlayer(player.transform, transform.position, 20f);
+                _nextContactDamageTime = Time.time + BossData.ContactCooldown;
+                EnemyController.DamagePlayer(player.transform, transform.position, 20f * AttackDamageMultiplier);
                 PixelBurst.Spawn(player.transform.position + Vector3.up * 0.5f, new Color(1f, 0.2f, 0.3f), 8);
                 break;
             }
@@ -715,6 +846,7 @@ public class VoidDevourerBoss : MonoBehaviour
 
     void FinishAttack(float pause)
     {
+        SetAnimationPose(NazorPose.Recover);
         _isChargingLaser = false;
         _isFiringLaser = false;
         _state = State.Flying;
@@ -734,11 +866,16 @@ public class VoidDevourerBoss : MonoBehaviour
         _isChargingLaser = false;
         _isFiringLaser = false;
         _state = State.Flying;
+        SetAnimationPose(NazorPose.Hover);
+        if (_target != null) _target.GetComponent<HealthSystem>().IsInvulnerable = false;
+        if (_healthBar != null && !_healthBar.gameObject.activeSelf) _healthBar.BeginIntroFill(.2f);
+        GameAudio.Instance?.BossCombatStarted();
         _stateTimer = 2.0f;
     }
 
     void OnDestroy()
     {
+        CancelActiveAttacks();
         _cutscene?.Close();
         _cutscene = null;
         if (_introSpeechGo != null)
@@ -832,7 +969,7 @@ public class VoidDevourerBoss : MonoBehaviour
 
     void CheckPlayerContact()
     {
-        if (_state == State.Intro || _state == State.Defeated || Time.time < _nextContactDamageTime)
+        if (_state == State.Intro || _state == State.Transition || _state == State.Defeated || Time.time < _nextContactDamageTime)
             return;
 
         foreach (var col in Physics2D.OverlapBoxAll(transform.position, new Vector2(3.2f, 3.2f), 0f))
@@ -841,7 +978,7 @@ public class VoidDevourerBoss : MonoBehaviour
             if (player != null)
             {
                 _nextContactDamageTime = Time.time + BossData.ContactCooldown;
-                EnemyController.DamagePlayer(player.transform, transform.position, BossData.ContactDamage);
+                EnemyController.DamagePlayer(player.transform, transform.position, BossData.ContactDamage * AttackDamageMultiplier);
                 break;
             }
         }
@@ -852,25 +989,17 @@ public class VoidDevourerBoss : MonoBehaviour
         if (_health == null || _state == State.Defeated || _state == State.Transition)
             return;
 
-        float ratio = _health.Current / _health.Max;
-        if (_phase == 1 && ratio <= BossData.Phase1Threshold)
-        {
-            TriggerTransition(2, "O VAZIO TEM FOME");
-        }
-        else if (_phase == 2 && ratio <= BossData.Phase2Threshold)
-        {
-            TriggerTransition(3, "AETHERION JÁ CAIU!");
-        }
+        if (_health.Current <= 0f && _phase < 3)
+            TriggerTransition(_phase + 1, _phase == 1 ? BossDialogue.Form2 : BossDialogue.Form3);
     }
 
-    void TriggerTransition(int targetPhase, string bannerText)
+    public void CancelActiveAttacks()
     {
-        _phase = targetPhase;
-        _state = State.Transition;
-        _stateTimer = BossData.TransitionDuration;
-
-        // Cancel active attacks
         StopAllCoroutines();
+        foreach (var hazard in FindObjectsByType<NazorHazard>(FindObjectsSortMode.None))
+            if (hazard.Owner == this) Destroy(hazard.gameObject);
+        _isChargingLaser = false;
+        _isFiringLaser = false;
         foreach (var laser in _activeLasers) if (laser != null) Destroy(laser.gameObject);
         _activeLasers.Clear();
         foreach (var aim in _activeAims) if (aim != null) Destroy(aim);
@@ -878,35 +1007,47 @@ public class VoidDevourerBoss : MonoBehaviour
         foreach (var t in _activeTentacles) if (t != null) Destroy(t.gameObject);
         _activeTentacles.Clear();
         if (_nucleus != null) _nucleus.SetActive(false);
+    }
 
-        // Screen shake + harmless shockwave pushback
+    void TriggerTransition(int targetPhase, string speech)
+    {
+        // Refill synchronously on health Changed, before HealthSystem emits Died.
+        // A huge attack therefore advances exactly one form and never skips it.
+        SpecialController.AbortActive();
+        _phase = targetPhase;
+        _state = State.Transition;
+        SetAnimationPose(NazorPose.Transform);
+        CancelActiveAttacks();
+        _cycleIndex = 0;
+        _supremeDamageAccumulator = 0f;
+        _supremeCapTimer = 0f;
+        _health.IsInvulnerable = true;
+        _health.Configure(BossData.FormHealth(_phase));
+        _healthBar?.SetForm(_phase);
+        _healthBar?.ForceSync();
+        GetComponent<BossFormVisual>()?.SetForm(_phase);
+        float voiceLength = GameAudio.Instance != null ? GameAudio.Instance.PlayBossVoice(_phase == 2 ? "BossForm2" : "BossForm3") : 0f;
+        _introTotalDuration = Mathf.Max(BossData.TransitionDuration, voiceLength + .7f);
+        _stateTimer = _introTotalDuration;
+        _cutscene = BossIntroCutscene.Create(speech, true, _introTotalDuration, GetComponent<BossFormVisual>().PortraitSprite);
+        if (_target != null) _target.GetComponent<HealthSystem>().IsInvulnerable = true;
         SupremeFx.PlayFlash();
-        if (_target != null)
-        {
-            var rb = _target.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                float pushDir = Mathf.Sign(_target.position.x - transform.position.x);
-                rb.linearVelocity = new Vector2(pushDir * 7f, 3f);
-            }
-        }
-
-        // Display transition banner
-        var stageController = FindFirstObjectByType<GroundT1Controller>();
-        if (stageController != null)
-        {
-            stageController.AnnounceWave(targetPhase, bannerText);
-        }
+        CameraFollow.Shake(.3f, .18f);
+        PixelBurst.Spawn(transform.position, new Color(.85f, .3f, 1f), 22);
     }
 
     void UpdateTransition()
     {
         _stateTimer -= Time.deltaTime;
-        // Boss roars with tremors
-        transform.position += (Vector3)(Random.insideUnitCircle * 0.08f);
-
+        _cutscene?.Tick(_introTotalDuration - _stateTimer);
+        if (_cutscene != null && _cutscene.SkipToEnd) _stateTimer = Mathf.Min(_stateTimer, .3f);
         if (_stateTimer <= 0f)
         {
+            _cutscene?.Close();
+            _cutscene = null;
+            _health.IsInvulnerable = false;
+            if (_target != null) _target.GetComponent<HealthSystem>().IsInvulnerable = false;
+            GameAudio.Instance?.BossCombatStarted();
             _state = State.Flying;
             _stateTimer = 1.0f;
         }
@@ -915,6 +1056,8 @@ public class VoidDevourerBoss : MonoBehaviour
     void UpdateAnimation()
     {
         if (_sr == null) return;
+        // Forms two/three have their own complete articulated body, including hits.
+        if (_phase > 1) { _flashTimer = Mathf.Max(0f, _flashTimer - Time.deltaTime); return; }
 
         if (_flashTimer > 0f)
         {
@@ -957,7 +1100,7 @@ public class VoidDevourerBoss : MonoBehaviour
             case State.Defeated:
                 if (_morteFrames != null && _morteFrames.Length > 0)
                 {
-                    int f = Mathf.Clamp(Mathf.FloorToInt(_defeatTimer * 6f), 0, _morteFrames.Length - 1);
+                    int f = Mathf.Clamp(Mathf.FloorToInt(_defeatTimer * 6f), 0, IsDissolving ? _morteFrames.Length - 1 : 1);
                     _sr.sprite = _morteFrames[f];
                 }
                 break;
@@ -966,9 +1109,10 @@ public class VoidDevourerBoss : MonoBehaviour
 
     void OnBossDied(HealthSystem _)
     {
-        if (_state == State.Defeated) return;
+        if (_state == State.Defeated || _phase < 3 || !_health.IsDead) return;
         _state = State.Defeated;
-        StopAllCoroutines();
+        SetAnimationPose(NazorPose.Dying);
+        CancelActiveAttacks();
 
         var playerController = _target != null ? _target.GetComponent<PlayerController>() : null;
         var stageController = FindFirstObjectByType<GroundT1Controller>();

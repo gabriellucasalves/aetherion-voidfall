@@ -1,0 +1,92 @@
+PASS BossIntro gravação original carregada
+PASS BossRetry gravação original carregada
+PASS BossForm2 gravação original carregada
+PASS BossForm3 gravação original carregada
+PASS BossDefeat gravação original carregada
+PASS Fonte inclui todos os caracteres japoneses do boss
+PASS Entrar na arena inicia primeiro encontro
+PASS Entrada toca a gravação longa sem mudar tom
+PASS Primeiro toque revela texto japonês completo sem cortar a voz
+PASS Trilha abaixa enquanto o boss fala
+PASS Pausa preserva posição da voz do boss
+PASS Retomar continua gravação do boss
+PASS Combate aguarda entrada completa
+PASS Trilha retorna ao volume configurado no combate
+PASS Primeira forma tem barra própria de 1000
+PASS Primeira forma exibe nome Nazor e três barras
+PASS Forma 1 renderiza articulação própria sem cartão estático duplicado
+PASS Forma 1 usa a textura original intacta na articulação
+PASS Asas da forma 1 batem independentemente do corpo
+PASS Tentáculos/manto da forma 1 têm ondulação própria
+PASS Centro da forma 1 fica estável enquanto extremidades se movem
+PASS Forma 1 tem poses distintas de preparação e disparo
+PASS Congelamento suspende articulações da forma 1
+PASS Primeira forma prepara a mira antes de disparar
+PASS Primeira forma dispara duas salvas com nova mira
+PASS Investida avisa antes de avançar
+PASS Boss avança fisicamente pela arena com pose de investida
+PASS Após investida há janela de contra-ataque perto do chão
+PASS Forma não troca apenas ao cruzar antigas porcentagens
+PASS Golpe letal avança somente para forma 2
+PASS Forma 2 recupera barra completa maior que anterior
+PASS Transição 2 usa painel com fonte japonesa
+PASS Transição toca gravação da forma 2
+PASS Fala exata da forma 2
+PASS Diálogo bloqueia supremo e ataques
+PASS Invulnerabilidade na transformação impede pular formas
+PASS Forma 2 usa a arte fornecida pelo usuário
+PASS Retrato de diálogo corresponde à nova forma 2
+PASS HUD remove barra vencida: restam 2
+PASS Forma 2 libera combate após voz completa
+PASS Forma 2 tem ataques mais fortes e rápidos
+PASS HUD identifica a forma 2
+PASS Forma 2 renderiza articulação própria sem cartão estático duplicado
+PASS Forma 2 usa a textura original intacta na articulação
+PASS Asas da forma 2 batem independentemente do corpo
+PASS Tentáculos/manto da forma 2 têm ondulação própria
+PASS Centro da forma 2 fica estável enquanto extremidades se movem
+PASS Forma 2 tem poses distintas de preparação e disparo
+PASS Congelamento suspende articulações da forma 2
+PASS Segunda forma avisa antes da onda sônica
+PASS Segunda forma dispara onda sônica em vez de laser
+PASS Onda sônica se desloca pela arena
+PASS Interromper ataque limpa novos perigos da forma 2
+PASS Escudo absorve onda sônica sem perder vida
+PASS Golpe letal avança somente para forma 3
+PASS Forma 3 recupera barra completa maior que anterior
+PASS Transição 3 usa painel com fonte japonesa
+PASS Transição toca gravação da forma 3
+PASS Fala exata da forma 3
+PASS Diálogo bloqueia supremo e ataques
+PASS Invulnerabilidade na transformação impede pular formas
+PASS Forma 3 usa a arte fornecida pelo usuário
+PASS Retrato de diálogo corresponde à nova forma 3
+PASS HUD remove barra vencida: restam 1
+PASS Forma 3 libera combate após voz completa
+PASS Forma 3 tem ataques mais fortes e rápidos
+PASS HUD identifica a forma 3
+PASS Forma 3 renderiza articulação própria sem cartão estático duplicado
+PASS Forma 3 usa a textura original intacta na articulação
+PASS Asas da forma 3 batem independentemente do corpo
+PASS Tentáculos/manto da forma 3 têm ondulação própria
+PASS Centro da forma 3 fica estável enquanto extremidades se movem
+PASS Forma 3 tem poses distintas de preparação e disparo
+PASS Congelamento suspende articulações da forma 3
+PASS Terceira forma marca três posições antes de atacar
+PASS Marcações do eclipse não causam dano antes do disparo
+PASS Após aviso, eclipse dispara projéteis descendentes
+PASS Interromper ataque limpa novos perigos da forma 3
+PASS Somente terceira forma inicia derrota definitiva
+PASS Derrota toca gravação completa correta
+PASS Derrota limpa ataques e tentáculos perigosos
+PASS Derrota apresenta as quatro falas japonesas completas
+PASS Texto final cabe no painel
+PASS Fanfarra toca após derrota completa, sem cortar fala final
+PASS Vitória salva conclusão do jogo e da terceira fase
+PASS Derrota encerra luta e abre painel de vitória
+PASS Sem quarta forma, teleporte ou gancho espacial
+PASS Encerramento exibe vitória em vez de fim da parte 1
+PASS Tela de vitória mantém combate encerrado ao pressionar pausa
+PASS Tentar de novo reinicia primeira forma e fala curta
+PASS Pular entrada encerra voz sem deixá-la no combate
+FAILURES=0

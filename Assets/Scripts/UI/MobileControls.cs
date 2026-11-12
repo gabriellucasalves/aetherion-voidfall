@@ -120,6 +120,7 @@ public class MobileControls : MonoBehaviour
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
         scaler.matchWidthOrHeight = 1f;
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         canvasGo.AddComponent<GraphicRaycaster>();
         canvasGo.AddComponent<SafeAreaFit>();
 
@@ -130,16 +131,18 @@ public class MobileControls : MonoBehaviour
 
     
     /// <summary>Troca o ícone de defesa: escudo (guerreiro) ou campo rúnico (mago).</summary>
-    public static void SetDefenseIcon(bool magicField)
+    public static void SetDefenseIcon(bool magicField) => SetDefenseIcon(magicField ? "mago" : "guerreiro");
+
+    public static void SetDefenseIcon(string heroId)
     {
-        if (_defenseIcon != null)
-            _defenseIcon.sprite = magicField ? FieldSprite() : ShieldSprite();
+        bool mage = heroId == "mago", archer = heroId == "arqueiro";
+        if (_defenseIcon != null) _defenseIcon.sprite = mage ? FieldSprite() : archer ? StarSprite() : ShieldSprite();
         if (_defenseBg != null)
-            _defenseBg.color = magicField
-                ? new Color(0.12f, 0.1f, 0.32f, 0.9f)
-                : new Color(0.08f, 0.14f, 0.28f, 0.88f);
-        if (_defenseBg != null)
-            _defenseBg.gameObject.name = magicField ? "Campo" : "Escudo";
+        {
+            _defenseBg.color = mage ? new Color(.12f, .10f, .32f, .9f)
+                : archer ? new Color(.04f, .22f, .26f, .9f) : new Color(.25f, .10f, .07f, .9f);
+            _defenseBg.gameObject.name = mage ? "Campo" : archer ? "Égide" : "Escudo";
+        }
     }
 
     void Update()
@@ -155,6 +158,7 @@ public class MobileControls : MonoBehaviour
     {
         Move = 0f;
         _stickJump = false;
+        _jumpPressed = false;
         AttackHeld = false;
         BlockHeld = false;
         _specialPressed = false;
@@ -183,11 +187,11 @@ public class MobileControls : MonoBehaviour
     {
         BuildLeftZone(parent);
 
-        var sword = IconButton(parent, "Espada", SwordSprite(), new Vector2(1f, 0f), new Vector2(-210f, 430f), 250f,
+        var sword = IconButton(parent, "Espada", SwordSprite(), new Vector2(1f, 0f), new Vector2(-200f, 455f), 270f,
             new Color(0.18f, 0.1f, 0.22f, 0.88f));
         Hold(sword, () => AttackHeld = true, () => AttackHeld = false);
 
-        var shield = IconButton(parent, "Escudo", ShieldSprite(), new Vector2(1f, 0f), new Vector2(-210f, 160f), 230f,
+        var shield = IconButton(parent, "Escudo", ShieldSprite(), new Vector2(1f, 0f), new Vector2(-200f, 160f), 250f,
             new Color(0.08f, 0.14f, 0.28f, 0.88f));
         _defenseBg = shield;
         _defenseIcon = shield.transform.Find("Icone") != null
@@ -196,19 +200,19 @@ public class MobileControls : MonoBehaviour
         Hold(shield, () => BlockHeld = true, () => BlockHeld = false);
 
         // Especial (Mago/Guerreiro/Arqueiro). Pressão única — ConsumeSpecialDown no combate.
-        var special = IconButton(parent, "Especial", OrbSprite(), new Vector2(1f, 0f), new Vector2(-460f, 300f), 210f,
+        var special = IconButton(parent, "Especial", OrbSprite(), new Vector2(1f, 0f), new Vector2(-490f, 365f), 230f,
             new Color(0.1f, 0.18f, 0.42f, 0.9f));
         Hold(special, () => _specialPressed = true, () => { });
 
         // Dash do Arqueiro (Shift). Guerreiro/Mago podem ignorar o botão.
-        var dash = IconButton(parent, "Dash", DashSprite(), new Vector2(1f, 0f), new Vector2(-460f, 90f), 190f,
+        var dash = IconButton(parent, "Dash", DashSprite(), new Vector2(1f, 0f), new Vector2(-490f, 125f), 210f,
             new Color(0.28f, 0.18f, 0.06f, 0.9f));
         Hold(dash, () => _dashPressed = true, () => { });
 
         // Supremo só aparece com a Ressonância cheia (SetSupremeVisible, chamado pelo HUD).
-        var supreme = IconButton(parent, "Supremo", StarSprite(), new Vector2(1f, 0f), new Vector2(-700f, 430f), 200f,
+        var supreme = IconButton(parent, "Supremo", StarSprite(), new Vector2(1f, 0f), new Vector2(-750f, 455f), 220f,
             new Color(0.42f, 0.26f, 0.05f, 0.94f));
-        var caption = UiKit.Label(supreme.transform, "ESPECIAL", 16, new Vector2(0f, -78f), new Color(1f, 0.84f, 0.25f), new Vector2(180f, 28f));
+        var caption = UiKit.Label(supreme.transform, "SUPREMO", 16, new Vector2(0f, -78f), new Color(1f, 0.84f, 0.25f), new Vector2(180f, 28f));
         caption.raycastTarget = false;
         Hold(supreme, () => _supremePressed = true, () => { });
         _supremeRoot = supreme.gameObject;
@@ -518,8 +522,15 @@ public class MobileControls : MonoBehaviour
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (_pointer != -1) return;
             _pointer = eventData.pointerId;
             _down?.Invoke();
+        }
+
+        void OnDisable()
+        {
+            _pointer = -1;
+            _up?.Invoke();
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -546,6 +557,7 @@ public class MobileControls : MonoBehaviour
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (_pointer != -1) return;
             _pointer = eventData.pointerId;
             _origin = eventData.position;
             if (_visual != null)

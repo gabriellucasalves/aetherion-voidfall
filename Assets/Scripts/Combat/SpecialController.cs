@@ -25,7 +25,7 @@ public class SpecialController : MonoBehaviour
     public bool Ready =>
         !IsCinematic
         && CooldownLeft <= 0f
-        && (_hero == null || _hero.Id != "guerreiro" || (_combat != null && !_combat.IsBlocking))
+        && (_combat == null || (!_combat.IsGuardHeld && !_combat.IsLocked))
         && _meter != null
         && _meter.IsFull
         && (_health == null || !_health.IsDead);
@@ -108,6 +108,7 @@ public class SpecialController : MonoBehaviour
             if (_health != null)
                 _health.IsInvulnerable = true;
 
+            GameAudio.Instance?.BeginSupreme(_hero != null ? _hero.Id : "guerreiro");
             SupremeFx.PlayFlash();
 
             float hitStop = _data != null ? _data.HitStop : 0.08f;
@@ -132,6 +133,7 @@ public class SpecialController : MonoBehaviour
             }
 
             CinematicTime.End();
+            GameAudio.Instance?.ReleaseSupreme(_hero != null ? _hero.Id : "guerreiro");
             SupremeFx.ClearAtmosphere();
 
             // Mago age durante o tempo parado. Guerreiro fica enraizado durante a Lâmina Rubra.
@@ -166,6 +168,7 @@ public class SpecialController : MonoBehaviour
         if (_finished)
             return;
         _finished = true;
+        GameAudio.Instance?.EndSupreme(!_completed);
 
         CinematicTime.End();
         CutInPanel.Cancel();
@@ -198,6 +201,6 @@ public class SpecialController : MonoBehaviour
     {
         if (MobileControls.IsVisible && MobileControls.ConsumeSupremeDown())
             return true;
-        return Input.GetKeyDown(KeyCode.E);
+        return Input.GetKeyDown(KeyCode.E) || GamepadControls.Down(GamepadControls.Supreme);
     }
 }

@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0710">
+    <link rel="manifest" href="manifest.webmanifest">
     <title>AETHERION: APOCALIPSE</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
@@ -103,11 +108,70 @@
       // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
       // expected to change.
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+          || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent))) {
         // Mobile device style: fill the whole browser client area with the game canvas:
 
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
+
+        // Fill the visible mobile viewport. Unity adapts its world camera to
+        // this aspect ratio instead of squeezing the game into a 16:9 box.
+        var container = document.querySelector("#unity-container");
+        var hint = document.createElement("div");
+        hint.id = "mobile-hint";
+        hint.textContent = "Para jogar melhor, gire o celular na horizontal.";
+        document.body.appendChild(hint);
+        function fitMobileGame() {
+          var view = window.visualViewport;
+          var width = view ? view.width : window.innerWidth;
+          var height = view ? view.height : window.innerHeight;
+          container.style.left = (view ? view.offsetLeft : 0) + "px";
+          container.style.top = (view ? view.offsetTop : 0) + "px";
+          container.style.width = width + "px";
+          container.style.height = height + "px";
+          var css = getComputedStyle(container);
+          var usableWidth = Math.max(1, width - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight));
+          var usableHeight = Math.max(1, height - parseFloat(css.paddingTop) - parseFloat(css.paddingBottom));
+          canvas.style.width = usableWidth + "px";
+          canvas.style.height = usableHeight + "px";
+          hint.hidden = width >= height;
+        }
+        window.addEventListener("resize", fitMobileGame);
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", fitMobileGame);
+          window.visualViewport.addEventListener("scroll", fitMobileGame);
+        }
+        var fullscreen = document.createElement("button");
+        fullscreen.id = "mobile-fullscreen";
+        fullscreen.type = "button";
+        fullscreen.textContent = "⛶";
+        fullscreen.setAttribute("aria-label", "Tela cheia");
+        fullscreen.title = "Tela cheia";
+        var root = document.documentElement;
+        var requestFullscreen = root.requestFullscreen || root.webkitRequestFullscreen;
+        // Safari versions without element fullscreen can launch from the Home
+        // Screen in standalone mode using the web app metadata above.
+        fullscreen.hidden = !requestFullscreen;
+        fullscreen.onclick = async function () {
+          try {
+            await requestFullscreen.call(root);
+            if (screen.orientation && screen.orientation.lock) {
+              try { await screen.orientation.lock("landscape"); } catch (ignored) {}
+            }
+          } catch (ignored) {
+            // Keep playing normally when the browser declines fullscreen.
+          }
+          fitMobileGame();
+        };
+        document.body.appendChild(fullscreen);
+        function fullscreenChanged() {
+          fullscreen.hidden = !requestFullscreen || !!(document.fullscreenElement || document.webkitFullscreenElement);
+          fitMobileGame();
+        }
+        document.addEventListener("fullscreenchange", fullscreenChanged);
+        document.addEventListener("webkitfullscreenchange", fullscreenChanged);
+        fitMobileGame();
 
         // To lower canvas resolution on mobile devices to gain some
         // performance, uncomment the following line:

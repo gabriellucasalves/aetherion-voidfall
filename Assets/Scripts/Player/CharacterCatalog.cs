@@ -60,12 +60,12 @@ public static class CharacterCatalog
             Make("mago", "Mago", "Pulso rúnico / controle de zona",
                 "Manto e cajado. Dispara Pulso Rúnico largo com impacto forte, cria Zona Rúnica no chão e canaliza Campo de Magia.",
                 115, 20, 100, 20, 50, 60,
-                "Pulso Rúnico & Zona Rúnica", "Básico (J/clique): Pulso Rúnico largo de alto impacto. Especial (L/Q): Zona Rúnica no chão (dano contínuo + lentidão, CD 6.5s). Campo (S/K/direito): hold reduz 55% do dano.",
+                "Pulso Rúnico & Zona Rúnica", "Básico (J/clique): Pulso Rúnico largo de alto impacto. Especial (L/Q): Zona Rúnica no chão (dano contínuo + lentidão, CD 6.5s). Campo (S/K/direito): hold absorve o dano na barra de escudo antes da vida.",
                 new Color(0.45f, 0.55f, 0.95f)),
             Make("arqueiro", "Arqueiro", "Artilheiro arcano / alto dano",
                 "Capuz arcano e arco de cristal. Menos vida, mas carrega disparos de altíssimo dano à distância e esquiva rápido.",
                 70, 50, 65, 45, 100, 80,
-                "Flecha Arcana Carregada", "Clique/J: segura para carregar (N3 causa o maior dano básico) e solta para atirar 1 flecha. L/Q: flecha perfurante (até 3 alvos, para no terreno, CD 6.5s). Shift: dash.",
+                "Flecha Arcana Carregada", "Clique/J: segura para carregar (N3 causa o maior dano básico) e solta para atirar 1 flecha. L/Q: flecha perfurante (até 3 alvos, para no terreno, CD 6.5s). S/K/direito: égide de cristal. Shift: dash.",
                 new Color(0.93f, 0.82f, 0.42f))
         };
     }

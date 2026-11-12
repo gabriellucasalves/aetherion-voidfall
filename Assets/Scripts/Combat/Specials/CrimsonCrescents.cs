@@ -44,6 +44,7 @@ public static class CrimsonCrescents
                 Pose(0);
                 yield return new WaitForSeconds(0.05f);
                 Pose(i % 2 == 0 ? 1 : 2);
+                GameAudio.Emit(GameAudio.Cue.WarriorCrescent, owner.position, .75f);
                 FireCrescent.Spawn(owner, Feet(owner) + new Vector3(dir * 0.9f, WaveHeights[i], 0f), dir,
                     strength * WaveDamageScale, false);
                 CameraFollow.Shake(0.06f, 0.05f);
@@ -54,12 +55,13 @@ public static class CrimsonCrescents
             yield return new WaitForSeconds(0.30f);
 
             Pose(4);
+            GameAudio.Emit(GameAudio.Cue.WarriorFinal, owner.position);
             FireCrescent.Spawn(owner, Feet(owner) + new Vector3(dir * 1.4f, 1.6f, 0f), dir,
                 strength * FinalDamageScale, true);
             RajadaFx.Flash(Feet(owner) + new Vector3(dir * 1.3f, 1.1f, 0f));
             SupremeFx.PlayFlash();
             CameraFollow.Shake(0.3f, 0.2f);
-            SupremeFx.Popup(Feet(owner) + Vector3.up * 2.6f, "LUA RUBRA!", Gold);
+            SupremeFx.Popup(Feet(owner) + Vector3.up * 2.6f, SpecialJapanese.WarriorImpact, Gold);
             yield return new WaitForSeconds(0.25f);
 
             Pose(5);

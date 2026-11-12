@@ -106,6 +106,8 @@ public class GroundT1Controller : MonoBehaviour
         _player = SpawnHero(hero);
         _combat = _player != null ? _player.GetComponent<PlayerCombat>() : null;
         BindCamera();
+        var audio = gameObject.AddComponent<GameAudio>();
+        audio.PlayStage(_stage.Id == "t3" ? 3 : _stage.Id == "t2" ? 2 : 1);
         // Fase diurna: sem chuva nesta fase
         BuildHud(hero);
         _spawner = gameObject.AddComponent<SimpleEnemySpawner>();
@@ -129,7 +131,7 @@ public class GroundT1Controller : MonoBehaviour
         if (_dead || _demoDone)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) || GamepadControls.Down(GamepadControls.Pause))
             TogglePause();
 
         // Barra de carregamento do especial (todos os herois) tica com o tempo.
@@ -191,6 +193,7 @@ public class GroundT1Controller : MonoBehaviour
             return;
 
         _demoDone = true;
+        GameAudio.Instance?.Finish(true);
         bool isT2 = _stage != null && _stage.Id == "t2";
         WorldMapProgress.Complete(isT2 ? 2 : 1);
         StageData.ActivePhase = 1;
@@ -371,6 +374,7 @@ public class GroundT1Controller : MonoBehaviour
             ward.Changed += _ => RefreshHud();
 
         HeroAppearance.Build(go.transform, hero);
+        go.AddComponent<HeroGuardVisual>().Setup(hero);
         if (T1AtmosScenery.Built || T2PalaceScenery.Built || T3RuinsScenery.Built)
             foreach (var renderer in go.GetComponentsInChildren<SpriteRenderer>(true))
                 if (renderer.sortingOrder == 12 || renderer.sortingOrder == 11) renderer.sortingOrder -= 2;
@@ -414,7 +418,7 @@ public class GroundT1Controller : MonoBehaviour
         RefreshHud();
         StageHud.Footer(canvas.transform, HintFor(hero));
         MobileControls.Attach(transform);
-        MobileControls.SetDefenseIcon(_showWard);
+        MobileControls.SetDefenseIcon(hero != null ? hero.Id : "guerreiro");
         RefreshHud();
 
         _waveBanner = UiKit.Label(canvas.transform, "", 32, new Vector2(0f, 230f), MenuTheme.CelestialGold, new Vector2(1000f, 48f));
@@ -475,7 +479,7 @@ public class GroundT1Controller : MonoBehaviour
             if (_shieldText != null)
             {
                 if (ward != null && ward.IsActive)
-                    _shieldText.text = "ATIVO";
+                    _shieldText.text = Mathf.CeilToInt(ward.Charge) + " / " + Mathf.CeilToInt(ward.Max);
                 else
                     _shieldText.text = ward != null
                         ? Mathf.CeilToInt(ward.Charge) + " / " + Mathf.CeilToInt(ward.Max)
@@ -531,7 +535,7 @@ public class GroundT1Controller : MonoBehaviour
         UiKit.SetBar(_resonanceFill, resonance, BarWidth);
         _resonanceFill.color = Color.white;
 
-        bool cinematic = SpecialController.IsCinematic || (_boss != null && _boss.Cutscene != null);
+        bool cinematic = BossDefeatCutscene.IsPlaying || SpecialController.IsCinematic || (_boss != null && _boss.Cutscene != null);
         bool supremeReady = _special != null && _special.Ready;
 
         if (cinematic)
@@ -614,6 +618,7 @@ public class GroundT1Controller : MonoBehaviour
             return;
 
         _dead = true;
+        GameAudio.Instance?.Finish(false);
         SpecialController.AbortActive();
         CinematicTime.End();
         Time.timeScale = 0f;
@@ -686,6 +691,7 @@ public class GroundT1Controller : MonoBehaviour
 
             var health = _player.GetComponent<HealthSystem>();
             if (health != null) health.Configure(_player.Hero != null ? _player.Hero.MaxHealth : 100);
+            _player.GetComponent<ShieldSystem>()?.Refill();
 
             var combat = _player.GetComponent<PlayerCombat>();
             if (combat != null) combat.SetLocked(false);
@@ -694,6 +700,9 @@ public class GroundT1Controller : MonoBehaviour
             if (meter != null) meter.ForceSet(_savedResonance);
         }
 
+        foreach (var laser in FindObjectsByType<BossLaser>(FindObjectsSortMode.None)) Destroy(laser.gameObject);
+        foreach (var enemy in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
+            if (enemy.GetComponent<VoidDevourerBoss>() == null) Destroy(enemy.gameObject);
         if (_boss != null)
         {
             if (_boss.HealthBar != null) Destroy(_boss.HealthBar.gameObject);
@@ -717,7 +726,7 @@ public class GroundT1Controller : MonoBehaviour
 
     public void RequestPause()
     {
-        if (_dead || _demoDone || CinematicTime.IsActive || SpecialController.IsCinematic)
+        if (_dead || _demoDone || (_inBossArena && _boss == null) || BossDefeatCutscene.IsPlaying || BossIntroCutscene.Current != null || CinematicTime.IsActive || SpecialController.IsCinematic)
             return;
         if (!_paused)
             TogglePause();
@@ -725,10 +734,11 @@ public class GroundT1Controller : MonoBehaviour
 
     void TogglePause()
     {
-        if (_dead || _demoDone || CinematicTime.IsActive || SpecialController.IsCinematic)
+        if (_dead || _demoDone || (_inBossArena && _boss == null) || BossDefeatCutscene.IsPlaying || BossIntroCutscene.Current != null || CinematicTime.IsActive || SpecialController.IsCinematic)
             return;
 
         _paused = !_paused;
+        GameAudio.Instance?.SetPaused(_paused);
         Time.timeScale = _paused ? 0f : 1f;
         if (_player != null)
         {
@@ -770,13 +780,13 @@ public class GroundT1Controller : MonoBehaviour
             if (hero != null && hero.Id == "guerreiro")
                 return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: corte / escudo / Feixe Infernal   |   ESPECIAL quando a barra encher";
             if (hero != null && hero.Id == "arqueiro")
-                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: tiro carregado / flecha perfurante / dash   |   SUPREMO quando a barra encher";
+                return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: tiro carregado / égide de cristal / flecha perfurante / dash   |   SUPREMO quando a barra encher";
             return "Esquerda: arrasta para andar  ·  para cima pula   |   Direita: ataque / escudo";
         }
         if (hero != null && hero.Id == "mago")
             return "A/D andar   ·   ESPAÇO pular   ·   clique / J Pulso Rúnico   ·   S/K/direito campo   ·   L/Q Zona Rúnica   ·   E supremo   ·   ESC pausa";
         if (hero != null && hero.Id == "arqueiro")
-            return "A/D andar   ·   ESPAÇO pular   ·   segurar J / clique tiro carregado   ·   SHIFT dash   ·   L/Q Flecha Perfurante   ·   E supremo   ·   ESC pausa";
+            return "A/D andar   ·   ESPAÇO pular   ·   segurar J / clique tiro carregado   ·   S/K/direito égide   ·   SHIFT dash   ·   L/Q Flecha Perfurante   ·   E supremo   ·   ESC pausa";
         return "A/D andar   ·   ESPAÇO pular   ·   clique / J corta   ·   L/Q/E Feixe Infernal (barra cheia)   ·   S / K / direito bloqueia   ·   ESC pausa";
     }
 

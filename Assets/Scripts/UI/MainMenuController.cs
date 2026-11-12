@@ -53,6 +53,7 @@ public class MainMenuController : MonoBehaviour
     void Start()
     {
         GameManager.EnsureExists();
+        gameObject.AddComponent<GameAudio>().PlayMenu();
         if (SceneTransitionManager.Instance != null)
             SceneTransitionManager.Instance.ClearFade();
 
@@ -130,7 +131,7 @@ public class MainMenuController : MonoBehaviour
     // painel CONFIGURAÇÕES (mock menu_config_mock.png) — reaproveitável pela pausa se quiser
     public static GameObject BuildSettings(Transform canvas, UnityEngine.Events.UnityAction onClose)
     {
-        var go = MenuKit.Modal(canvas, "PainelConfiguracoes", "CONFIGURAÇÕES", 300, 226, out var box);
+        var go = MenuKit.Modal(canvas, "PainelConfiguracoes", "CONFIGURAÇÕES", 300, 252, out var box);
         MenuKit.Label(box, "CONTROLES", MenuKit.TitleFont, 40, MenuKit.Gold, 16, 30, 120, 12);
         MenuKit.Label(box, "TECLADO", MenuKit.BodyFont, 28, MenuKit.Dim, 180, 30, 104, 12, TextAnchor.MiddleRight);
         var rows = new (string, string[])[]
@@ -161,8 +162,10 @@ public class MainMenuController : MonoBehaviour
             }
         }
         MenuKit.Label(box, "No celular: botões na tela (ataque, escudo, especial, SUPREMO).", MenuKit.BodyFont, 30, MenuKit.Dim, 12, 183, 276, 10, TextAnchor.MiddleCenter);
-        MenuKit.Label(box, "Volume e remapeamento chegam nas próximas etapas.", MenuKit.BodyFont, 30, MenuKit.Dim, 12, 193, 276, 10, TextAnchor.MiddleCenter);
-        var close = MenuKit.Button(box, "FECHAR", 108, 202, 84, 16, onClose);
+        var music = AudioVolumeControls.Add(box, "MÚSICA", 196, 300, true);
+        var effects = AudioVolumeControls.Add(box, "EFEITOS", 215, 300, false);
+        var close = MenuKit.Button(box, "FECHAR", 108, 234, 84, 16, onClose);
+        AudioVolumeControls.Link(close, music, effects, close);
         go.SetActive(false);
         go.AddComponent<MenuModalFocus>().First = close;
         return go;

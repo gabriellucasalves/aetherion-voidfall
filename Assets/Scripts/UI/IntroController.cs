@@ -58,6 +58,7 @@ public class IntroController : MonoBehaviour
     void Start()
     {
         GameManager.EnsureExists();
+        gameObject.AddComponent<GameAudio>();
         if (SceneTransitionManager.Instance != null)
             SceneTransitionManager.Instance.ClearFade();
 
@@ -111,6 +112,7 @@ public class IntroController : MonoBehaviour
     {
         _panelPrev.sprite = _panel.sprite;
         _page = page;
+        GameAudio.Instance?.PlayPrologue(page);
         _panel.sprite = _panelSprites[page];
         _fade = instant ? 1f : 0f;
         _typed = 0f;

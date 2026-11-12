@@ -54,6 +54,7 @@ public static class VoidTimeStop
         if (owner == null)
             yield break;
 
+        GameAudio.Emit(GameAudio.Cue.MageTimeBreak, owner.position);
         ProjectilesHeld = true;
         Frozen.Clear();
 
@@ -107,9 +108,10 @@ public static class VoidTimeStop
                 SupremeFx.Link(a.transform.position, b.transform.position, gold);
         }
 
-        SupremeFx.Popup(owner.position + Vector3.up * 1.8f, "SUPERNOVA… ARCANA!", nova);
+        SupremeFx.Popup(owner.position + Vector3.up * 1.8f, SpecialJapanese.MageImpact, nova);
         yield return new WaitForSeconds(0.12f);
 
+        GameAudio.Emit(GameAudio.Cue.MageNova, owner.position, 1f);
         // As estrelas estouram ainda no gelo: o dano fica guardado e entra junto quando o tempo solta.
         float damage = (hero != null ? hero.Power : 100f) * 1.4f;
         for (int i = 0; i < stars; i++)

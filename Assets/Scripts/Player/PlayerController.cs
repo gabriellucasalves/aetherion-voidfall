@@ -128,9 +128,7 @@ public class PlayerController : MonoBehaviour
         var combat = GetComponent<PlayerCombat>();
         float speed = MoveSpeed;
         if (combat != null && combat.IsBlocking)
-            speed *= 0.42f;
-        else if (combat != null && combat.IsWarding)
-            speed *= 0.72f; // campo canalizado — mais leve que o escudo
+            speed *= combat.IsWarrior ? .42f : combat.IsMage ? .72f : .60f;
         else if (combat != null && combat.IsCharging)
             speed *= PlayerCombat.ChargeMoveScale; // 40% da velocidade durante a puxada/carga do Arqueiro
 
@@ -213,9 +211,9 @@ public class PlayerController : MonoBehaviour
 
     static float ReadHorizontal()
     {
-        float x = 0f;
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) x -= 1f;
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) x += 1f;
+        float x = Input.GetAxisRaw("Horizontal");
+        if (Mathf.Abs(x) < 0.19f)
+            x = GamepadControls.DpadHorizontal;
         if (Mathf.Abs(x) < 0.01f)
             x = MobileControls.Move;
         return x;
@@ -223,7 +221,8 @@ public class PlayerController : MonoBehaviour
 
     static bool WantsJumpDown()
     {
-        return Input.GetKeyDown(KeyCode.Space)
+        return GamepadControls.Down(GamepadControls.Jump)
+            || Input.GetKeyDown(KeyCode.Space)
             || Input.GetKeyDown(KeyCode.W)
             || Input.GetKeyDown(KeyCode.UpArrow)
             || MobileControls.ConsumeJumpDown();
@@ -231,7 +230,8 @@ public class PlayerController : MonoBehaviour
 
     static bool WantsJumpHeld()
     {
-        return Input.GetKey(KeyCode.Space)
+        return GamepadControls.Held(GamepadControls.Jump)
+            || Input.GetKey(KeyCode.Space)
             || Input.GetKey(KeyCode.W)
             || Input.GetKey(KeyCode.UpArrow)
             || MobileControls.JumpHeld;

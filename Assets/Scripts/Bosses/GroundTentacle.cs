@@ -63,7 +63,7 @@ public class GroundTentacle : MonoBehaviour
             _sr.sprite = _frames[0];
 
         _health = gameObject.AddComponent<HealthSystem>();
-        _health.Configure(BossData.TentacleMaxHealth);
+        _health.Configure(BossData.TentacleMaxHealth * (_boss != null ? 1f + .2f * (_boss.Phase - 1) : 1f));
         _health.Died += OnDied;
 
         // Hurtbox for hero attacks
@@ -84,7 +84,7 @@ public class GroundTentacle : MonoBehaviour
         var dummyData = ScriptableObject.CreateInstance<EnemyData>();
         dummyData.Id = "tentaculo_vazio";
         dummyData.DisplayName = "Tentáculo do Vazio";
-        dummyData.MaxHealth = 45;
+        dummyData.MaxHealth = Mathf.RoundToInt(BossData.TentacleMaxHealth * (_boss != null ? 1f + .2f * (_boss.Phase - 1) : 1f));
         dummyData.Size = new Vector2(0.85f, 2.2f);
         dummyData.Color = new Color(0.65f, 0.25f, 0.85f);
         _enemyController.Setup(dummyData, null, null);
@@ -137,6 +137,7 @@ public class GroundTentacle : MonoBehaviour
         if (_stateTimer <= 0f)
         {
             _sr.enabled = true;
+            GameAudio.Emit(GameAudio.Cue.Tentacle, transform.position, 0.85f);
             _state = State.Rising;
             _stateTimer = 0.25f; // 3 frames @ 12 fps
             _hurtbox.enabled = true;
@@ -202,7 +203,7 @@ public class GroundTentacle : MonoBehaviour
             if (player != null)
             {
                 _hasHitPlayer = true;
-                EnemyController.DamagePlayer(player.transform, transform.position, 18f);
+                EnemyController.DamagePlayer(player.transform, transform.position, 18f * (_boss != null ? _boss.AttackDamageMultiplier : 1f));
                 var rb = player.GetComponent<Rigidbody2D>();
                 if (rb != null)
                 {

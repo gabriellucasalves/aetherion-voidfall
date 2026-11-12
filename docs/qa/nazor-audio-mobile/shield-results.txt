@@ -1,0 +1,57 @@
+PASS guerreiro possui escudo próprio cheio
+PASS guerreiro possui barra de defesa ativa no HUD
+PASS guerreiro possui botão de defesa no mobile
+PASS guerreiro ergue a defesa por toque
+PASS guerreiro exibe defesa distinta
+PASS guerreiro dano direto vai ao escudo antes da vida
+PASS guerreiro armadura e escudo são aplicados uma única vez
+PASS guerreiro bloqueia golpes frontais, traseiros e de cima sem perder vida
+PASS guerreiro invulnerabilidade não gasta escudo
+PASS guerreiro dano zero/negativo não altera barras
+PASS guerreiro defesa impede ataque e cancela carga
+PASS guerreiro não drena nem regenera escudo enquanto segura
+PASS guerreiro somente excedente atinge a vida ao quebrar o escudo
+PASS guerreiro escudo quebrado exige soltar para recuperar
+PASS guerreiro regenera após soltar e aguardar
+PASS guerreiro sem defender o dano vai à vida
+PASS guerreiro pausa/cinemática interrompe defesa
+PASS guerreiro queda no abismo continua fatal mesmo com escudo
+PASS mago possui escudo próprio cheio
+PASS mago possui barra de defesa ativa no HUD
+PASS mago possui botão de defesa no mobile
+PASS mago ergue a defesa por toque
+PASS Campo do mago usa a mesma barra de absorção
+PASS mago dano direto vai ao escudo antes da vida
+PASS mago armadura e escudo são aplicados uma única vez
+PASS mago bloqueia golpes frontais, traseiros e de cima sem perder vida
+PASS mago invulnerabilidade não gasta escudo
+PASS mago dano zero/negativo não altera barras
+PASS mago defesa impede ataque e cancela carga
+PASS mago não drena nem regenera escudo enquanto segura
+PASS mago somente excedente atinge a vida ao quebrar o escudo
+PASS mago escudo quebrado exige soltar para recuperar
+PASS mago regenera após soltar e aguardar
+PASS mago sem defender o dano vai à vida
+PASS mago pausa/cinemática interrompe defesa
+PASS mago queda no abismo continua fatal mesmo com escudo
+PASS arqueiro possui escudo próprio cheio
+PASS arqueiro possui barra de defesa ativa no HUD
+PASS arqueiro possui botão de defesa no mobile
+PASS arqueiro ergue a defesa por toque
+PASS arqueiro exibe defesa distinta
+PASS arqueiro dano direto vai ao escudo antes da vida
+PASS arqueiro armadura e escudo são aplicados uma única vez
+PASS arqueiro bloqueia golpes frontais, traseiros e de cima sem perder vida
+PASS arqueiro invulnerabilidade não gasta escudo
+PASS arqueiro dano zero/negativo não altera barras
+PASS arqueiro defesa impede ataque e cancela carga
+PASS arqueiro não drena nem regenera escudo enquanto segura
+PASS arqueiro somente excedente atinge a vida ao quebrar o escudo
+PASS arqueiro escudo quebrado exige soltar para recuperar
+PASS arqueiro regenera após soltar e aguardar
+PASS arqueiro sem defender o dano vai à vida
+PASS arqueiro pausa/cinemática interrompe defesa
+PASS arqueiro queda no abismo continua fatal mesmo com escudo
+PASS Três ícones mobile distintos para as defesas
+PASS Três desenhos de defesa distintos
+FAILURES=0

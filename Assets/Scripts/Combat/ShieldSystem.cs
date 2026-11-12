@@ -10,6 +10,7 @@ public class ShieldSystem : MonoBehaviour
     public event Action<ShieldSystem> Changed;
 
     float _regenDelay;
+    PlayerCombat _combat;
 
     public void Configure(float max)
     {
@@ -42,8 +43,10 @@ public class ShieldSystem : MonoBehaviour
 
     void Update()
     {
-        if (Current >= Max)
-            return;
+        if (Current >= Max) return;
+        if (_combat == null) _combat = GetComponent<PlayerCombat>();
+        // A held defense cannot regenerate between hits or resurrect while held.
+        if (_combat != null && _combat.IsGuardHeld) return;
 
         if (_regenDelay > 0f)
         {

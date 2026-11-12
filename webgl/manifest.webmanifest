@@ -1,0 +1,11 @@
+{
+  "name": "AETHERION: APOCALIPSE",
+  "short_name": "Aetherion",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0a0710",
+  "theme_color": "#0a0710"
+}

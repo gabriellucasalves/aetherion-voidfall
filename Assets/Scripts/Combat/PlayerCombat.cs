@@ -44,8 +44,9 @@ public class PlayerCombat : MonoBehaviour
     public const float ArcherReleaseCooldown = 0.30f;
     public const float ArcherRecoilDuration = 0.22f;
 
-    public bool IsBlocking => CanBlock && _blocking && !_locked;
-    public bool IsWarding => IsMage && _ward != null && _ward.IsActive && !_locked;
+    public bool IsGuardHeld => CanBlock && _blocking && !_locked && (_health == null || !_health.IsDead);
+    public bool IsBlocking => IsGuardHeld && _shield != null && !_shield.IsBroken;
+    public bool IsWarding => IsMage && IsBlocking;
     public bool IsCharging => IsArcher && _isCharging && !_locked;
     public float ChargeTime => _isCharging ? _chargeTime : 0f;
     public int ChargeSegmentCount => !_isCharging ? 0 : (_chargeTime >= ArcherChargeMaxThreshold ? 3 : (_chargeTime >= ArcherChargeMidThreshold ? 2 : 1));
@@ -62,7 +63,7 @@ public class PlayerCombat : MonoBehaviour
     public bool IsWarrior => _hero != null && _hero.Id == "guerreiro";
     public bool IsMage => _hero != null && _hero.Id == "mago";
     public bool IsArcher => _hero != null && _hero.Id == "arqueiro";
-    public bool CanBlock => IsWarrior;
+    public bool CanBlock => _hero != null;
     public AbilityData Ability => _ability;
 
     public float AttackRange
@@ -88,16 +89,11 @@ public class PlayerCombat : MonoBehaviour
         _health = GetComponent<HealthSystem>();
         HookDamageCancel();
 
-        if (IsWarrior)
-        {
-            _shield = GetComponent<ShieldSystem>();
-            if (_shield == null)
-                _shield = gameObject.AddComponent<ShieldSystem>();
-            _shield.Configure(20f + hero.Defense);
-            _shieldVisual = transform.Find("Escudo");
-            if (_shieldVisual != null)
-                _shieldRest = _shieldVisual.localPosition;
-        }
+        _shield = GetComponent<ShieldSystem>();
+        if (_shield == null) _shield = gameObject.AddComponent<ShieldSystem>();
+        _shield.Configure(IsWarrior ? 20f + hero.Defense : IsMage ? 100f : 75f);
+        _shieldVisual = transform.Find("Escudo");
+        if (_shieldVisual != null) _shieldRest = _shieldVisual.localPosition;
 
         if (IsMage)
         {
@@ -116,6 +112,8 @@ public class PlayerCombat : MonoBehaviour
         _damagedHooked = true;
     }
 
+    void OnDisable() { CancelArcherCharge(); }
+
     void OnDestroy()
     {
         if (_damagedHooked && _health != null)
@@ -131,6 +129,7 @@ public class PlayerCombat : MonoBehaviour
 
     public void CancelArcherCharge()
     {
+        if (_isCharging) GameAudio.StopBowDraw();
         _isCharging = false;
         _chargeTime = 0f;
     }
@@ -154,31 +153,27 @@ public class PlayerCombat : MonoBehaviour
             return false;
 
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
-        float side = attackerPosition.x - transform.position.x;
-        if (Mathf.Abs(side) > 0.05f && Mathf.Sign(side) != Mathf.Sign(facing.x))
-            return false;
-
         leftover = _shield.Absorb(rawDamage);
         bool blocked = leftover < rawDamage;
         if (blocked)
         {
+            GameAudio.Emit(IsMage ? GameAudio.Cue.MageGuard : IsArcher ? GameAudio.Cue.ArcherGuard : GameAudio.Cue.Block, transform.position);
             Vector3 impact = transform.position + new Vector3(facing.x * 0.7f, 0.9f, 0f);
             PixelBurst.Spawn(impact, new Color(0.45f, 0.72f, 1f), 5);
-            if (leftover <= 0.01f)
+            if (IsWarrior && leftover <= 0.01f)
                 GetComponent<ResonanceMeter>()?.Add(ResonanceMeter.PerPerfectBlock);
         }
         return blocked;
     }
 
-    /// <summary>Campo de Magia do Mago — mitigação omnidirecional (não é escudo físico).</summary>
+    /// <summary>Compatibility entry point; the ward now absorbs shield-first, without health leakage.</summary>
     public bool TryWard(float rawDamage, out float leftover)
     {
         leftover = rawDamage;
         if (!IsWarding || _ward == null || rawDamage <= 0f)
             return false;
 
-        leftover = _ward.Mitigate(rawDamage);
-        return leftover < rawDamage;
+        return TryBlock(transform.position, rawDamage, out leftover);
     }
 
     void Update()
@@ -211,17 +206,25 @@ public class PlayerCombat : MonoBehaviour
         if (_attackLeft > 0f)
             _attackLeft -= Time.deltaTime;
 
+        _blocking = WantsBlock();
+        if (_ward != null) _ward.SetHolding(IsWarding);
+        PoseShield();
+        if (IsGuardHeld)
+        {
+            if (MobileControls.IsVisible)
+            {
+                MobileControls.ConsumeSpecialDown();
+                MobileControls.ConsumeDashPressed();
+                MobileControls.ConsumeSupremeDown();
+            }
+            CancelArcherCharge();
+            _attackLeft = 0f;
+            _specialAnimLeft = 0f;
+            return;
+        }
+
         if (IsWarrior)
         {
-            _blocking = WantsBlock();
-            PoseShield();
-            if (_blocking)
-            {
-                _attackLeft = 0f; // levantar o escudo cancela o corte
-                _specialAnimLeft = 0f;
-                return;
-            }
-
             // Especial tem CD próprio — não fica bloqueado pelo CD do Corte.
             if (_specialCooldownLeft <= 0f && WantsSpecial())
                 TryFireWarriorSpecial();
@@ -231,14 +234,8 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        _blocking = false;
-
         if (IsMage)
         {
-            // Campo de Magia: mesmo input de block do Guerreiro (S/K/direito / mobile Block).
-            if (_ward != null)
-                _ward.SetHolding(WantsBlock());
-
             // Especial tem CD próprio — não fica bloqueado pelo CD do Orbe básico.
             if (_specialCooldownLeft <= 0f && WantsSpecial())
                 FireMageSpecial();
@@ -309,12 +306,13 @@ public class PlayerCombat : MonoBehaviour
 
     public bool BeginArcherCharge()
     {
-        if (!IsArcher || _locked || (_health != null && _health.IsDead))
+        if (!IsArcher || _locked || IsGuardHeld || (_health != null && _health.IsDead))
             return false;
         if (_cooldownLeft > 0f || _attackLeft > 0f || _specialAnimLeft > 0f || (_player != null && _player.IsDashing))
             return false;
         _isCharging = true;
         _chargeTime = 0f;
+        GameAudio.BeginBowDraw();
         return true;
     }
 
@@ -337,6 +335,7 @@ public class PlayerCombat : MonoBehaviour
         if (!_isCharging)
             return;
 
+        GameAudio.StopBowDraw();
         float held = _chargeTime;
         _isCharging = false;
         _chargeTime = 0f;
@@ -396,6 +395,7 @@ public class PlayerCombat : MonoBehaviour
             speedOverride: speed,
             lifetimeOverride: lifetime);
 
+        GameAudio.Emit(GameAudio.Cue.Bow, transform.position, tier == 3 ? 1f : 0.75f);
         _lastReleasedTier = tier;
         _attackLeft = ArcherRecoilDuration;     // Janela de animação Soltar -> Recuo (~0.22s)
         _cooldownLeft = ArcherReleaseCooldown;  // Cooldown fixo de 0.30s após o disparo
@@ -403,6 +403,7 @@ public class PlayerCombat : MonoBehaviour
 
     void FireWarrior()
     {
+        GameAudio.Emit(GameAudio.Cue.Sword, transform.position);
         var go = new GameObject("Corte");
         go.AddComponent<MeleeSlash>().Swing(transform, _ability, DamageForShot());
         Vector3 swingFx = transform.position + (Vector3)_player.Facing * 1.0f + Vector3.up * 0.35f;
@@ -417,6 +418,7 @@ public class PlayerCombat : MonoBehaviour
             Time.timeScale <= 0f || (_health != null && _health.IsDead))
             return false;
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
+        GameAudio.Emit(GameAudio.Cue.WarriorSpecial, transform.position);
         InfernalBeam.Launch(transform, facing, _hero.Strength * InfernalBeam.DamageScale);
         _attackLeft = InfernalBeam.Startup + InfernalBeam.ActiveDuration;
         _specialAnimLeft = _attackLeft;
@@ -426,6 +428,7 @@ public class PlayerCombat : MonoBehaviour
 
     void FireMage()
     {
+        GameAudio.Emit(GameAudio.Cue.Magic, transform.position);
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         if (facing.sqrMagnitude < 0.01f)
             facing = Vector2.right;
@@ -438,6 +441,7 @@ public class PlayerCombat : MonoBehaviour
 
     void FireMageSpecial()
     {
+        GameAudio.Emit(GameAudio.Cue.MageSpecial, transform.position);
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         if (facing.sqrMagnitude < 0.01f)
             facing = Vector2.right;
@@ -456,6 +460,7 @@ public class PlayerCombat : MonoBehaviour
 
     void FireArcherSpecial()
     {
+        GameAudio.Emit(GameAudio.Cue.ArcherSpecial, transform.position);
         // Flecha Perfurante: 1 único projétil reto, atravessa até três inimigos e para no terreno.
         Vector2 facing = _player != null ? _player.Facing : Vector2.right;
         if (facing.sqrMagnitude < 0.01f)
@@ -553,53 +558,46 @@ public class PlayerCombat : MonoBehaviour
 
     static bool WantsAttack()
     {
-        if (MobileControls.IsVisible)
-            return MobileControls.AttackHeld;
-        return Input.GetMouseButton(0) || Input.GetKey(KeyCode.J);
+        return MobileControls.AttackHeld || GamepadControls.Held(GamepadControls.Attack)
+            || (!MobileControls.IsVisible && Input.GetMouseButton(0)) || Input.GetKey(KeyCode.J);
     }
 
     static bool WantsArcherAttackDown(bool mobileDown)
     {
-        if (MobileControls.IsVisible)
-            return mobileDown;
-        return Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.J);
+        return mobileDown || GamepadControls.Down(GamepadControls.Attack)
+            || (!MobileControls.IsVisible && Input.GetMouseButtonDown(0)) || Input.GetKeyDown(KeyCode.J);
     }
 
     static bool WantsArcherAttackHeld(bool mobileHeld)
     {
-        if (MobileControls.IsVisible)
-            return mobileHeld;
-        return Input.GetMouseButton(0) || Input.GetKey(KeyCode.J);
+        return WantsAttack();
     }
 
     static bool WantsArcherAttackUp(bool mobileUp)
     {
-        if (MobileControls.IsVisible)
-            return mobileUp;
-        return Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.J);
+        // Release only after ALL input sources have let go of the charged shot.
+        return !WantsAttack() && (mobileUp || GamepadControls.Up(GamepadControls.Attack)
+            || (!MobileControls.IsVisible && Input.GetMouseButtonUp(0)) || Input.GetKeyUp(KeyCode.J));
     }
 
     static bool WantsBlock()
     {
-        if (MobileControls.IsVisible)
-            return MobileControls.BlockHeld;
-        return Input.GetMouseButton(1)
-            || Input.GetKey(KeyCode.K)
-            || Input.GetKey(KeyCode.S);
+        return MobileControls.BlockHeld || GamepadControls.Held(GamepadControls.Block)
+            || (!MobileControls.IsVisible && Input.GetMouseButton(1))
+            || Input.GetKey(KeyCode.K) || Input.GetKey(KeyCode.S);
     }
 
     static bool WantsSpecial()
     {
-        if (MobileControls.IsVisible)
-            return MobileControls.ConsumeSpecialDown();
-        return Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Q);
+        bool touch = MobileControls.ConsumeSpecialDown();
+        return touch || GamepadControls.Down(GamepadControls.Special)
+            || Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Q);
     }
 
     static bool WantsDash()
     {
-        if (MobileControls.IsVisible && MobileControls.ConsumeDashPressed())
-            return true;
-        return Input.GetKeyDown(KeyCode.LeftShift)
-            || Input.GetKeyDown(KeyCode.RightShift);
+        bool touch = MobileControls.ConsumeDashPressed();
+        return touch || GamepadControls.Down(GamepadControls.Dash)
+            || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift);
     }
 }

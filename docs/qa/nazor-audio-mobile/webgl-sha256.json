@@ -1,0 +1,206 @@
+{
+  "Build/webgl.data.unityweb": {
+    "bytes": 32605928,
+    "sha256": "3ea1163691fee08c0d8b20230619915c0053ba1114f4c4114387683d55f4ba01"
+  },
+  "Build/webgl.framework.js.unityweb": {
+    "bytes": 86786,
+    "sha256": "729c4c5175be6e1fbab8a3ac835be8dfa712b75991904406225052be843d3af6"
+  },
+  "Build/webgl.loader.js": {
+    "bytes": 47867,
+    "sha256": "e121f5fb2dc76aaa10d9a599747ea020f87078ad4d5ff1803b7f8972b1975ae5"
+  },
+  "Build/webgl.wasm.unityweb": {
+    "bytes": 8215962,
+    "sha256": "bcfd32d2d5e0b560c77a4e44e9326057a7fea3706b832a69af6084d1da5238f3"
+  },
+  "StreamingAssets/Guerreiro/Guerreiro_sheet.png": {
+    "bytes": 3827,
+    "sha256": "21b1985496858e7f0706f861e040541fffc132623816a32e8f84d73c67864d97"
+  },
+  "TemplateData/MemoryProfiler.png": {
+    "bytes": 665,
+    "sha256": "0ce87be20d0c24ab6cb73b57de2004da261cc2a641e69319c6ae3fe11fc85483"
+  },
+  "TemplateData/favicon.ico": {
+    "bytes": 2305,
+    "sha256": "9c13beb90ee8f70580d52a21d5233970d1c89e71e4a34a462c22610941c3c77f"
+  },
+  "TemplateData/fullscreen-button.png": {
+    "bytes": 175,
+    "sha256": "21221581673a54b8139d408d4a3f8d2b879e86827d4b6fc53b995ff7a99ee3e9"
+  },
+  "TemplateData/progress-bar-empty-dark.png": {
+    "bytes": 96,
+    "sha256": "bbee7131afe8a3365906240d89184dc86234c119467f390bc4bc6802328fdb4d"
+  },
+  "TemplateData/progress-bar-empty-light.png": {
+    "bytes": 109,
+    "sha256": "143696c060ad43d6c30f19ff5f49000927a139a2a1e4c9f45fafaa2b90d7d2be"
+  },
+  "TemplateData/progress-bar-full-dark.png": {
+    "bytes": 74,
+    "sha256": "3306a6244dcb3926fca38a28e3ced589df8ff1beed955eb17c0bbf01c918bc62"
+  },
+  "TemplateData/progress-bar-full-light.png": {
+    "bytes": 84,
+    "sha256": "12395ea785480c5cdf12fade6e6cbf49666d5bb1cef7240c113dbcba6bdc5c87"
+  },
+  "TemplateData/style.css": {
+    "bytes": 2819,
+    "sha256": "137d1888eb379ba5b6f6c47d60d13eab1b41826e2b1a30bee05a586e7b4a7167"
+  },
+  "TemplateData/unity-logo-dark.png": {
+    "bytes": 3042,
+    "sha256": "c1b72d26c096487dabc948b54bc203f8dac7ed4e3f5733918798e858acb4b159"
+  },
+  "TemplateData/unity-logo-light.png": {
+    "bytes": 3077,
+    "sha256": "002990aea0d946833cadc1519d5b7e50a4570bd537a0517dd79a59d3eec84da7"
+  },
+  "TemplateData/unity-logo-title-footer.png": {
+    "bytes": 1151,
+    "sha256": "9e8b3bdb67c2446d16362fe59449d892100931dbbadfe6a9d923a4142b57a79f"
+  },
+  "TemplateData/webmemd-icon.png": {
+    "bytes": 1670,
+    "sha256": "c56f5494640cedda273aad38d58e6ab9da625d5b3f4d875c0ff92c6192a569c2"
+  },
+  "index.html": {
+    "bytes": 8884,
+    "sha256": "3c14ff9c68346fb329a7ae1b5a0b7ddc8e885999bbd734526cb04bfeb0b3c36c"
+  },
+  "manifest.webmanifest": {
+    "bytes": 240,
+    "sha256": "97a49f71887d21670875161b6c3912765bb87e93798ae2bae11ebb97de4fc68f"
+  },
+  "trailer/index.html": {
+    "bytes": 18743,
+    "sha256": "f7c1935e55e2d9aa40912b38216ecc17377f8a86bcfc4adf31a9f33cf486fb3e"
+  },
+  "trailer/media/apresentacao.png": {
+    "bytes": 9000,
+    "sha256": "69dcdbfec55d6f01adeb27729260cc110c222a3658a95bebd33ebf6cf723e73e"
+  },
+  "trailer/media/city.png": {
+    "bytes": 9255,
+    "sha256": "3089b0aeffe43cc0df16dc35de5acca8f566f00ffe00ef6afcc69c01fbac7e99"
+  },
+  "trailer/media/esqueleto_walk.gif": {
+    "bytes": 11588,
+    "sha256": "a7f3aeedbe83dbaa3746c69edd64a750501f308d7bdb076b0b96d31e396ca000"
+  },
+  "trailer/media/far.png": {
+    "bytes": 3280,
+    "sha256": "8af002192dbbff6435537ed245cc3cb6d1850cd75bc72c96df11a176c657ffca"
+  },
+  "trailer/media/ghoul_walk.gif": {
+    "bytes": 8713,
+    "sha256": "138caa8dbdab6fe72b32f2f20ad443ba333130172e9deb4b9b4db43e7a60dc5b"
+  },
+  "trailer/media/hero_idle.png": {
+    "bytes": 1293,
+    "sha256": "78bd7d904b7bd55755494b475db05ffd930230f97d5afad662ce1c7be23704e1"
+  },
+  "trailer/media/sheet.png": {
+    "bytes": 3827,
+    "sha256": "21b1985496858e7f0706f861e040541fffc132623816a32e8f84d73c67864d97"
+  },
+  "trailer/media/sky.png": {
+    "bytes": 7360,
+    "sha256": "22f45520d7e366eb8ec7d82403b4073ecd27ccac638a835a9f0897f8a74ab65f"
+  },
+  "trailer/media/sprite-arqueiro.png": {
+    "bytes": 368607,
+    "sha256": "963830b8bbad65ada18d914a7d5bf4f7b28e5b4d906d2b8e55f2796e1dc85fc9"
+  },
+  "trailer/media/sprite-mago.png": {
+    "bytes": 154538,
+    "sha256": "a6a51e57713b97dffa064dfa2254ea3be392b60bc478f73a8c2f237ab4a77947"
+  },
+  "trailer/media/sprite-nave-anjo.png": {
+    "bytes": 98551,
+    "sha256": "60d36f867c8ff03067aa41a4db183f4920d129b1ceb4d1d80eeb58f269308a29"
+  },
+  "trailer/media/sprite-nave-guerreiro.png": {
+    "bytes": 179044,
+    "sha256": "be392a5aa89ec52927bfcecad1ab5a23094a0489e148ea479565d1b8dfd1b8b1"
+  },
+  "trailer/media/sprite-nave-mago.png": {
+    "bytes": 161112,
+    "sha256": "1228e8a647fa48c3aec0a746fc58a385eb70df310b8afd359d95b6d702183ecc"
+  },
+  "trailer/media/trailer-arqueiro.png": {
+    "bytes": 1280838,
+    "sha256": "ff0d8a8a19e90f3401bb0f8609e1c23de4ec8605a0cb433986e23ef776d91172"
+  },
+  "trailer/media/trailer-boss-espaco-relance.png": {
+    "bytes": 713922,
+    "sha256": "267b3c17f45e70ef99b475a4b4ac5b3500e3af508860db88ec45028b657bf622"
+  },
+  "trailer/media/trailer-boss-espaco.png": {
+    "bytes": 816550,
+    "sha256": "ae6e63c0c105da65c17db0fed14004d3f867d2e6bc94e947f9e75917a3ab4ec3"
+  },
+  "trailer/media/trailer-boss-terra-relance.png": {
+    "bytes": 687329,
+    "sha256": "16bd03dc2dc42b371041b5cedc63160fbd9ca14d4434c35c85ba8eb1220d3879"
+  },
+  "trailer/media/trailer-boss-terra.png": {
+    "bytes": 1402056,
+    "sha256": "e456e32ebe7356b1d5da1e67e137aed0fc6c92f8ca6839aa322c84a9cbae7391"
+  },
+  "trailer/media/trailer-ceu.png": {
+    "bytes": 985606,
+    "sha256": "bf5daaa3e7b1ea43adb2b83d391f27d3ad74de30f21b0620167e6ffffd7d8c6a"
+  },
+  "trailer/media/trailer-espaco.png": {
+    "bytes": 1454444,
+    "sha256": "cdb6d8d4be495adc0c43d87da652db59c8bb51d7fefb772d6123f9b80f05294b"
+  },
+  "trailer/media/trailer-gameplay.png": {
+    "bytes": 847304,
+    "sha256": "b5d8a0c4cf9d9558d49dea90e0a21a2345a732a792de6658ef399e60d9c83fb9"
+  },
+  "trailer/media/trailer-guerreiro.png": {
+    "bytes": 854622,
+    "sha256": "a63478d6a4a40c784b0631150695ed899a258f9e601c8a4cfc942b7ff5314a72"
+  },
+  "trailer/media/trailer-herois.png": {
+    "bytes": 983780,
+    "sha256": "48b0836d7fb66958d6a336f5fe5a3f818b44ba97a477ae1f7d2fd70a16ee3e01"
+  },
+  "trailer/media/trailer-inimigos.png": {
+    "bytes": 565828,
+    "sha256": "f69abeffa2df468b5b0f9a0ac31896a3d28ed240070af279811cfc71ba003a48"
+  },
+  "trailer/media/trailer-mago.png": {
+    "bytes": 1132362,
+    "sha256": "f8a88aa98838c08c7b42dae16726168fec2d8483c0ab4befb0c9680861451aa2"
+  },
+  "trailer/media/trailer-naves-combate.png": {
+    "bytes": 1284834,
+    "sha256": "be79a5610df7bf6d03b6e637f5effd047c8b9dd6eb087af1fddcfc96068adbb0"
+  },
+  "trailer/media/trailer-naves.png": {
+    "bytes": 1299024,
+    "sha256": "e185b3d36c927b6ea7e8d80fad59160158abb64cefba42016ddf17781fe84e32"
+  },
+  "trailer/media/trailer-ruinas.png": {
+    "bytes": 1259274,
+    "sha256": "8c1399ecb1b8d2537ae8d995a6b64da05a2a9b5e7b7d69719050b7358b79a187"
+  },
+  "trailer/media/trailer-titulo.png": {
+    "bytes": 1205024,
+    "sha256": "9a8b7c84768539f83509c92a4b05c306367ff0b716d2bcb8d734b61fc8e15d0e"
+  },
+  "trailer/media/trailer-veu.png": {
+    "bytes": 993258,
+    "sha256": "b7116265d8e859fb12d3a4bf92d46ac65dc1b29eaa8854aac1b9f73187953018"
+  },
+  "trailer/media/zumbi_walk.gif": {
+    "bytes": 9791,
+    "sha256": "bf3723591adab76cc99bc05c0fc56b7d0f2e367be655de6990ae32c6af4513a1"
+  }
+}

@@ -58,6 +58,7 @@ public static class HunterStars
                     continue;
 
                 launched[target] = already + 1;
+                GameAudio.Emit(GameAudio.Cue.ArcherStar, owner.position, .55f);
                 HomingStarArrow.Launch(owner.position + Vector3.up * 0.85f, target, hit, arrows);
                 arrows++;
                 yield return new WaitForSeconds(0.04f);
@@ -73,6 +74,7 @@ public static class HunterStars
 
         yield return new WaitForSeconds(ExplodeDelay);
 
+        GameAudio.Emit(GameAudio.Cue.ArcherNova, owner.position, .95f);
         float power = hero != null ? hero.Power : 65f;
         float burst = power * 1.2f + agility * 0.4f;
         var gold = new Color(1f, 0.839f, 0.251f);
@@ -93,8 +95,7 @@ public static class HunterStars
             enemy.ClearVitalMarks();
         }
 
-        if (marked >= 3)
-            SupremeFx.Popup(owner.position + Vector3.up * 1.6f, "…Vocês já caíram.", gold);
+        SupremeFx.Popup(owner.position + Vector3.up * 1.6f, SpecialJapanese.ArcherImpact, gold);
     }
 
     static bool OnScreen(Vector3 world)

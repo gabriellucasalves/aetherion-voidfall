@@ -71,6 +71,7 @@ public class CharacterSelectController : MonoBehaviour
     void Start()
     {
         GameManager.EnsureExists();
+        gameObject.AddComponent<GameAudio>();
         if (SceneTransitionManager.Instance != null)
             SceneTransitionManager.Instance.ClearFade();
 
@@ -199,6 +200,7 @@ public class CharacterSelectController : MonoBehaviour
 
     public void Select(CharacterData hero)
     {
+        if (hero != null && hero != _selected) GameAudio.SelectHero(hero.Id);
         _selected = hero;
         bool has = hero != null;
         _detailRoot.SetActive(has);
@@ -252,6 +254,7 @@ public class CharacterSelectController : MonoBehaviour
             r.Extra.rectTransform.anchoredPosition = new Vector2((313 + kw + 4) * MenuKit.Px, r.Extra.rectTransform.anchoredPosition.y);
             Color tipo = k == 0 ? (Color)new Color32(176, 172, 188, 255) : k == 1 ? info.EspecialColor : HeroSkillInfo.SupremoColor;
             r.Extra.color = tipo;
+            r.Name.font = JapaneseText.For(s.Name, MenuKit.TitleFont);
             r.Name.text = s.Name;
             r.Name.color = k == 0 ? MenuKit.Ivory : tipo;
             r.Desc.text = s.Desc;

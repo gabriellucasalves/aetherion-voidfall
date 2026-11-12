@@ -297,6 +297,7 @@ public class CavaleiroCorrompido : MonoBehaviour
 
     void StartCharge()
     {
+        GameAudio.Emit(GameAudio.Cue.KnightCharge, transform.position);
         _state = State.Charging;
         _stateTimer = 0.8f;
         _struckPlayerDuringCharge = false;
@@ -321,6 +322,7 @@ public class CavaleiroCorrompido : MonoBehaviour
 
     void ExecuteSlam()
     {
+        GameAudio.Emit(GameAudio.Cue.KnightSlam, transform.position);
         _state = State.Slam;
         _stateTimer = 0.35f;
         _animTimer = 0f;

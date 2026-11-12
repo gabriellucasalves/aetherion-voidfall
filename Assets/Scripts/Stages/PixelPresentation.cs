@@ -27,11 +27,40 @@ public class PixelPresentation : MonoBehaviour
     GameObject _screenRoot;
     UnityEngine.UI.RawImage _view;
     RectTransform _viewRt;
+    bool _fillMobile;
 
     void OnEnable()
     {
         _world = GetComponent<Camera>();
-        _target = new RenderTexture(InternalWidth, InternalHeight, 24, RenderTextureFormat.ARGB32)
+        _fillMobile = MobileControls.ShouldShow();
+        EnsureTarget();
+        if (_screenRoot != null)
+            _screenRoot.SetActive(true);
+        _world.orthographic = true;
+        _world.orthographicSize = OrthoSize;
+        ApplyAspect();
+        Fit();
+        UpdateScreen();
+    }
+
+    void EnsureTarget()
+    {
+        float aspect = _fillMobile ? (float)Screen.width / Mathf.Max(1, Screen.height)
+            : (float)InternalWidth / InternalHeight;
+        // Keep the same vertical field of view; wider phones show more world.
+        // Bound allocation on very wide screens, and reallocate only on resize.
+        float density = Mathf.Min(1f, 4096f / (InternalHeight * aspect));
+        int height = Mathf.Max(1, Mathf.RoundToInt(InternalHeight * density));
+        int width = Mathf.Clamp(Mathf.RoundToInt(height * aspect), 1, 4096);
+        if (_target != null && _target.width == width && _target.height == height)
+            return;
+        if (_target != null)
+        {
+            _world.targetTexture = null;
+            _target.Release();
+            Destroy(_target);
+        }
+        _target = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32)
         {
             filterMode = FilterMode.Point,
             wrapMode = TextureWrapMode.Clamp,
@@ -41,13 +70,6 @@ public class PixelPresentation : MonoBehaviour
         };
         _target.Create();
         _world.targetTexture = _target;
-        if (_screenRoot != null)
-            _screenRoot.SetActive(true);
-        _world.orthographic = true;
-        _world.orthographicSize = OrthoSize;
-        ApplyAspect();
-        Fit();
-        UpdateScreen();
     }
 
     void OnDisable()
@@ -66,6 +88,7 @@ public class PixelPresentation : MonoBehaviour
 
     void LateUpdate()
     {
+        EnsureTarget();
         ApplyAspect();
         Fit();
         UpdateScreen();
@@ -75,12 +98,14 @@ public class PixelPresentation : MonoBehaviour
     {
         if (_world == null)
             return;
-        _world.aspect = (float)InternalWidth / InternalHeight;
+        _world.aspect = _fillMobile ? (float)Screen.width / Mathf.Max(1, Screen.height)
+            : (float)InternalWidth / InternalHeight;
     }
 
     void Fit()
     {
-        _dest = FitRect(Screen.width, Screen.height);
+        _dest = _fillMobile ? new Rect(0, 0, Screen.width, Screen.height)
+            : FitRect(Screen.width, Screen.height);
     }
 
     public static Rect FitRect(int width, int height)

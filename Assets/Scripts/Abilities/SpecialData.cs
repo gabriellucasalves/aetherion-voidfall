@@ -26,9 +26,9 @@ public class SpecialData : ScriptableObject
         if (data.HeroId == "mago")
         {
             data.Id = "supernova_arcana";
-            data.DisplayName = "CONSTELAÇÃO ÍNDIGO: SUPERNOVA ARCANA";
-            data.Callout = "Queima, Véu,\ndentro de mim!";
-            data.FinalShout = "SUPERNOVA… ARCANA!";
+            data.DisplayName = SpecialJapanese.MageName;
+            data.Callout = SpecialJapanese.MageChannel;
+            data.FinalShout = SpecialJapanese.MageImpact;
             data.BustFrame = 18;
             data.PanelDark = new Color(0.07f, 0.04f, 0.16f, 0.96f);
             data.PanelLight = new Color(0.22f, 0.12f, 0.42f, 0.55f);
@@ -40,9 +40,9 @@ public class SpecialData : ScriptableObject
         else if (data.HeroId == "arqueiro")
         {
             data.Id = "sete_estrelas";
-            data.DisplayName = "SETE ESTRELAS DO CAÇADOR";
-            data.Callout = "Sete estrelas…\num só destino.";
-            data.FinalShout = "…Vocês já caíram.";
+            data.DisplayName = SpecialJapanese.ArcherName;
+            data.Callout = SpecialJapanese.ArcherChannel;
+            data.FinalShout = SpecialJapanese.ArcherImpact;
             data.BustFrame = 13;
             data.PanelDark = new Color(0.03f, 0.12f, 0.08f, 0.96f);
             data.PanelLight = new Color(0.08f, 0.32f, 0.20f, 0.55f);
@@ -54,9 +54,9 @@ public class SpecialData : ScriptableObject
         else
         {
             data.Id = "cinco_luas";
-            data.DisplayName = "LÂMINA RUBRA: CINCO LUAS DE FOGO";
-            data.Callout = "Cinco luas…\num só incêndio!";
-            data.FinalShout = "LUA RUBRA!";
+            data.DisplayName = SpecialJapanese.WarriorName;
+            data.Callout = SpecialJapanese.WarriorChannel;
+            data.FinalShout = SpecialJapanese.WarriorImpact;
             data.BustFrame = 17;
             data.PanelDark = new Color(0.20f, 0.03f, 0.04f, 0.96f);
             data.PanelLight = new Color(0.55f, 0.08f, 0.06f, 0.5f);

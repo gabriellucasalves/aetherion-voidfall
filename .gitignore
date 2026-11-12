@@ -39,3 +39,6 @@ CrashReports/
 .vscode/
 .vercel
 .env*
+.playwright-mcp/
+Assets/_Recovery/
+Assets/_Recovery.meta

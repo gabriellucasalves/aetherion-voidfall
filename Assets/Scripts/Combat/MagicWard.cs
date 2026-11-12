@@ -1,126 +1,55 @@
 using System;
 using UnityEngine;
 
-/// <summary>
-/// Campo de Magia (FASE 2) — defesa do Mago, distinta do escudo do Guerreiro.
-///
-/// Regra: hold (S / K / botão direito / Block mobile) mantém o campo enquanto houver carga.
-/// Efeito: reduz 55% do dano recebido (omnidirecional).
-/// Custo: drena ~28%/s (~3.5s de carga cheia). Sem carga o campo cai;
-/// regenera após breve delay fora do hold. Após zerar, precisa soltar o hold.
-/// </summary>
+// The Mage's runic shield uses the shared damage-absorbing pool. Its existing
+// ring/hex artwork stays intact; holding no longer drains charge or leaks 45% HP.
 public class MagicWard : MonoBehaviour
 {
     public const float MaxCharge = 100f;
-    public const float DrainPerSecond = 28f;
-    public const float RegenPerSecond = 22f;
-    public const float RegenDelay = 0.55f;
-    public const float DamageTakenScale = 0.45f; // 55% redução
+    public const float DamageTakenScale = 0f;
     public const float AuraRadius = 1.35f;
-
-    public float Charge { get; private set; } = MaxCharge;
-    public float Max => MaxCharge;
-    public bool IsActive { get; private set; }
-    public float Normalized => Charge / MaxCharge;
-
-    public event Action<MagicWard> Changed;
-
+    ShieldSystem _shield;
     bool _holding;
-    bool _exhausted; // precisa soltar o hold após zerar a carga
-    float _regenDelay;
-    float _pulse;
-    float _sparkClock;
-    SpriteRenderer _ring;
-    SpriteRenderer _hex;
-    static Sprite _ringSprite;
-    static Sprite _hexSprite;
+    public float Charge => _shield != null ? _shield.Current : 0f;
+    public float Max => _shield != null ? _shield.Max : MaxCharge;
+    public float Normalized => Max > 0f ? Charge / Max : 0f;
+    public bool IsActive { get; private set; }
+    public event Action<MagicWard> Changed;
+    float _pulse, _sparkClock;
+    SpriteRenderer _ring, _hex;
+    static Sprite _ringSprite, _hexSprite;
 
     public void Configure()
     {
-        Charge = MaxCharge;
+        if (_shield != null) _shield.Changed -= OnShieldChanged;
+        _shield = GetComponent<ShieldSystem>();
+        if (_shield == null) { _shield = gameObject.AddComponent<ShieldSystem>(); _shield.Configure(MaxCharge); }
+        _shield.Changed += OnShieldChanged;
         _holding = false;
-        _exhausted = false;
         IsActive = false;
-        _regenDelay = 0f;
-        EnsureVisuals();
         SetVisualActive(false);
         Changed?.Invoke(this);
     }
+
+    void OnDestroy() { if (_shield != null) _shield.Changed -= OnShieldChanged; }
+    void OnShieldChanged(ShieldSystem _) { SetHolding(_holding); Changed?.Invoke(this); }
 
     public void SetHolding(bool holding)
     {
-        if (!holding)
-            _exhausted = false;
-        _holding = holding && !_exhausted;
-    }
-
-    /// <summary>Aplica mitigação se o campo estiver ativo. Retorna dano residual.</summary>
-    public float Mitigate(float rawDamage)
-    {
-        if (!IsActive || rawDamage <= 0f)
-            return rawDamage;
-
-        float leftover = rawDamage * DamageTakenScale;
-        PixelBurst.Spawn(transform.position + Vector3.up * 0.55f,
-            new Color(0.55f, 0.85f, 1f), 4);
-        PixelBurst.Spawn(transform.position + Vector3.up * 0.4f,
-            new Color(0.72f, 0.45f, 1f), 2);
-        // impacto no campo consome um pouco de carga extra
-        Charge = Mathf.Max(0f, Charge - rawDamage * 0.35f);
+        _holding = holding;
+        bool active = holding && _shield != null && !_shield.IsBroken;
+        if (active == IsActive) return;
+        IsActive = active;
+        SetVisualActive(active);
         Changed?.Invoke(this);
-        if (Charge <= 0.01f)
-            DropField();
-        return leftover;
     }
+
+    public float Mitigate(float damage) => IsActive && _shield != null ? _shield.Absorb(damage) : damage;
 
     void Update()
     {
-        bool wantActive = _holding && Charge > 0.5f;
-        if (wantActive != IsActive)
-        {
-            IsActive = wantActive;
-            SetVisualActive(IsActive);
-            if (IsActive)
-            {
-                _regenDelay = RegenDelay;
-                PixelBurst.Spawn(transform.position + Vector3.up * 0.2f,
-                    new Color(0.5f, 0.8f, 1f), 5);
-            }
-            Changed?.Invoke(this);
-        }
-
-        if (IsActive)
-        {
-            Charge = Mathf.Max(0f, Charge - DrainPerSecond * Time.deltaTime);
-            Changed?.Invoke(this);
-            if (Charge <= 0.01f)
-                DropField();
-            else
-                AnimateAura();
-        }
-        else
-        {
-            if (_regenDelay > 0f)
-                _regenDelay -= Time.deltaTime;
-            else if (Charge < MaxCharge)
-            {
-                Charge = Mathf.Min(MaxCharge, Charge + RegenPerSecond * Time.deltaTime);
-                Changed?.Invoke(this);
-            }
-        }
-    }
-
-    void DropField()
-    {
-        Charge = 0f;
-        IsActive = false;
-        _exhausted = true;
-        _holding = false;
-        _regenDelay = RegenDelay + 0.35f;
-        SetVisualActive(false);
-        PixelBurst.Spawn(transform.position + Vector3.up * 0.5f,
-            new Color(0.7f, 0.5f, 1f), 6);
-        Changed?.Invoke(this);
+        SetHolding(_holding);
+        if (IsActive) AnimateAura();
     }
 
     void EnsureVisuals()
