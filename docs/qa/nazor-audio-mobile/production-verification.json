@@ -1,0 +1,47 @@
+{
+  "deploymentId": "dpl_E5Poab7416m4ydJfAJLWTscDvieH",
+  "url": "https://aetherion-voidfall-gules.vercel.app/",
+  "sourceCommit": "b2b7c79d3335fe424fa395740980832e4250e4ef",
+  "files": {
+    "index.html": {
+      "status": 200,
+      "bytes": 8884,
+      "sha256": "3c14ff9c68346fb329a7ae1b5a0b7ddc8e885999bbd734526cb04bfeb0b3c36c",
+      "matchesLocal": true,
+      "contentType": "text/html; charset=utf-8",
+      "contentEncoding": null
+    },
+    "Build/webgl.loader.js": {
+      "status": 200,
+      "bytes": 47867,
+      "sha256": "e121f5fb2dc76aaa10d9a599747ea020f87078ad4d5ff1803b7f8972b1975ae5",
+      "matchesLocal": true,
+      "contentType": "application/javascript; charset=utf-8",
+      "contentEncoding": null
+    },
+    "Build/webgl.framework.js.unityweb": {
+      "status": 200,
+      "bytes": 86786,
+      "sha256": "729c4c5175be6e1fbab8a3ac835be8dfa712b75991904406225052be843d3af6",
+      "matchesLocal": true,
+      "contentType": "application/javascript",
+      "contentEncoding": "gzip"
+    },
+    "Build/webgl.wasm.unityweb": {
+      "status": 200,
+      "bytes": 8215962,
+      "sha256": "bcfd32d2d5e0b560c77a4e44e9326057a7fea3706b832a69af6084d1da5238f3",
+      "matchesLocal": true,
+      "contentType": "application/wasm",
+      "contentEncoding": "gzip"
+    },
+    "Build/webgl.data.unityweb": {
+      "status": 200,
+      "bytes": 32605928,
+      "sha256": "3ea1163691fee08c0d8b20230619915c0053ba1114f4c4114387683d55f4ba01",
+      "matchesLocal": true,
+      "contentType": "application/octet-stream",
+      "contentEncoding": "gzip"
+    }
+  }
+}

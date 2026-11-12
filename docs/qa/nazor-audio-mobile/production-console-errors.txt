@@ -1,0 +1,4 @@
+Vercel production smoke test — 2026-11-12
+URL: https://aetherion-voidfall-gules.vercel.app
+Unity WebGL menu loaded successfully.
+Browser console errors during verification: 0.

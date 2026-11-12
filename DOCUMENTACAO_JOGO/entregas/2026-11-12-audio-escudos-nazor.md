@@ -30,3 +30,15 @@ Data: 12 de novembro de 2026. Repositório: https://github.com/gabriellucasalves
 4. Publique o diretório de saída `webgl/` no projeto Vercel `aetherion-voidfall`, usando a configuração de raiz `vercel.json`. Não é necessário compilar Unity nos servidores Vercel: o build já acompanha o repositório.
 
 As pastas locais de recuperação do Unity, caches, credenciais, configurações pessoais e logs de automação não são parte da entrega.
+
+## Publicação confirmada
+
+- Produção: https://aetherion-voidfall-gules.vercel.app
+- Deployment imutável: https://aetherion-voidfall-3tblx7p0d-gabriellucassilva81-8983.vercel.app
+- Projeto: `aetherion-voidfall` (`prj_BjRWPsfINvsxLR7ixioA1AVhrbWM`), equipe `gabriellucassilva81-8983`.
+- ID do deployment: `dpl_E5Poab7416m4ydJfAJLWTscDvieH`; estado confirmado pela Vercel: **READY**, destino **production**.
+- Código e build versionados no commit `b2b7c79d3335fe424fa395740980832e4250e4ef`. A documentação de publicação foi acrescentada depois, sem modificar o build.
+- O deploy por origem Git retornou `429: GitHub API rate limit exceeded`; a publicação foi concluída pelo envio direto do build local ao mesmo projeto Vercel.
+- HTML, loader, framework, WebAssembly e dados retornaram HTTP 200. Os cinco hashes publicados coincidem com o manifesto versionado; MIME types e Content-Encoding gzip foram verificados.
+- O jogo foi aberto no endereço de produção sem instrumentação de código. O menu inicial carregou e o console não apresentou erros na verificação.
+- Evidências: `docs/qa/nazor-audio-mobile/production-verification.json`, `production-menu.png` e `production-console-errors.txt`.
