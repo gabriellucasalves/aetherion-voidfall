@@ -21,3 +21,11 @@ O título mostra apenas **NAZOR, O DESTRUIDOR DE MUNDOS**, sem complemento do Va
 O teste do boss passou em **145 verificações**, sem erros ou exceções. Inclui dano real das duas formas contra o herói parado em uma plataforma da própria arena, aviso sem dano, três salvas/rajadas, limpeza de perigos, nome simplificado, trilha após a fala, continuidade nas transformações, retry e todo o encerramento. Resultados e capturas em `docs/qa/boss-combat/`.
 
 A regressão geral de áudio passou em **208 verificações**, cobrindo música das três fases, armas, especiais, supremos, vozes, pausa, volumes, boss, retry e retorno ao menu. O build WebGL foi concluído com sucesso.
+
+## Publicação confirmada
+
+- Commit de código/build: `94e8ca05575f9173d3490594c7aeca3ef1a86fe4`, enviado à branch `codex/combate-hud-local` no GitHub.
+- Vercel: `dpl_CzvaEtkZbejGAXhNRAAEaPqhFTLT`, produção, **READY**.
+- Link: https://aetherion-voidfall-gules.vercel.app
+- Cinco artefatos retornaram HTTP 200 com SHA-256 idêntico ao build local testado e MIME/gzip corretos. Registro em `docs/qa/boss-combat/production-verification.json`.
+- Combate conferido no navegador mobile emulado 844 × 390, sem erros; abertura de produção sem instrumentação em desktop 1920 × 1080 também sem erros ou requisições falhas. Capturas em `docs/qa/boss-combat/`.
