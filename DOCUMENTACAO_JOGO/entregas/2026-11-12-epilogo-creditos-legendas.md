@@ -19,3 +19,11 @@ As ambiências existentes evoluem de calma a memória e determinação, respeita
 `BossLifecycleSmoke` percorre combate e transformação das três formas, voz original, redução de música, derrota completa, quatro páginas, arte distinta, tamanho dos textos, nomes, rolagem automática/manual, FIM, mapa, menu e nova tentativa. Resultados finais e capturas ficam em `docs/qa/ending/` após a validação. O teste restaura as preferências de progresso que existiam antes da execução.
 
 Resultado: **131 verificações aprovadas, zero falhas ou erros de execução**. Build WebGL concluído; fluxo mobile por toque validado em 844 × 390, incluindo arraste dos créditos e retorno ao menu, sem erros de console. Manifesto SHA-256 dos cinco artefatos em `docs/qa/ending/build-manifest.json`.
+
+## Publicação confirmada
+
+- Código e build: commit `2df8cf509f1a41d7ebb6ff7a4a767dc36271628f`, branch `codex/combate-hud-local`, enviado ao GitHub.
+- Vercel: `dpl_ALZTY6Pqo9Ewe1HxKjcK9db6HLbc`, produção, estado **READY**.
+- Link: https://aetherion-voidfall-gules.vercel.app
+- Os cinco arquivos servidos em produção retornaram HTTP 200 e SHA-256 idêntico ao build testado; tipos MIME e gzip corretos. Registro em `docs/qa/ending/production-verification.json`.
+- Abertura direta em navegador desktop 1920 × 1080, sem instrumentação de QA: menu carregado, zero erros de console e zero requisições falhas. Captura em `docs/qa/ending/production-menu.png`.

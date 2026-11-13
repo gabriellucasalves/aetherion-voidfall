@@ -1,0 +1,47 @@
+{
+  "url": "https://aetherion-voidfall-gules.vercel.app/",
+  "deploymentId": "dpl_ALZTY6Pqo9Ewe1HxKjcK9db6HLbc",
+  "codeCommit": "2df8cf509f1a41d7ebb6ff7a4a767dc36271628f",
+  "checks": [
+    {
+      "file": "index.html",
+      "status": 200,
+      "matches": true,
+      "bytes": 8884,
+      "contentType": "text/html; charset=utf-8",
+      "encoding": null
+    },
+    {
+      "file": "Build/webgl.data.unityweb",
+      "status": 200,
+      "matches": true,
+      "bytes": 50464856,
+      "contentType": "application/octet-stream",
+      "encoding": "gzip"
+    },
+    {
+      "file": "Build/webgl.framework.js.unityweb",
+      "status": 200,
+      "matches": true,
+      "bytes": 86789,
+      "contentType": "application/javascript",
+      "encoding": "gzip"
+    },
+    {
+      "file": "Build/webgl.loader.js",
+      "status": 200,
+      "matches": true,
+      "bytes": 47867,
+      "contentType": "application/javascript; charset=utf-8",
+      "encoding": null
+    },
+    {
+      "file": "Build/webgl.wasm.unityweb",
+      "status": 200,
+      "matches": true,
+      "bytes": 8216882,
+      "contentType": "application/wasm",
+      "encoding": "gzip"
+    }
+  ]
+}
