@@ -15,6 +15,14 @@ public sealed class EpilogueArtImporter : AssetPostprocessor
         importer.npotScale = TextureImporterNPOTScale.None;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
         importer.maxTextureSize = 2048;
+        importer.sRGBTexture = true;
+
+        var webglSettings = importer.GetPlatformTextureSettings("WebGL");
+        if (webglSettings.overridden)
+        {
+            webglSettings.overridden = false;
+            importer.SetPlatformTextureSettings(webglSettings);
+        }
     }
 }
 #endif

@@ -68,10 +68,11 @@ public class CameraFollow : MonoBehaviour
         if (_target == null)
             return;
 
-        var next = Vector3.Lerp(transform.position, Clamped(TargetPoint()), Smooth * Time.deltaTime);
+        float dt = Time.timeScale > 0f ? Time.deltaTime : Time.unscaledDeltaTime;
+        var next = Vector3.Lerp(transform.position, Clamped(TargetPoint(dt)), Smooth * dt);
         if (_shakeTimer > 0f)
         {
-            _shakeTimer -= Time.deltaTime;
+            _shakeTimer -= dt;
             Vector2 offset = Random.insideUnitCircle * _shakeMagnitude;
             next.x += offset.x;
             next.y += offset.y;
@@ -80,11 +81,11 @@ public class CameraFollow : MonoBehaviour
         transform.position = (T1AtmosScenery.Built || T2PalaceScenery.Built || T3RuinsScenery.Built) ? AtmosV1Parallax.Snap(next) : next;
     }
 
-    Vector3 TargetPoint()
+    Vector3 TargetPoint(float dt = 0.016f)
     {
         var player = _target.GetComponent<PlayerController>();
         float desiredLook = player != null ? player.Facing.x * LookAhead : 0f;
-        _lookX = Mathf.Lerp(_lookX, desiredLook, 3.2f * Time.deltaTime);
+        _lookX = Mathf.Lerp(_lookX, desiredLook, 3.2f * dt);
         float y = _hasLockedY ? _lockedY : (_target.position.y + 1.15f);
         return new Vector3(_target.position.x + _lookX, y, -10f);
     }
@@ -119,7 +120,10 @@ public class CameraFollow : MonoBehaviour
             maxX = 0f;
         }
 
-        float minY = _stage.GroundTop + ((T1AtmosScenery.Built || T2PalaceScenery.Built || T3RuinsScenery.Built) ? T1AtmosScenery.GroundBelowCenter : viewHalfH * 0.55f);
+        var health = _target != null ? _target.GetComponent<HealthSystem>() : null;
+        bool fallingOrDead = (health != null && health.IsDead) || (_target != null && _target.position.y < _stage.GroundTop - 0.2f);
+        float defaultMinY = _stage.GroundTop + ((T1AtmosScenery.Built || T2PalaceScenery.Built || T3RuinsScenery.Built) ? T1AtmosScenery.GroundBelowCenter : viewHalfH * 0.55f);
+        float minY = (fallingOrDead && !_hasLockedY) ? (_stage.GroundTop - 12f) : defaultMinY;
         float maxY = _stage.GroundTop + 8.5f;
 
         point.x = Mathf.Clamp(point.x, minX, maxX);

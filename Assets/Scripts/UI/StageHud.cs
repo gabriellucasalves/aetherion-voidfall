@@ -28,6 +28,7 @@ public static class StageHud
         root.anchoredPosition = Vector2.zero;
         var v = new View();
         string id = hero != null ? hero.Id : "guerreiro";
+        bool defense = hero != null && hero.Id != "arqueiro";
         // Posições reorganizadas para acomodar as duas barras:
         int icon = 26;
         int life = 52;
@@ -39,12 +40,21 @@ public static class StageHud
         Art(root, "label_vida", life - 1, 5, 17, 7);
         v.Life = HudBar(root, "vida", life);
         v.LifeValue = HudValue(root, life, 24);
-        Art(root, id == "mago" ? "label_campo" : "label_escudo", escudo - 1, 5,
-            id == "mago" ? 21 : 25, 7);
-        v.Defense = HudBar(root, "escudo", escudo);
-        v.DefenseValue = HudValue(root, escudo, 24);
-        v.DefenseLabel = HudValue(root, escudo, 32);
-        v.DefenseLabel.gameObject.SetActive(false);
+        if (defense)
+        {
+            Art(root, id == "mago" ? "label_campo" : "label_escudo", escudo - 1, 5,
+                id == "mago" ? 21 : 25, 7);
+            v.Defense = HudBar(root, "escudo", escudo);
+            v.DefenseValue = HudValue(root, escudo, 24);
+            v.DefenseLabel = HudValue(root, escudo, 32);
+            v.DefenseLabel.gameObject.SetActive(false);
+        }
+        else
+        {
+            var disabledLabel = Art(root, "label_escudo", escudo - 1, 5, 25, 7);
+            disabledLabel.color = new Color(.5f, .5f, .55f, .7f);
+            Art(root, "bar_frame_desabilitada_72x10", escudo, 14, 72, 10);
+        }
 
         // ESPECIAL
         Art(root, "label_especial", special - 1, 5, 33, 7);

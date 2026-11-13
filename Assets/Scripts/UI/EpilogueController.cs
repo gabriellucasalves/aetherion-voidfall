@@ -54,39 +54,54 @@ public sealed class EpilogueController : MonoBehaviour
         var stage = MenuKit.Stage(canvas.transform);
         _art = new Sprite[4];
         for (int i = 0; i < _art.Length; i++) _art[i] = MenuKit.Sprite("Menu/epilogue/epilogo_painel_" + (i + 1));
-        _background = MenuKit.Img(stage, _art[0], -4, -4, 488, 278);
+
+        // Fundo em escala inteira 2x (640x360 nativos) com máscara 480x270 para não vazar
+        var bgRoot = MenuKit.Node(stage, "BackgroundRoot", 0, 0, 480, 270);
+        bgRoot.gameObject.AddComponent<RectMask2D>();
+        _background = MenuKit.Img(bgRoot, _art[0], -80, -45, 640, 360);
         _background.color = new Color(.27f, .22f, .35f, 1f);
-        var veil = MenuKit.Img(stage, UiKit.WhiteSprite(), -4, -4, 488, 278);
+        var veil = MenuKit.Img(stage, UiKit.WhiteSprite(), 0, 0, 480, 270);
         veil.color = new Color(.025f, .018f, .045f, .60f);
-        MenuKit.Label(stage, "EPÍLOGO", MenuKit.TitleFont, 44, MenuKit.Gold, 14, 10, 100, 14);
-        _counter = MenuKit.Label(stage, "", MenuKit.BodyFont, 36, MenuKit.Dim, 14, 26, 55, 12);
+
+        // Cabeçalho e indicadores de página
+        MenuKit.Label(stage, "EPÍLOGO", MenuKit.TitleFont, 40, MenuKit.Gold, 16, 10, 100, 14);
+        _counter = MenuKit.Label(stage, "", MenuKit.BodyFont, 34, MenuKit.Dim, 16, 26, 50, 12);
         _pips = new Image[4];
-        for (int i = 0; i < 4; i++) _pips[i] = MenuKit.Img(stage, MenuKit.Sprite("Menu/ui_kit/pip_vazio_7x7"), 72 + i * 11, 29, 7, 7);
-        MenuKit.Img(stage, MenuKit.Sprite("Menu/intro/moldura_ilustracao_336x196", new Vector4(8, 8, 8, 8)), 8, 52, 288, 169, sliced: true);
-        _previous = MenuKit.Img(stage, _art[0], 16, 60, 272, 153);
-        _panel = MenuKit.Img(stage, _art[0], 16, 60, 272, 153);
-        _heroes = MenuKit.Node(stage, "HeroisDoRenascimento", 16, 60, 272, 153);
+        for (int i = 0; i < 4; i++) _pips[i] = MenuKit.Img(stage, MenuKit.Sprite("Menu/ui_kit/pip_vazio_7x7"), 68 + i * 11, 29, 7, 7);
+
+        // Moldura nativa (336x196) em volta do painel de 320x180
+        MenuKit.Art(stage, "Menu/intro/moldura_ilustracao_336x196", 8, 40);
+        _previous = MenuKit.Img(stage, _art[0], 16, 48, 320, 180);
+        _panel = MenuKit.Img(stage, _art[0], 16, 48, 320, 180);
+        _heroes = MenuKit.Node(stage, "HeroisDoRenascimento", 16, 48, 320, 180);
         _heroes.gameObject.AddComponent<RectMask2D>();
         _heroGroup = _heroes.gameObject.AddComponent<CanvasGroup>();
-        foreach (var (id, x) in new[] { ("mago", 126f), ("guerreiro", 164f), ("arqueiro", 203f) })
-            HeroPortrait.AttachFeetNative(_heroes, id, x, 134f, 8);
-        var touch = MenuKit.Img(stage, UiKit.WhiteSprite(), 16, 60, 272, 153, raycast: true);
+        foreach (var (id, x) in new[] { ("mago", 149f), ("guerreiro", 193f), ("arqueiro", 239f) })
+            HeroPortrait.AttachFeetNative(_heroes, id, x, 164f, 8);
+
+        // Toque na imagem para avançar
+        var touch = MenuKit.Img(stage, UiKit.WhiteSprite(), 16, 48, 320, 180, raycast: true);
         touch.color = Color.clear;
         var artButton = touch.gameObject.AddComponent<Button>();
         artButton.transition = Selectable.Transition.None;
         artButton.navigation = new Navigation { mode = Navigation.Mode.None };
         artButton.onClick.AddListener(Advance);
-        MenuKit.Img(stage, MenuKit.Nine("caixa_dialogo_9s_48x24", 8, 8, 8, 8), 304, 36, 168, 212, sliced: true);
-        _heading = MenuKit.Label(stage, "", MenuKit.TitleFont, 40, MenuKit.Gold, 314, 46, 148, 28, TextAnchor.UpperLeft);
-        _body = MenuKit.Label(stage, "", MenuKit.BodyFont, 44, MenuKit.Ivory, 314, 80, 148, 137, TextAnchor.UpperLeft, true, .94f);
-        _continue = MenuKit.Button(stage, "CONTINUAR", 318, 220, 140, 24, Advance);
+
+        // Coluna de narrativa e botões à direita (largura nativa 124, margens respeitadas)
+        MenuKit.Img(stage, MenuKit.Nine("caixa_dialogo_9s_48x24", 8, 8, 8, 8), 348, 36, 124, 226, sliced: true);
+        _heading = MenuKit.Label(stage, "", MenuKit.TitleFont, 34, MenuKit.Gold, 356, 46, 108, 28, TextAnchor.UpperLeft);
+        _body = MenuKit.Label(stage, "", MenuKit.BodyFont, 36, MenuKit.Ivory, 356, 78, 108, 140, TextAnchor.UpperLeft, true, .90f);
+        _continue = MenuKit.Button(stage, "CONTINUAR", 354, 226, 112, 24, Advance);
         _continueText = _continue.GetComponentInChildren<Text>();
-        _back = MenuKit.Button(stage, "VOLTAR", 16, 232, 82, 20, Back);
-        var skip = MenuKit.Button(stage, "PULAR", 410, 8, 60, 20, Finish);
+
+        // Botões auxiliares e atalhos
+        _back = MenuKit.Button(stage, "VOLTAR", 16, 242, 70, 20, Back);
+        var skip = MenuKit.Button(stage, "PULAR", 412, 8, 60, 20, Finish);
         _continue.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnUp = skip, selectOnDown = _back, selectOnLeft = _back, selectOnRight = skip };
         _back.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnRight = _continue, selectOnUp = _continue };
         skip.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnDown = _continue, selectOnLeft = _continue };
-        MenuKit.Label(stage, "TOQUE NA IMAGEM OU APERTE ESPAÇO", MenuKit.BodyFont, 28, MenuKit.Dim, 16, 256, 280, 9);
+        MenuKit.Label(stage, "TOQUE NA IMAGEM OU APERTE ESPAÇO", MenuKit.BodyFont, 26, MenuKit.Dim, 96, 248, 240, 10);
+
         Show(0, true);
         MenuKit.Select(_continue.gameObject);
     }
