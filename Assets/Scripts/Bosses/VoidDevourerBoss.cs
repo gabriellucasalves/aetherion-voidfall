@@ -209,7 +209,7 @@ public class VoidDevourerBoss : MonoBehaviour
         transform.position = new Vector3(transform.position.x, _introStartY, 0f);
         SetBossAlpha(0f);
 
-        _introSpeechText = _isRetry ? BossDialogue.Retry : BossDialogue.Intro;
+        _introSpeechText = _isRetry ? BossDialogue.RetryPt : BossDialogue.IntroPt;
 
         if (_target != null) _target.GetComponent<HealthSystem>().IsInvulnerable = true;
         CreateIntroSpeechUi();
@@ -990,7 +990,7 @@ public class VoidDevourerBoss : MonoBehaviour
             return;
 
         if (_health.Current <= 0f && _phase < 3)
-            TriggerTransition(_phase + 1, _phase == 1 ? BossDialogue.Form2 : BossDialogue.Form3);
+            TriggerTransition(_phase + 1, _phase == 1 ? BossDialogue.Form2Pt : BossDialogue.Form3Pt);
     }
 
     public void CancelActiveAttacks()

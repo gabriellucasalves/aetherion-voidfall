@@ -1,0 +1,132 @@
+PASS BossIntro gravação original carregada
+PASS BossRetry gravação original carregada
+PASS BossForm2 gravação original carregada
+PASS BossForm3 gravação original carregada
+PASS BossDefeat gravação original carregada
+PASS Fonte inclui todos os caracteres japoneses do boss
+PASS Entrar na arena inicia primeiro encontro
+PASS Entrada toca a gravação longa sem mudar tom
+PASS Primeiro toque revela legenda portuguesa completa sem cortar a voz
+PASS Trilha abaixa enquanto o boss fala
+PASS Pausa preserva posição da voz do boss
+PASS Retomar continua gravação do boss
+PASS Legenda de entrada cabe no painel ampliada
+PASS Combate aguarda entrada completa
+PASS Trilha retorna ao volume configurado no combate
+PASS Primeira forma tem barra própria de 1000
+PASS Primeira forma exibe nome Nazor e três barras
+PASS Forma 1 renderiza articulação própria sem cartão estático duplicado
+PASS Forma 1 usa a textura original intacta na articulação
+PASS Asas da forma 1 batem independentemente do corpo
+PASS Tentáculos/manto da forma 1 têm ondulação própria
+PASS Centro da forma 1 fica estável enquanto extremidades se movem
+PASS Forma 1 tem poses distintas de preparação e disparo
+PASS Congelamento suspende articulações da forma 1
+PASS Primeira forma prepara a mira antes de disparar
+PASS Primeira forma dispara duas salvas com nova mira
+PASS Investida avisa antes de avançar
+PASS Boss avança fisicamente pela arena com pose de investida
+PASS Após investida há janela de contra-ataque perto do chão
+PASS Forma não troca apenas ao cruzar antigas porcentagens
+PASS Golpe letal avança somente para forma 2
+PASS Forma 2 recupera barra completa maior que anterior
+PASS Transição 2 usa legenda portuguesa legível
+PASS Transição toca gravação da forma 2
+PASS Fala exata da forma 2
+PASS Diálogo bloqueia supremo e ataques
+PASS Invulnerabilidade na transformação impede pular formas
+PASS Forma 2 usa a arte fornecida pelo usuário
+PASS Retrato de diálogo corresponde à nova forma 2
+PASS HUD remove barra vencida: restam 2
+PASS Forma 2 libera combate após voz completa
+PASS Forma 2 tem ataques mais fortes e rápidos
+PASS HUD identifica a forma 2
+PASS Forma 2 renderiza articulação própria sem cartão estático duplicado
+PASS Forma 2 usa a textura original intacta na articulação
+PASS Asas da forma 2 batem independentemente do corpo
+PASS Tentáculos/manto da forma 2 têm ondulação própria
+PASS Centro da forma 2 fica estável enquanto extremidades se movem
+PASS Forma 2 tem poses distintas de preparação e disparo
+PASS Congelamento suspende articulações da forma 2
+PASS Segunda forma avisa antes da onda sônica
+PASS Segunda forma dispara onda sônica em vez de laser
+PASS Onda sônica se desloca pela arena
+PASS Interromper ataque limpa novos perigos da forma 2
+PASS Escudo absorve onda sônica sem perder vida
+PASS Golpe letal avança somente para forma 3
+PASS Forma 3 recupera barra completa maior que anterior
+PASS Transição 3 usa legenda portuguesa legível
+PASS Transição toca gravação da forma 3
+PASS Fala exata da forma 3
+PASS Diálogo bloqueia supremo e ataques
+PASS Invulnerabilidade na transformação impede pular formas
+PASS Forma 3 usa a arte fornecida pelo usuário
+PASS Retrato de diálogo corresponde à nova forma 3
+PASS HUD remove barra vencida: restam 1
+PASS Forma 3 libera combate após voz completa
+PASS Forma 3 tem ataques mais fortes e rápidos
+PASS HUD identifica a forma 3
+PASS Forma 3 renderiza articulação própria sem cartão estático duplicado
+PASS Forma 3 usa a textura original intacta na articulação
+PASS Asas da forma 3 batem independentemente do corpo
+PASS Tentáculos/manto da forma 3 têm ondulação própria
+PASS Centro da forma 3 fica estável enquanto extremidades se movem
+PASS Forma 3 tem poses distintas de preparação e disparo
+PASS Congelamento suspende articulações da forma 3
+PASS Terceira forma marca três posições antes de atacar
+PASS Marcações do eclipse não causam dano antes do disparo
+PASS Após aviso, eclipse dispara projéteis descendentes
+PASS Interromper ataque limpa novos perigos da forma 3
+PASS Somente terceira forma inicia derrota definitiva
+PASS Derrota toca gravação completa correta
+PASS Derrota limpa ataques e tentáculos perigosos
+PASS Derrota apresenta as quatro legendas portuguesas completas
+PASS Texto final cabe no painel
+PASS Vitória salva conclusão do jogo e da terceira fase
+PASS Derrota conduz ao epílogo após a fala final completa
+PASS Sem quarta forma, teleporte ou gancho espacial
+PASS Epílogo carregou sua cena registrada no build
+PASS Epílogo começa na primeira tela
+PASS Primeiro toque revela o texto sem pular a página
+PASS Tela 1 contém texto integral aprovado
+PASS Tela 1 tem ilustração própria
+PASS Título e narrativa cabem na tela 1
+PASS Heróis nativos aparecem no panorama final: 1
+PASS Tela 2 contém texto integral aprovado
+PASS Tela 2 tem ilustração própria
+PASS Título e narrativa cabem na tela 2
+PASS Heróis nativos aparecem no panorama final: 2
+PASS Tela 3 contém texto integral aprovado
+PASS Tela 3 tem ilustração própria
+PASS Título e narrativa cabem na tela 3
+PASS Heróis nativos aparecem no panorama final: 3
+PASS Tela 4 contém texto integral aprovado
+PASS Tela 4 tem ilustração própria
+PASS Título e narrativa cabem na tela 4
+PASS Heróis nativos aparecem no panorama final: 4
+PASS Voltar permite reler a tela anterior
+PASS Créditos carregaram sua cena registrada no build
+PASS Última tela leva aos agradecimentos
+PASS Fanfarra celebra os créditos sem interromper voz final
+PASS Créditos apresentam todos os blocos na ordem, sem abreviar
+PASS Créditos preservam Bianca Xavier de Oliveira
+PASS Créditos preservam Gabriel Lucas Alves da Silva
+PASS Créditos preservam Isabela Rosa dos Santos Gontijo
+PASS Créditos preservam Matheus Nascimento Cardoso
+PASS Créditos preservam Samer Osama Mohammad Taleeb
+PASS Créditos preservam Thiago Costa Renovato
+PASS Créditos preservam Wesley Thiago Matias Xavier
+PASS Créditos preservam Professor Weverson Garcia Medeiros
+PASS Todos os textos dos créditos cabem em suas caixas
+PASS Créditos têm área de leitura rolável
+PASS Rolagem automática avança os agradecimentos
+PASS Arrastar pausa rolagem automática para leitura manual
+PASS Leitura chega à mensagem final e ao FIM
+PASS Retorno ao mapa preserva conclusão
+PASS Pular epílogo mantém os agradecimentos disponíveis
+PASS Créditos retornam ao menu
+PASS Tentar de novo reinicia primeira forma e fala curta
+PASS Nova tentativa exibe legenda curta em português
+PASS Pular entrada encerra voz sem deixá-la no combate
+PASS Execução sem erros ou exceções: 
+FAILURES=0

@@ -13,6 +13,11 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
 {
     readonly List<string> _results = new List<string>();
     int _failures;
+    readonly List<string> _runtimeErrors = new List<string>();
+    void RecordError(string message, string trace, LogType type)
+    {
+        if (type == LogType.Error || type == LogType.Exception || type == LogType.Assert) _runtimeErrors.Add(message);
+    }
     const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     static void Call(object o, string method) => o.GetType().GetMethod(method, Private | BindingFlags.Public).Invoke(o, null);
     void Check(bool ok, string message)
@@ -33,6 +38,7 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
     }
     IEnumerator Start()
     {
+        Application.logMessageReceived += RecordError;
         string hero = GameManager.EnsureExists().SelectedHeroId;
         int phase = StageData.ActivePhase;
         // Restore progress after exercising the real victory-save path.
@@ -53,6 +59,8 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
         if (!string.IsNullOrEmpty(hero)) GameManager.EnsureExists().SelectHero(CharacterCatalog.ById(hero));
         StageData.ActivePhase = phase;
         Time.timeScale = 1f;
+        Application.logMessageReceived -= RecordError;
+        Check(_runtimeErrors.Count == 0, "Execução sem erros ou exceções: " + string.Join("; ", _runtimeErrors));
         File.WriteAllLines("/tmp/aetherion-boss-qa/results.txt", _results.Concat(new[] { "FAILURES=" + _failures }));
         EditorApplication.isPlaying = false;
     }
@@ -116,7 +124,7 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
         Check(boss != null && boss.CurrentState == VoidDevourerBoss.State.Intro, "Entrar na arena inicia primeiro encontro");
         Check(Voice.isPlaying && Voice.clip.name == "BossIntro" && Voice.pitch == 1f, "Entrada toca a gravação longa sem mudar tom");
         boss.Cutscene.RequestSkip();
-        Check(boss.CurrentSpeechText == BossDialogue.Intro && !boss.Cutscene.SkipToEnd, "Primeiro toque revela texto japonês completo sem cortar a voz");
+        Check(boss.CurrentSpeechText == BossDialogue.IntroPt && !boss.Cutscene.SkipToEnd, "Primeiro toque revela legenda portuguesa completa sem cortar a voz");
         yield return new WaitForSecondsRealtime(.6f);
         Check(Voice.isPlaying && GameAudio.Instance.GetComponentsInChildren<AudioSource>().First(v => v.clip == GameAudio.Instance.CurrentTrack).volume <= GameAudio.Instance.MusicVolume * .21f,
             "Trilha abaixa enquanto o boss fala");
@@ -127,7 +135,8 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
         GameAudio.Instance.SetPaused(false);
         yield return null;
         Check(Voice.isPlaying, "Retomar continua gravação do boss");
-        yield return Capture("intro-japanese");
+        Check(boss.Cutscene.SpeechText.preferredHeight <= boss.Cutscene.SpeechText.rectTransform.rect.height, "Legenda de entrada cabe no painel ampliada");
+        yield return Capture("intro-portuguese");
         yield return new WaitForSecondsRealtime(Voice.clip.length + .9f);
         Check(boss.CurrentState != VoidDevourerBoss.State.Intro && !Voice.isPlaying, "Combate aguarda entrada completa");
         Check(Mathf.Abs(GameAudio.Instance.GetComponentsInChildren<AudioSource>().First(v => v.clip == GameAudio.Instance.CurrentTrack).volume - GameAudio.Instance.MusicVolume) < .01f,
@@ -170,11 +179,11 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
                 "Golpe letal avança somente para forma " + form);
             Check(boss.Health.Max == BossData.FormHealth(form) && boss.Health.Current == boss.Health.Max,
                 "Forma " + form + " recupera barra completa maior que anterior");
-            Check(boss.Cutscene.SpeechText.text == "" && boss.Cutscene.SpeechText.font == JapaneseText.Font,
-                "Transição " + form + " usa painel com fonte japonesa");
+            Check(boss.Cutscene.SpeechText.text == "" && boss.Cutscene.SpeechText.font == MenuKit.BodyFont,
+                "Transição " + form + " usa legenda portuguesa legível");
             Check(Voice.isPlaying && Voice.clip.name == "BossForm" + form, "Transição toca gravação da forma " + form);
             boss.Cutscene.RequestSkip();
-            Check(boss.CurrentSpeechText == (form == 2 ? BossDialogue.Form2 : BossDialogue.Form3), "Fala exata da forma " + form);
+            Check(boss.CurrentSpeechText == (form == 2 ? BossDialogue.Form2Pt : BossDialogue.Form3Pt), "Fala exata da forma " + form);
             Check(!player.GetComponent<SpecialController>().Ready && player.GetComponent<PlayerCombat>().IsLocked, "Diálogo bloqueia supremo e ataques");
             float hp = boss.Health.Current;
             boss.EnemyCtrl.ReceiveDamage(100000f); boss.OnNucleusDamaged(100000f); boss.ForwardTentacleDamage(100000f);
@@ -250,25 +259,81 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
             "Derrota limpa ataques e tentáculos perigosos");
         yield return new WaitForSecondsRealtime(12.3f);
         var defeat = FindFirstObjectByType<BossDefeatCutscene>();
-        Check(defeat.DialogueText.text == BossDialogue.Defeat, "Derrota apresenta as quatro falas japonesas completas");
+        Check(defeat.DialogueText.text == BossDialogue.DefeatPt, "Derrota apresenta as quatro legendas portuguesas completas");
         Check(defeat.DialogueText.preferredHeight <= defeat.DialogueText.rectTransform.rect.height, "Texto final cabe no painel");
-        yield return Capture("defeat-japanese");
+        yield return Capture("defeat-portuguese");
         yield return new WaitForSecondsRealtime(2.5f);
-        Check(GameAudio.Instance.GetComponentsInChildren<AudioSource>().Any(s => s.isPlaying && s.clip != null && s.clip.name == "Victory"), "Fanfarra toca após derrota completa, sem cortar fala final");
         Check(WorldMapProgress.GameComplete && WorldMapProgress.IsCompleted(3), "Vitória salva conclusão do jogo e da terceira fase");
-        Check(!BossDefeatCutscene.IsPlaying && FindFirstObjectByType<VoidDevourerBoss>() == null && GameObject.Find("EndPart1Panel") != null, "Derrota encerra luta e abre painel de vitória");
-        Check(GameObject.Find("CosmicHood") == null && GameObject.Find("TeleportBeam") == null && !MenuPanels.EndPart1Text.Contains("estrelas"), "Sem quarta forma, teleporte ou gancho espacial");
-        Check(FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t => t.text == "VITÓRIA"), "Encerramento exibe vitória em vez de fim da parte 1");
-        stage.RequestPause();
-        Check(!GameAudio.Instance.IsPaused && player.GetComponent<PlayerCombat>().IsLocked, "Tela de vitória mantém combate encerrado ao pressionar pausa");
-        yield return Capture("victory");
-        // Exercise the actual retry entry point and its shorter recording.
-        Destroy(defeat.gameObject);
+        Check(!BossDefeatCutscene.IsPlaying && FindFirstObjectByType<VoidDevourerBoss>() == null && EpilogueController.Instance != null, "Derrota conduz ao epílogo após a fala final completa");
+        Check(GameObject.Find("CosmicHood") == null && GameObject.Find("TeleportBeam") == null, "Sem quarta forma, teleporte ou gancho espacial");
+        Check(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == GameScenes.Epilogue, "Epílogo carregou sua cena registrada no build");
+        var ending = EpilogueController.Instance;
+        Check(ending.Page == 0, "Epílogo começa na primeira tela");
+        ending.Advance();
+        Check(ending.Page == 0 && ending.Body.text == EpilogueController.Pages[0], "Primeiro toque revela o texto sem pular a página");
+        var textures = new HashSet<Texture>();
+        for (int page = 0; page < 4; page++)
+        {
+            ending.JumpTo(page);
+            Canvas.ForceUpdateCanvases();
+            Check(ending.Heading.text == EpilogueController.Titles[page] && ending.Body.text == EpilogueController.Pages[page], "Tela " + (page + 1) + " contém texto integral aprovado");
+            Check(ending.PanelImage.sprite != null && textures.Add(ending.PanelImage.sprite.texture), "Tela " + (page + 1) + " tem ilustração própria");
+            Check(ending.Body.preferredHeight <= ending.Body.rectTransform.rect.height && ending.Heading.preferredHeight <= ending.Heading.rectTransform.rect.height, "Título e narrativa cabem na tela " + (page + 1));
+            Check(ending.HeroLayer.gameObject.activeSelf == (page == 3), "Heróis nativos aparecem no panorama final: " + (page + 1));
+            yield return Capture("epilogue-" + (page + 1));
+        }
+        ending.Back();
+        Check(ending.Page == 2, "Voltar permite reler a tela anterior");
+        ending.JumpTo(3);
+        ending.Advance();
+        yield return new WaitForSecondsRealtime(.4f);
+        Check(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == GameScenes.Credits, "Créditos carregaram sua cena registrada no build");
+        var credits = CreditsController.Instance;
+        Check(credits != null, "Última tela leva aos agradecimentos");
+        Check(GameAudio.Instance.GetComponentsInChildren<AudioSource>().Any(s => s.isPlaying && s.clip != null && s.clip.name == "Victory"), "Fanfarra celebra os créditos sem interromper voz final");
+        Check(credits.CreditTexts.Count == CreditsContent.Blocks.Length && credits.CreditTexts.Select(t => t.text).SequenceEqual(CreditsContent.Blocks.Select(b => b.Text)), "Créditos apresentam todos os blocos na ordem, sem abreviar");
+        foreach (string name in new[] { "Bianca Xavier de Oliveira", "Gabriel Lucas Alves da Silva", "Isabela Rosa dos Santos Gontijo", "Matheus Nascimento Cardoso", "Samer Osama Mohammad Taleeb", "Thiago Costa Renovato", "Wesley Thiago Matias Xavier", "Professor Weverson Garcia Medeiros" })
+            Check(credits.CreditTexts.Any(t => t.text == name), "Créditos preservam " + name);
+        Check(credits.CreditTexts.All(t => t.preferredHeight <= t.rectTransform.rect.height), "Todos os textos dos créditos cabem em suas caixas");
+        Check(credits.Scroll.content.rect.height > credits.Scroll.viewport.rect.height, "Créditos têm área de leitura rolável");
+        yield return Capture("credits-start");
+        float scrollStart = credits.Scroll.content.anchoredPosition.y;
+        yield return new WaitForSecondsRealtime(.3f);
+        Check(credits.AutoScrolling && credits.Scroll.content.anchoredPosition.y > scrollStart, "Rolagem automática avança os agradecimentos");
+        UnityEngine.EventSystems.ExecuteEvents.Execute(credits.Scroll.gameObject,
+            new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current), UnityEngine.EventSystems.ExecuteEvents.beginDragHandler);
+        Check(!credits.AutoScrolling, "Arrastar pausa rolagem automática para leitura manual");
+        credits.Scroll.verticalNormalizedPosition = .55f;
+        yield return Capture("credits-team");
+        credits.ScrollToEnd();
+        yield return null;
+        Check(credits.Scroll.verticalNormalizedPosition < .01f && credits.CreditTexts.Last().text == "FIM", "Leitura chega à mensagem final e ao FIM");
+        yield return Capture("credits-end");
+        credits.GoToMap();
+        yield return new WaitForSecondsRealtime(.3f);
+        Check(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == GameScenes.WorldMap && WorldMapProgress.GameComplete, "Retorno ao mapa preserva conclusão");
+        SceneTransitionManager.Instance.Load(GameScenes.Epilogue);
+        yield return new WaitForSecondsRealtime(.3f);
+        EpilogueController.Instance.Finish();
+        yield return new WaitForSecondsRealtime(.3f);
+        Check(CreditsController.Instance != null, "Pular epílogo mantém os agradecimentos disponíveis");
+        CreditsController.Instance.GoToMenu();
+        yield return new WaitForSecondsRealtime(.3f);
+        Check(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == GameScenes.MainMenu, "Créditos retornam ao menu");
+        // Recreate the arena before exercising retry; ending scenes destroy the old stage.
+        SceneTransitionManager.Instance.Load(GameScenes.GroundT3);
+        yield return new WaitForSecondsRealtime(.4f);
+        stage = FindFirstObjectByType<GroundT1Controller>();
+        Call(stage, "EnterBossArena");
+        yield return null;
+        FindFirstObjectByType<VoidDevourerBoss>().ForceStateFlying();
         Call(stage, "RetryBoss");
         yield return new WaitForSecondsRealtime(.15f);
         boss = FindFirstObjectByType<VoidDevourerBoss>();
         Check(boss.Phase == 1 && boss.Health.Max == 1000 && Voice.isPlaying && Voice.clip.name == "BossRetry", "Tentar de novo reinicia primeira forma e fala curta");
-        boss.Cutscene.RequestSkip(); boss.Cutscene.RequestSkip();
+        boss.Cutscene.RequestSkip();
+        Check(boss.CurrentSpeechText == BossDialogue.RetryPt, "Nova tentativa exibe legenda curta em português");
+        boss.Cutscene.RequestSkip();
         yield return new WaitForSecondsRealtime(.6f);
         Check(boss.CurrentState == VoidDevourerBoss.State.Flying && !Voice.isPlaying, "Pular entrada encerra voz sem deixá-la no combate");
     }

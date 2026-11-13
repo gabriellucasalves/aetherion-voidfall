@@ -8,7 +8,7 @@ Repositório: **https://github.com/gabriellucasalves/aetherion-voidfall**
 
 ## Fluxo
 
-Menu → história → escolha do herói → Terra 1 (ruínas de Aetherion).
+Menu → história → escolha do herói → mapa → três fases → Nazor (três formas) → epílogo de quatro telas → agradecimentos e equipe.
 
 ## Controles (PC)
 
@@ -98,10 +98,10 @@ A pasta `webgl/` é o que o Vercel publica.
 
 ### Nazor, o Devorador: três formas e encerramento
 
-- Entrada inédita: `Audio/Voices/BossIntro.mp3`; tentativa novamente: `BossRetry.mp3`; transições: `BossForm2.mp3` e `BossForm3.mp3`; derrota definitiva: `BossDefeat.mp3`. São as cinco gravações fornecidas, sem cortes, com legenda japonesa em `BossDialogue.cs`. A trilha reduz durante as falas, e a duração dos painéis acompanha os áudios completos. Primeiro toque revela o texto; segundo toque pula a entrada/transição e encerra a voz.
+- Entrada inédita: `Audio/Voices/BossIntro.mp3`; tentativa novamente: `BossRetry.mp3`; transições: `BossForm2.mp3` e `BossForm3.mp3`; derrota definitiva: `BossDefeat.mp3`. São as cinco gravações fornecidas, sem cortes, com legendas em português em `BossDialogue.cs` e áudio japonês preservado. A trilha reduz durante as falas, e a duração dos painéis acompanha os áudios completos. Primeiro toque revela o texto; segundo toque pula a entrada/transição e encerra a voz.
 - Cada forma precisa ser derrotada: 1.000 → 1.500 → 2.200 de vida, sem carregar dano excedente entre formas. Ataques causam 100% → 115% → 130% do dano base, com cadência e movimentação crescentes (108% → 120% → 132%). A primeira forma usa raios; a segunda prioriza rugidos sônicos; a terceira usa a Chuva do Eclipse. Tentáculos, invocações e janelas de núcleo exposto complementam os ciclos de combate.
 - A primeira forma usa a arte original. A segunda e a terceira usam as artes fornecidas, preparadas como sprites transparentes em `Assets/Resources/Bosses/DevoradorDoVazio/nazor/form2.png` e `form3.png`. O voo, a respiração, a canalização e a queda animam os desenhos completos, sem voltar ao corpo antigo nos ataques ou na derrota.
-- Somente a terceira forma pode morrer definitivamente. Ela cai, pronuncia as quatro falas finais, se desfaz e abre **VITÓRIA**, salvando a conclusão da fase e do jogo. O antigo quarto corpo, o teleporte e o gancho para o espaço foram removidos do encerramento.
+- Somente a terceira forma pode morrer definitivamente. Ela cai, pronuncia as quatro falas finais, se desfaz e inicia o **epílogo**, salvando a conclusão da fase e do jogo. Após as quatro telas, são exibidos os agradecimentos completos. O antigo quarto corpo, o teleporte e o gancho para o espaço foram removidos do encerramento.
 - Teste: **Aetherion → Validar três formas e vozes do boss**, ou `Library/BossLifecycleQA.request`. Relatório e capturas em `/tmp/aetherion-boss-qa/`.
 
 - A barra do boss mostra apenas vidas restantes: **3 → 2 → 1**. A primeira linha é a forma atual; as linhas roxas representam as próximas. Cada barra vencida desaparece na transformação. Nome nos painéis, legendas e vitória: **Nazor, o Devorador** (ナゾール). As gravações fornecidas anteriormente continuam sendo arquivos originais, portanto ainda pronunciam o nome antigo.
@@ -117,3 +117,12 @@ A pasta `webgl/` é o que o Vercel publica.
 - O teste do boss verifica movimento local de asas/caudas, centro estável, texturas originais, poses de preparação/disparo, congelamento, duas salvas e deslocamento/recuperação da investida, além de vida 3→2→1, vozes e encerramento. Capturas `motion-form*-*.png` em `/tmp/aetherion-boss-qa/`.
 
 Entrega consolidada de áudio, mobile, escudos e Nazor: [documentação e validação](DOCUMENTACAO_JOGO/entregas/2026-11-12-audio-escudos-nazor.md).
+
+### Epílogo e agradecimentos
+
+- Quatro telas com os textos aprovados: **O fim da escuridão**, **Um novo amanhecer**, **O renascimento** e **A esperança prevalece**. Ilustrações originais mantêm a arquitetura, a paleta e a direção artística da abertura; o último panorama recebe os três heróis animados do próprio jogo.
+- Toque na imagem, botão **Continuar** ou Espaço: primeiro revela o parágrafo, depois avança. **Voltar** permite reler; **Pular** leva aos agradecimentos. As ambiências evoluem de calma para esperança.
+- Créditos com o texto integral fornecido pela equipe, sete integrantes, Professor Weverson Garcia Medeiros e UNICEPLAC. Rolagem automática pausável; arrastar, roda do mouse ou setas permite ler manualmente. **Mapa** e **Menu** preservam o progresso salvo.
+- As cinco gravações japonesas de Nazor têm legenda portuguesa: encontro, nova tentativa, segunda forma, terceira forma e derrota. As gravações continuam intactas, inclusive a pronúncia anterior do nome, conforme solicitado.
+- Arte em `Assets/Resources/Menu/epilogue/`; prompts completos e modo da ferramenta integrada em `Tools/Art/epilogue-prompts.json`. Cenas `Epilogue` e `Credits` incluídas no build.
+- O teste **Validar três formas e vozes do boss** agora percorre a derrota, as quatro páginas, os créditos, a rolagem e os retornos ao mapa/menu.

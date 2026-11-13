@@ -54,6 +54,10 @@ public class SceneTransitionManager : MonoBehaviour
             MainMenuController.EnsureExists();
         else if (sceneName == GameScenes.Intro)
             IntroController.EnsureExists();
+        else if (sceneName == GameScenes.Epilogue)
+            EpilogueController.EnsureExists();
+        else if (sceneName == GameScenes.Credits)
+            CreditsController.EnsureExists();
         else if (sceneName == GameScenes.CharacterSelection)
             CharacterSelectController.EnsureExists();
         else if (sceneName == GameScenes.GroundT1 || sceneName == GameScenes.GroundT2 || sceneName == GameScenes.GroundT3)

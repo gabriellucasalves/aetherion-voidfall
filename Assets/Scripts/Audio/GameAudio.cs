@@ -146,6 +146,22 @@ public sealed class GameAudio : MonoBehaviour
         PlayAccent(cues[Mathf.Clamp(page, 0, cues.Length - 1)], .75f);
     }
 
+    public void PlayEpilogue(int page)
+    {
+        _ended = false;
+        _duck = false;
+        SetPaused(false);
+        string theme = page == 0 ? "calm" : page == 1 ? "memory" : "resolve";
+        PlayMusic("Audio/Ambience/prologue_" + theme);
+        PlayAccent(page == 0 ? Cue.ProloguePeace : page == 1 ? Cue.PrologueMemory : Cue.PrologueResolve, .35f);
+    }
+
+    public void PlayCredits()
+    {
+        PlayEpilogue(3);
+        PlayAccent(Cue.Victory, .55f);
+    }
+
     void PlayAccent(Cue cue, float gain)
     {
         _accent.Stop();

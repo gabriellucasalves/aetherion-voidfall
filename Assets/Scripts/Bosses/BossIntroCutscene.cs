@@ -162,8 +162,8 @@ public class BossIntroCutscene : MonoBehaviour
         // 7. PlacaNome (468x52)
         _placaNome = CreateImage("PlacaNome", null, 908, -736, 468, 52, Color.white);
         _placaNome.color = new Color(.14f, .04f, .20f, .98f);
-        var name = UiKit.Label(_placaNome.transform, BossDialogue.Name, 30, Vector2.zero, new Color(1f, .78f, .46f), new Vector2(450f, 48f));
-        name.font = JapaneseText.Font;
+        var name = UiKit.Label(_placaNome.transform, BossData.DisplayName, 30, Vector2.zero, new Color(1f, .78f, .46f), new Vector2(450f, 48f));
+        name.font = MenuKit.BodyFont;
         var placaGroup = _placaNome.gameObject.AddComponent<CanvasGroup>();
 
         // 8. FalaBoss (1216x136)
@@ -176,8 +176,8 @@ public class BossIntroCutscene : MonoBehaviour
         frt.sizeDelta = new Vector2(1216, 136);
 
         _falaText = falaGo.GetComponent<Text>();
-        _falaText.font = JapaneseText.Font;
-        _falaText.fontSize = 34;
+        _falaText.font = MenuKit.BodyFont;
+        _falaText.fontSize = 44;
         _falaText.color = new Color(246f / 255f, 238f / 255f, 222f / 255f);
         _falaText.alignment = TextAnchor.UpperLeft;
         _falaText.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -359,7 +359,7 @@ public class BossIntroCutscene : MonoBehaviour
             if (_falaText != null) _falaText.text = cur;
 
             // Retrato e animações
-            if (cur.Contains(BossDialogue.Name))
+            if (cur.Contains("Eu sou Nazor"))
             {
                 if (!_didShake)
                 {

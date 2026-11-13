@@ -61,11 +61,11 @@ public sealed class BossDefeatCutscene : MonoBehaviour
         shade.raycastTarget = false;
         var box = UiKit.Panel(canvas.transform, "DialogueBox", new Vector2(1420f, 290f), new Vector2(0f, -300f), new Color(.06f, .04f, .12f, .97f));
         UiKit.Panel(box.transform, "Trim", new Vector2(1420f, 4f), new Vector2(0f, 144f), new Color(.85f, .25f, .75f));
-        var name = UiKit.Label(box.transform, BossDialogue.Name, 28, new Vector2(0, 110f), new Color(1f, .65f, .40f), new Vector2(1300, 40));
-        name.font = JapaneseText.Font;
+        var name = UiKit.Label(box.transform, BossData.DisplayName, 28, new Vector2(0, 110f), new Color(1f, .65f, .40f), new Vector2(1300, 40));
+        name.font = MenuKit.BodyFont;
         name.alignment = TextAnchor.MiddleLeft;
-        DialogueText = UiKit.Label(box.transform, "", 34, new Vector2(0f, -15f), MenuTheme.SoftIvory, new Vector2(1300f, 205f));
-        DialogueText.font = JapaneseText.Font;
+        DialogueText = UiKit.Label(box.transform, "", 44, new Vector2(0f, -15f), MenuTheme.SoftIvory, new Vector2(1300f, 205f));
+        DialogueText.font = MenuKit.BodyFont;
         DialogueText.alignment = TextAnchor.UpperLeft;
         DialogueText.horizontalOverflow = HorizontalWrapMode.Wrap;
         DialogueText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -73,11 +73,11 @@ public sealed class BossDefeatCutscene : MonoBehaviour
         float duration = Mathf.Max(8f, voiceLength + .8f);
         for (float t = 0f; t < duration; t += Time.unscaledDeltaTime)
         {
-            int count = Mathf.Clamp(Mathf.CeilToInt(t / (duration - 1.4f) * BossDialogue.Defeat.Length), 0, BossDialogue.Defeat.Length);
-            DialogueText.text = BossDialogue.Defeat.Substring(0, count);
+            int count = Mathf.Clamp(Mathf.CeilToInt(t / (duration - 1.4f) * BossDialogue.DefeatPt.Length), 0, BossDialogue.DefeatPt.Length);
+            DialogueText.text = BossDialogue.DefeatPt.Substring(0, count);
             yield return null;
         }
-        DialogueText.text = BossDialogue.Defeat;
+        DialogueText.text = BossDialogue.DefeatPt;
         box.gameObject.SetActive(false);
         if (_boss != null)
         {
@@ -93,10 +93,8 @@ public sealed class BossDefeatCutscene : MonoBehaviour
         }
         WorldMapProgress.Complete(3);
         WorldMapProgress.ConfirmFinalBossDefeated();
-        GameAudio.Instance?.Finish(true);
-        MenuPanels.EndPart1(canvas.transform,
-            () => SceneTransitionManager.Instance.Load(GameScenes.WorldMap),
-            () => SceneTransitionManager.Instance.Load(GameScenes.MainMenu));
+        GameAudio.Instance?.StopBossVoice();
         IsPlaying = false;
+        SceneTransitionManager.Instance.Load(GameScenes.Epilogue);
     }
 }

@@ -3,6 +3,8 @@ public static class GameScenes
     public const string Boot = "Boot";
     public const string MainMenu = "MainMenu";
     public const string Intro = "Intro";
+    public const string Epilogue = "Epilogue";
+    public const string Credits = "Credits";
     public const string CharacterSelection = "CharacterSelection";
     public const string GroundT1 = "Ground_T1";
     public const string GroundT2 = "Ground_T2";

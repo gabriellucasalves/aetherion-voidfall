@@ -61,6 +61,8 @@ public static class AetherionProjectSetup
             new EditorBuildSettingsScene("Assets/Scenes/Ground_T1.unity", true),
             new EditorBuildSettingsScene("Assets/Scenes/Ground_T2.unity", true),
             new EditorBuildSettingsScene("Assets/Scenes/Ground_T3.unity", true),
+            new EditorBuildSettingsScene("Assets/Scenes/Epilogue.unity", true),
+            new EditorBuildSettingsScene("Assets/Scenes/Credits.unity", true),
             new EditorBuildSettingsScene("Assets/Scenes/Pong.unity", false)
         };
     }
