@@ -76,6 +76,24 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
         yield return new WaitForSecondsRealtime(.08f);
         var visual = boss.GetComponent<BossFormVisual>();
         var rig = visual.Rig;
+        if (BossFormVisual.UseFinalSheets)
+        {
+            var body = boss.GetComponent<SpriteRenderer>();
+            Check(rig != null && !rig.Enabled && rig.VertexCount == 0 && rig.Renderer == null && !body.forceRenderingOff,
+                "Forma " + form + " usa folhas finais sem criar malha");
+            boss.SetAnimationPose(NazorPose.Hover);
+            yield return new WaitForEndOfFrame();
+            var before = body.sprite;
+            yield return new WaitForSecondsRealtime(.16f);
+            Check(body.sprite != before && body.sprite.texture == NazorSheets.GetFrame("forma" + form + "_idle_8f",0).texture,
+                "Forma " + form + " anima quadros idle reais do pacote");
+            boss.EnemyCtrl.SetFrozen(true);
+            var frozen = body.sprite;
+            yield return new WaitForSecondsRealtime(.16f);
+            Check(body.sprite == frozen, "Congelamento suspende quadros da forma " + form);
+            boss.EnemyCtrl.SetFrozen(false);
+            yield break;
+        }
         Check(rig != null && rig.VertexCount > 1000 && rig.Renderer.enabled && boss.GetComponent<SpriteRenderer>().forceRenderingOff,
             "Forma " + form + " renderiza articulação própria sem cartão estático duplicado");
         Check(rig.Renderer.sharedMaterial.mainTexture == boss.GetComponent<SpriteRenderer>().sprite.texture,
@@ -195,8 +213,9 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
             boss.EnemyCtrl.ReceiveDamage(100000f); boss.OnNucleusDamaged(100000f); boss.ForwardTentacleDamage(100000f);
             Check(boss.Health.Current == hp && !BossDefeatCutscene.IsPlaying, "Invulnerabilidade na transformação impede pular formas");
             var visual = boss.GetComponent<BossFormVisual>();
-            Check(visual.FormSprite != null && visual.FormSprite.name == "NazorForma" + form
-                && visual.FormSprite.texture == Resources.Load<Texture2D>("Bosses/DevoradorDoVazio/nazor/form" + form), "Forma " + form + " usa a arte fornecida pelo usuário");
+            Check(visual.FormSprite != null && visual.FormSprite.texture == (BossFormVisual.UseFinalSheets
+                    ? NazorSheets.GetFrame("forma" + form + "_idle_8f",0).texture
+                    : Resources.Load<Texture2D>("Bosses/DevoradorDoVazio/nazor/form" + form)), "Forma " + form + " usa a arte fornecida pelo usuário");
             Check(boss.Cutscene.GetComponentsInChildren<Image>(true).Any(image => image.sprite != null && image.sprite.texture == visual.FormSprite.texture), "Retrato de diálogo corresponde à nova forma " + form);
             Check(boss.HealthBar.RemainingBars == 4 - form && boss.HealthBar.VisibleBars == 4 - form, "HUD remove barra vencida: restam " + (4 - form));
             yield return Capture("transition-" + form);
@@ -231,8 +250,11 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
                 if (wave != null)
                 {
                     Vector3 position = wave.transform.position;
+                    float healthBeforeFlight = player.GetComponent<HealthSystem>().Current;
                     yield return new WaitForSecondsRealtime(.1f);
-                    Check(wave != null && Vector3.Distance(position, wave.transform.position) > .4f, "Onda sônica se desloca pela arena");
+                    bool traveled = wave != null && Vector3.Distance(position, wave.transform.position) > .4f;
+                    bool impacted = wave == null && player.GetComponent<HealthSystem>().Current < healthBeforeFlight;
+                    Check(traveled || impacted, "Onda sônica se desloca ou conclui impacto real no herói");
                 }
                 yield return Capture("sonic-wave");
                 yield return new WaitForSecondsRealtime(1.0f);

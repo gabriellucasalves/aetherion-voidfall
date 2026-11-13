@@ -5,6 +5,7 @@ public class SupremeOverlay : MonoBehaviour
     SpriteRenderer _renderer;
     float _life;
     float _age;
+    float _startAlpha = 1f;
     bool _fading;
 
     void Awake()
@@ -22,8 +23,23 @@ public class SupremeOverlay : MonoBehaviour
 
     public void PlayFade(float life)
     {
+        PlayFade(life, 1f);
+    }
+
+    public void PlayFade(float life, float startAlpha)
+    {
         _life = Mathf.Max(0.05f, life);
+        _startAlpha = startAlpha;
+        _age = 0f;
         _fading = true;
+        if (_renderer == null)
+            _renderer = GetComponent<SpriteRenderer>();
+        if (_renderer != null)
+        {
+            var color = _renderer.color;
+            color.a = startAlpha;
+            _renderer.color = color;
+        }
     }
 
     void Update()
@@ -33,7 +49,7 @@ public class SupremeOverlay : MonoBehaviour
 
         _age += Time.unscaledDeltaTime;
         var color = _renderer.color;
-        color.a = Mathf.Clamp01(1f - _age / _life);
+        color.a = Mathf.Clamp01(_startAlpha * (1f - _age / _life));
         _renderer.color = color;
         if (_age >= _life)
             Destroy(gameObject);

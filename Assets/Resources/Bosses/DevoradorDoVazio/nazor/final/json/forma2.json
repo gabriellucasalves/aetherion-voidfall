@@ -1,0 +1,350 @@
+{
+ "forma": 2,
+ "nome": "O Devorador Encarnado",
+ "ppu": 32,
+ "filtro": "Point (no filter)",
+ "compressao": "None",
+ "mipmaps": false,
+ "pivo_normalizado": [
+  0.5,
+  0.5
+ ],
+ "celula_px": [
+  224,
+  176
+ ],
+ "celula_u": [
+  7.0,
+  5.5
+ ],
+ "sprite_repouso_px": [
+  182,
+  130
+ ],
+ "cor_da_borda_rgb": [
+  225,
+  70,
+  185
+ ],
+ "animacoes": {
+  "idle": {
+   "arquivo": "sheets/forma2_idle_8f.png",
+   "frames": 8,
+   "fps": 8,
+   "loop": true,
+   "celula_px": [
+    224,
+    176
+   ],
+   "descricao": "flutuação, batida de asas/garras, véu/tentáculos e núcleo/olhos pulsando"
+  },
+  "dano": {
+   "arquivo": "sheets/forma2_dano_2f.png",
+   "frames": 2,
+   "fps": 12,
+   "loop": false,
+   "celula_px": [
+    224,
+    176
+   ],
+   "descricao": "frame 0: silhueta em 3 tons da cor da borda; frame 1: só as luzes, com recuo"
+  },
+  "ataque": {
+   "arquivo": "sheets/forma2_ataque_4f.png",
+   "frames": 4,
+   "fps": 10,
+   "loop": false,
+   "celula_px": [
+    224,
+    176
+   ],
+   "descricao": "antecipação, carga, liberação, recuperação (genérico, serve de base para os ataques)"
+  },
+  "transformacao_f3": {
+   "arquivo": "sheets/forma2_transformacao_f3_8f.png",
+   "frames": 8,
+   "fps": 8,
+   "loop": false,
+   "celula_px": [
+    224,
+    176
+   ],
+   "descricao": "transforma na próxima forma: tremor, flash na cor da borda, rachaduras, dissolução em dither para a nova silhueta (centralizada na mesma célula)"
+  },
+  "nucleo_brilho": {
+   "arquivo": "sheets/forma2_nucleo_brilho_6f.png",
+   "frames": 6,
+   "fps": 8,
+   "loop": true,
+   "celula_px": [
+    96,
+    96
+   ],
+   "descricao": "overlay do ponto fraco (janela de dano). Desenhar sobre o boss, centrado na posição do núcleo, blend normal"
+  }
+ },
+ "pecas": [
+  {
+   "id": "asa_ouro",
+   "arquivo": "pecas/forma2/asa_ouro.png",
+   "tamanho_px": [
+    58,
+    57
+   ],
+   "canto_na_celula_px": [
+    22,
+    25
+   ],
+   "pivo_px_na_peca": [
+    50.0,
+    28.0
+   ],
+   "pivo_unidades_do_centro": [
+    -2.5,
+    2.188
+   ],
+   "ordem_z": 0,
+   "movel": true
+  },
+  {
+   "id": "asa_carne",
+   "arquivo": "pecas/forma2/asa_carne.png",
+   "tamanho_px": [
+    63,
+    69
+   ],
+   "canto_na_celula_px": [
+    139,
+    24
+   ],
+   "pivo_px_na_peca": [
+    12.0,
+    25.0
+   ],
+   "pivo_unidades_do_centro": [
+    2.438,
+    2.438
+   ],
+   "ordem_z": 1,
+   "movel": true
+  },
+  {
+   "id": "tentaculos",
+   "arquivo": "pecas/forma2/tentaculos.png",
+   "tamanho_px": [
+    114,
+    50
+   ],
+   "canto_na_celula_px": [
+    59,
+    102
+   ],
+   "pivo_px_na_peca": [
+    53.0,
+    9.0
+   ],
+   "pivo_unidades_do_centro": [
+    0.0,
+    -1.438
+   ],
+   "ordem_z": 2,
+   "movel": true
+  },
+  {
+   "id": "tronco",
+   "arquivo": "pecas/forma2/tronco.png",
+   "tamanho_px": [
+    107,
+    85
+   ],
+   "canto_na_celula_px": [
+    57,
+    24
+   ],
+   "pivo_px_na_peca": [
+    55.0,
+    64.0
+   ],
+   "pivo_unidades_do_centro": [
+    0.0,
+    0.0
+   ],
+   "ordem_z": 3,
+   "movel": false
+  },
+  {
+   "id": "braco_esq",
+   "arquivo": "pecas/forma2/braco_esq.png",
+   "tamanho_px": [
+    50,
+    54
+   ],
+   "canto_na_celula_px": [
+    33,
+    79
+   ],
+   "pivo_px_na_peca": [
+    38.0,
+    6.0
+   ],
+   "pivo_unidades_do_centro": [
+    -2.562,
+    0.188
+   ],
+   "ordem_z": 4,
+   "movel": true
+  },
+  {
+   "id": "braco_dir",
+   "arquivo": "pecas/forma2/braco_dir.png",
+   "tamanho_px": [
+    46,
+    60
+   ],
+   "canto_na_celula_px": [
+    135,
+    75
+   ],
+   "pivo_px_na_peca": [
+    12.0,
+    10.0
+   ],
+   "pivo_unidades_do_centro": [
+    2.188,
+    0.188
+   ],
+   "ordem_z": 5,
+   "movel": true
+  },
+  {
+   "id": "nucleo",
+   "arquivo": "pecas/forma2/nucleo.png",
+   "tamanho_px": [
+    33,
+    73
+   ],
+   "canto_na_celula_px": [
+    88,
+    45
+   ],
+   "pivo_px_na_peca": [
+    15.0,
+    40.0
+   ],
+   "pivo_unidades_do_centro": [
+    -0.562,
+    0.188
+   ],
+   "ordem_z": 6,
+   "movel": true
+  },
+  {
+   "id": "cabeca",
+   "arquivo": "pecas/forma2/cabeca.png",
+   "tamanho_px": [
+    26,
+    33
+   ],
+   "canto_na_celula_px": [
+    95,
+    24
+   ],
+   "pivo_px_na_peca": [
+    12.0,
+    29.0
+   ],
+   "pivo_unidades_do_centro": [
+    -0.312,
+    2.188
+   ],
+   "ordem_z": 7,
+   "movel": true
+  }
+ ],
+ "ponto_fraco_nucleo": {
+  "posicao_px_sprite": [
+   82,
+   42
+  ],
+  "posicao_px_celula": [
+   103,
+   65
+  ],
+  "posicao_u_do_centro": [
+   -0.281,
+   0.719
+  ],
+  "hurtbox_ponto_fraco_u": [
+   1.1,
+   1.1
+  ],
+  "forma_hurtbox": "círculo/elipse inscrito no retângulo",
+  "observacao": "abre a janela de dano: mostrar nucleo_brilho_6f nesta posição"
+ },
+ "hurtbox_corpo_sugerida": {
+  "centro_u": [
+   -0.045,
+   0.53
+  ],
+  "tamanho_u": [
+   3.01,
+   2.645
+  ],
+  "obs": "corpo central da arte a PPU 32. Ver hurtbox_corpo_recomendada_final_u."
+ },
+ "hitbox_contato_dano_ao_heroi_sugerida": {
+  "centro_u": [
+   -0.045,
+   0.53
+  ],
+  "tamanho_u": [
+   2.675,
+   2.35
+  ],
+  "obs": "dano por contato só no corpo central"
+ },
+ "caixa_silhueta_total": {
+  "centro_u": [
+   0.0,
+   0.0
+  ],
+  "tamanho_u": [
+   5.625,
+   4.0
+  ]
+ },
+ "regras": {
+  "y_para_cima_no_unity": true,
+  "rotacao_positiva": "anti-horária (como no Unity, eixo Z)",
+  "bob_idle_px": 2
+ },
+ "ppu_nota": "CORRIGIDO: a v1 deste JSON usava ppu 16 (instrucao inicial). O codigo real do boss (BossLaser, GroundTentacle, strips v2 do boss) usa PPU 32 e o canvas de jogo e 768x432 (32 px por unidade): a PPU 16 deixaria o boss com o DOBRO do tamanho (F1 11 u de largura). Todos os valores em unidades (u) abaixo foram divididos por 2. Escala recomendada em BossFormVisual.SetForm: 1.0 / 1.0 / 1.0 (1 px da arte = 1 px da tela).",
+ "hurtbox_corpo_recomendada_final_u": {
+  "tamanho_u": [
+   3.6,
+   3.2
+  ],
+  "obs": "corpo 3.0x2.65 u; +20% de folga"
+ },
+ "pontos_vfx_u_do_centro": {
+  "olhos": [
+   [
+    -0.469,
+    1.281
+   ],
+   [
+    0.031,
+    1.281
+   ]
+  ],
+  "boca_ou_origem_sonica": [
+   -0.219,
+   0.031
+  ],
+  "nucleo": [
+   -0.281,
+   0.719
+  ],
+  "nota": "y para cima. Origem dos feixes do Olhar Duplo (F1/F2) e da Rajada Sonica (F2); F3 usa o nucleo."
+ }
+}

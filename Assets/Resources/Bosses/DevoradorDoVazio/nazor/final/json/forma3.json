@@ -1,0 +1,324 @@
+{
+ "forma": 3,
+ "nome": "A Fenda Coroada",
+ "ppu": 32,
+ "filtro": "Point (no filter)",
+ "compressao": "None",
+ "mipmaps": false,
+ "pivo_normalizado": [
+  0.5,
+  0.5
+ ],
+ "celula_px": [
+  160,
+  192
+ ],
+ "celula_u": [
+  5.0,
+  6.0
+ ],
+ "sprite_repouso_px": [
+  108,
+  146
+ ],
+ "cor_da_borda_rgb": [
+  130,
+  225,
+  255
+ ],
+ "animacoes": {
+  "idle": {
+   "arquivo": "sheets/forma3_idle_8f.png",
+   "frames": 8,
+   "fps": 8,
+   "loop": true,
+   "celula_px": [
+    160,
+    192
+   ],
+   "descricao": "flutuação, batida de asas/garras, véu/tentáculos e núcleo/olhos pulsando"
+  },
+  "dano": {
+   "arquivo": "sheets/forma3_dano_2f.png",
+   "frames": 2,
+   "fps": 12,
+   "loop": false,
+   "celula_px": [
+    160,
+    192
+   ],
+   "descricao": "frame 0: silhueta em 3 tons da cor da borda; frame 1: só as luzes, com recuo"
+  },
+  "ataque": {
+   "arquivo": "sheets/forma3_ataque_4f.png",
+   "frames": 4,
+   "fps": 10,
+   "loop": false,
+   "celula_px": [
+    160,
+    192
+   ],
+   "descricao": "antecipação, carga, liberação, recuperação (genérico, serve de base para os ataques)"
+  },
+  "morte": {
+   "arquivo": "sheets/forma3_morte_8f.png",
+   "frames": 8,
+   "fps": 8,
+   "loop": false,
+   "celula_px": [
+    160,
+    192
+   ],
+   "descricao": "a fenda se abre ao meio, o anel solar se parte e voa, raios de luz, dissolução em estrelas"
+  },
+  "nucleo_brilho": {
+   "arquivo": "sheets/forma3_nucleo_brilho_6f.png",
+   "frames": 6,
+   "fps": 8,
+   "loop": true,
+   "celula_px": [
+    64,
+    112
+   ],
+   "descricao": "overlay do ponto fraco (janela de dano). Desenhar sobre o boss, centrado na posição do núcleo, blend normal"
+  }
+ },
+ "pecas": [
+  {
+   "id": "halo",
+   "arquivo": "pecas/forma3/halo.png",
+   "tamanho_px": [
+    75,
+    75
+   ],
+   "canto_na_celula_px": [
+    43,
+    25
+   ],
+   "pivo_px_na_peca": [
+    37.0,
+    37.0
+   ],
+   "pivo_unidades_do_centro": [
+    0.0,
+    2.125
+   ],
+   "ordem_z": 0,
+   "movel": true
+  },
+  {
+   "id": "garra_esq",
+   "arquivo": "pecas/forma3/garra_esq.png",
+   "tamanho_px": [
+    46,
+    87
+   ],
+   "canto_na_celula_px": [
+    27,
+    62
+   ],
+   "pivo_px_na_peca": [
+    37.0,
+    27.0
+   ],
+   "pivo_unidades_do_centro": [
+    -1.0,
+    0.438
+   ],
+   "ordem_z": 1,
+   "movel": true
+  },
+  {
+   "id": "garra_dir",
+   "arquivo": "pecas/forma3/garra_dir.png",
+   "tamanho_px": [
+    44,
+    85
+   ],
+   "canto_na_celula_px": [
+    87,
+    62
+   ],
+   "pivo_px_na_peca": [
+    7.0,
+    27.0
+   ],
+   "pivo_unidades_do_centro": [
+    0.875,
+    0.438
+   ],
+   "ordem_z": 2,
+   "movel": true
+  },
+  {
+   "id": "tronco",
+   "arquivo": "pecas/forma3/tronco.png",
+   "tamanho_px": [
+    55,
+    94
+   ],
+   "canto_na_celula_px": [
+    52,
+    40
+   ],
+   "pivo_px_na_peca": [
+    28.0,
+    56.0
+   ],
+   "pivo_unidades_do_centro": [
+    0.0,
+    0.0
+   ],
+   "ordem_z": 3,
+   "movel": false
+  },
+  {
+   "id": "veu",
+   "arquivo": "pecas/forma3/veu.png",
+   "tamanho_px": [
+    57,
+    39
+   ],
+   "canto_na_celula_px": [
+    54,
+    127
+   ],
+   "pivo_px_na_peca": [
+    28.0,
+    8.0
+   ],
+   "pivo_unidades_do_centro": [
+    0.125,
+    -2.438
+   ],
+   "ordem_z": 4,
+   "movel": true
+  },
+  {
+   "id": "cosmos",
+   "arquivo": "pecas/forma3/cosmos.png",
+   "tamanho_px": [
+    31,
+    87
+   ],
+   "canto_na_celula_px": [
+    65,
+    60
+   ],
+   "pivo_px_na_peca": [
+    16.0,
+    43.0
+   ],
+   "pivo_unidades_do_centro": [
+    0.062,
+    -0.438
+   ],
+   "ordem_z": 5,
+   "movel": true
+  },
+  {
+   "id": "cabeca",
+   "arquivo": "pecas/forma3/cabeca.png",
+   "tamanho_px": [
+    31,
+    27
+   ],
+   "canto_na_celula_px": [
+    65,
+    40
+   ],
+   "pivo_px_na_peca": [
+    14.0,
+    23.0
+   ],
+   "pivo_unidades_do_centro": [
+    -0.062,
+    2.062
+   ],
+   "ordem_z": 6,
+   "movel": true
+  }
+ ],
+ "ponto_fraco_nucleo": {
+  "posicao_px_sprite": [
+   53,
+   73
+  ],
+  "posicao_px_celula": [
+   79,
+   96
+  ],
+  "posicao_u_do_centro": [
+   -0.031,
+   0.0
+  ],
+  "hurtbox_ponto_fraco_u": [
+   1.1,
+   2.0
+  ],
+  "forma_hurtbox": "círculo/elipse inscrito no retângulo",
+  "observacao": "abre a janela de dano: mostrar nucleo_brilho_6f nesta posição"
+ },
+ "hurtbox_corpo_sugerida": {
+  "centro_u": [
+   0.045,
+   -0.22
+  ],
+  "tamanho_u": [
+   1.66,
+   3.545
+  ],
+  "obs": "corpo central da arte a PPU 32. Ver hurtbox_corpo_recomendada_final_u."
+ },
+ "hitbox_contato_dano_ao_heroi_sugerida": {
+  "centro_u": [
+   0.045,
+   -0.22
+  ],
+  "tamanho_u": [
+   1.475,
+   3.15
+  ],
+  "obs": "dano por contato só no corpo central"
+ },
+ "caixa_silhueta_total": {
+  "centro_u": [
+   -0.03,
+   0.015
+  ],
+  "tamanho_u": [
+   3.25,
+   4.405
+  ]
+ },
+ "regras": {
+  "y_para_cima_no_unity": true,
+  "rotacao_positiva": "anti-horária (como no Unity, eixo Z)",
+  "bob_idle_px": 3
+ },
+ "ppu_nota": "CORRIGIDO: a v1 deste JSON usava ppu 16 (instrucao inicial). O codigo real do boss (BossLaser, GroundTentacle, strips v2 do boss) usa PPU 32 e o canvas de jogo e 768x432 (32 px por unidade): a PPU 16 deixaria o boss com o DOBRO do tamanho (F1 11 u de largura). Todos os valores em unidades (u) abaixo foram divididos por 2. Escala recomendada em BossFormVisual.SetForm: 1.0 / 1.0 / 1.0 (1 px da arte = 1 px da tela).",
+ "hurtbox_corpo_recomendada_final_u": {
+  "tamanho_u": [
+   2.4,
+   4.4
+  ],
+  "obs": "corpo 1.66x3.55 u; +40% de folga (alto e estreito)"
+ },
+ "pontos_vfx_u_do_centro": {
+  "olhos": [
+   [
+    -0.031,
+    0.0
+   ]
+  ],
+  "boca_ou_origem_sonica": [
+   -0.031,
+   0.0
+  ],
+  "nucleo": [
+   -0.031,
+   0.0
+  ],
+  "nota": "y para cima. Origem dos feixes do Olhar Duplo (F1/F2) e da Rajada Sonica (F2); F3 usa o nucleo."
+ }
+}

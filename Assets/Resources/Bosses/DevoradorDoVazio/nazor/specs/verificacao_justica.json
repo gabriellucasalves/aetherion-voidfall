@@ -1,0 +1,131 @@
+{
+ "desabamento_palacio": {
+  "ondas": [
+   {
+    "onda": 1,
+    "intervalos_seguros": [
+     [
+      39.52,
+      45.97
+     ],
+     [
+      50.02,
+      54.37
+     ]
+    ],
+    "maior_vao_u": 6.45,
+    "distancia_maxima_ate_vao_u": 4.03,
+    "telegrafo_s": 1.1,
+    "tempo_necessario_s": 1.0,
+    "ok": true
+   },
+   {
+    "onda": 2,
+    "intervalos_seguros": [
+     [
+      41.62,
+      48.07
+     ],
+     [
+      54.23,
+      58.5
+     ]
+    ],
+    "maior_vao_u": 6.45,
+    "distancia_maxima_ate_vao_u": 4.12,
+    "telegrafo_s": 1.0,
+    "pior_transicao_u": 3.03,
+    "tempo_necessario_s": 0.81,
+    "janela_disponivel_s": 1.35,
+    "ok": true
+   },
+   {
+    "onda": 3,
+    "intervalos_seguros": [
+     [
+      39.52,
+      43.87
+     ],
+     [
+      50.02,
+      56.48
+     ]
+    ],
+    "maior_vao_u": 6.46,
+    "distancia_maxima_ate_vao_u": 3.03,
+    "telegrafo_s": 0.9,
+    "pior_transicao_u": 3.03,
+    "tempo_necessario_s": 0.81,
+    "janela_disponivel_s": 1.25,
+    "ok": true
+   }
+  ],
+  "cacos": "1 por vao, nunca nas duas faixas do mesmo vao (por construcao)",
+  "ok": true
+ },
+ "chuva_eclipse": {
+  "vao_entre_colunas_u": 1.7,
+  "hitbox_heroi_u": 0.55,
+  "folga_u": 1.15,
+  "enrage_vao_u": 1.5,
+  "enrage_folga_u": 0.95,
+  "telegrafo_s": 1.05,
+  "ok": true
+ },
+ "garras_do_vazio": {
+  "vao_entre_garras_u": {
+   "G1-G2": 2.2,
+   "G1-G3": 2.2
+  },
+  "folga_heroi_u": 1.65,
+  "telegrafo_s": 0.9,
+  "intervalo_s": 0.55,
+  "intervalo_enrage_s": 0.44,
+  "tempo_para_reposicionar_s": 0.55,
+  "nota": "G2/G3 = G1 +- 3.8 u; vao 2.2 u; heroi percorre 1.9 u ate o centro do vao em 0.35 s (5.4 u/s)",
+  "ok": true
+ },
+ "fenda_estelar": {
+  "ponto_A_dist_u": 4.2,
+  "tempo_A_s": 1.03,
+  "ponto_B_dist_u": 10.5,
+  "tempo_B_s": 2.19,
+  "telegrafo_total_s": 1.6,
+  "ponto_seguro_largura_u": 3.0,
+  "largura_enrage_u": 3.4,
+  "ok": true
+ },
+ "telegrafos": {
+  "valores_s": {
+   "olhar_duplo F1": 0.75,
+   "olhar_duplo F3": 0.7,
+   "varredura_rubra": 0.85,
+   "erupcao F1": 1.0,
+   "erupcao F2": 0.95,
+   "erupcao F3": 0.85,
+   "mergulho": 0.85,
+   "descida_nucleo": 0.6,
+   "rajada_sonica(2a/3a)": 0.7,
+   "chuva_eclipse": 1.05,
+   "desabamento(3a onda)": 0.9,
+   "combo(olhar)": 0.75,
+   "combo(mergulho)": 0.85,
+   "fenda_estelar": 1.6,
+   "garras(cada)": 0.9,
+   "enrage: telegrafo minimo": 0.6
+  },
+  "minimo_s": 0.6,
+  "ok": true
+ },
+ "dano_teorico_se_tudo_acertasse": {
+  "olhar_duplo F1 (2 salvas x 2 feixes)": 64.0,
+  "olhar_duplo F3 (3 salvas x 2 feixes)": 124.8,
+  "varredura_rubra (ida+volta, 1 acerto cada)": 44.0,
+  "rajada_sonica (3 salvas x 3 ondas)": 207.0,
+  "chuva_eclipse (3 ondas x 5)": 468.0,
+  "desabamento (3 colunas)": 75.9,
+  "fenda_estelar (2 varreduras)": 78.0,
+  "garras (4)": 145.6
+ },
+ "nota_dano": "Valores teoricos antes da defesa do heroi e fora da hitbox real: a mira trava, nenhuma execucao acerta tudo. Referencia: heroi 160 HP + 110 escudo = 270."
+}

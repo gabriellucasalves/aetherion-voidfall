@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class VoidDevourerBoss : MonoBehaviour
+public partial class VoidDevourerBoss : MonoBehaviour
 {
     public enum State
     {
@@ -22,7 +22,11 @@ public class VoidDevourerBoss : MonoBehaviour
         RedSweep,
         TentacleEruption,
         SummonMinions,
-        DescentExposed
+        DescentExposed,
+        PalaceCollapse,
+        GlareDiveCombo,
+        StellarRift,
+        VoidClaws
     }
 
     static Sprite[] _vooFrames;
@@ -123,6 +127,14 @@ public class VoidDevourerBoss : MonoBehaviour
     public bool IsDissolving { get; set; }
     public bool IsChargingAttack => _isChargingLaser;
     public bool IsDamageFlashing => _flashTimer > 0f;
+    public BoxCollider2D BodyHurtbox => _bodyHurtbox;
+    public BossNucleus Nucleus => _nucleus;
+    public float FlashTimer => _flashTimer;
+    public bool IsEnraged => _isEnraged;
+    public float EnrageCadence => _enrageCadence;
+    public int CurrentCycleIndex => _cycleIndex;
+    bool _isEnraged;
+    float _enrageCadence = 1f;
 
     // Intro dramatic speech & emergence
     float _introTotalDuration;
@@ -154,7 +166,7 @@ public class VoidDevourerBoss : MonoBehaviour
         _bodyHurtbox = gameObject.AddComponent<BoxCollider2D>();
         _bodyHurtbox.isTrigger = true;
         _bodyHurtbox.size = new Vector2(3.5f, 3.5f);
-        _bodyHurtbox.offset = Vector2.zero;
+        _bodyHurtbox.offset = new Vector2(-0.015f, 0.545f);
 
         _enemyController = gameObject.AddComponent<EnemyController>();
         _enemyController.ExternalBrain = true;
@@ -172,17 +184,29 @@ public class VoidDevourerBoss : MonoBehaviour
         _health.Configure(BossData.MaxHealth);
         _health.Died += OnBossDied;
         _health.Changed += OnHealthChanged;
+        _health.Damaged += ReactToDamage;
 
         // Child object for the exposed nucleus
         var nucGo = new GameObject("NucleoExposto");
         nucGo.transform.SetParent(transform, false);
-        nucGo.transform.localPosition = new Vector3(-0.3125f, -0.9375f, 0f);
+        nucGo.transform.localPosition = new Vector3(-0.031f, 0.281f, 0f);
         _nucleus = nucGo.AddComponent<BossNucleus>();
         _nucleus.Setup(this);
 
         gameObject.AddComponent<BossFormVisual>().Setup(this);
         _healthBar?.SetForm(1);
         StartIntro();
+    }
+
+    public void SetFormHurtbox(int form)
+    {
+        var data = NazorSheets.Form(form);
+        if (_bodyHurtbox != null) { _bodyHurtbox.size = data.BodySize; _bodyHurtbox.offset = data.BodyCenter; }
+        if (_nucleus != null)
+        {
+            _nucleus.transform.localPosition = data.Nucleus;
+            _nucleus.SetForm(form, data.NucleusSize.x * .5f);
+        }
     }
 
     void OnHealthChanged(HealthSystem h)
@@ -333,7 +357,9 @@ public class VoidDevourerBoss : MonoBehaviour
 
     void UpdateFlying()
     {
-        _stateTimer -= Time.deltaTime * CadenceMultiplier;
+        if (_phase == 3 && !_isEnraged && _health.Current < _health.Max * .3f)
+        { StartCoroutine(EnterEnrage()); return; }
+        _stateTimer -= Time.deltaTime * (CadenceMultiplier / _enrageCadence);
         _flightBobClock += Time.deltaTime * 2.2f;
 
         // Hover smoothly across arena (x = 42 .. 54)
@@ -362,7 +388,7 @@ public class VoidDevourerBoss : MonoBehaviour
         }
     }
 
-    float CadenceMultiplier => BossData.FormCadence(_phase) * ((_enemyController != null && _enemyController.IsSlowed) ? .85f : 1f);
+    public float CadenceMultiplier => BossData.FormCadence(_phase) * _enrageCadence * ((_enemyController != null && _enemyController.IsSlowed) ? .85f : 1f);
     public float AttackDamageMultiplier => BossData.FormDamage(_phase);
     public NazorPose AnimationPose { get; private set; }
     float _poseStarted;
@@ -371,6 +397,11 @@ public class VoidDevourerBoss : MonoBehaviour
     public int DiveLaunches { get; private set; }
     public int SonicVolleys { get; private set; }
     public int EclipseVolleys { get; private set; }
+    public int CollapseWaves { get; private set; }
+    public int ComboLaunches { get; private set; }
+    public int RiftSweeps { get; private set; }
+    public int ClawStrikes { get; private set; }
+    public int EnrageEntries { get; private set; }
     public void SetAnimationPose(NazorPose pose) { AnimationPose = pose; _poseStarted = Time.time; }
 
     void ChooseNextAttack()
@@ -393,24 +424,27 @@ public class VoidDevourerBoss : MonoBehaviour
         else if (_phase == 2)
         {
             // Aimed sonic fans threaten both the floor and elevated platforms.
-            switch (_cycleIndex++ % 4)
+            switch (_cycleIndex++ % 5)
             {
                 case 0: StartCoroutine(AttackSonicBurst()); break;
-                case 1: StartCoroutine(AttackTentacleEruption(4, .95f)); break;
-                case 2: StartCoroutine(AttackDive()); break;
-                case 3: StartCoroutine(AttackDescentExposed(2.6f)); break;
+                case 1: StartCoroutine(AttackPalaceCollapse()); break;
+                case 2: StartCoroutine(AttackTentacleEruption(4, .95f)); break;
+                case 3: StartCoroutine(AttackGlareDiveCombo()); break;
+                case 4: StartCoroutine(AttackDescentExposed(2.6f)); break;
             }
         }
         else
         {
             // The crowned final form calls down telegraphed eclipse projectiles.
-            switch (_cycleIndex++ % 5)
+            switch (_cycleIndex++ % 7)
             {
                 case 0: StartCoroutine(AttackEclipseRain()); break;
                 case 1: StartCoroutine(AttackDoubleGlare(3, .70f)); break;
-                case 2: StartCoroutine(AttackDive()); break;
+                case 2: StartCoroutine(AttackVoidClaws()); break;
                 case 3: StartCoroutine(AttackTentacleEruption(5, .85f, .35f)); break;
-                case 4: StartCoroutine(AttackDescentExposed(2.2f)); break;
+                case 4: StartCoroutine(AttackDive()); break;
+                case 5: StartCoroutine(AttackStellarRift()); break;
+                case 6: StartCoroutine(AttackDescentExposed(2.2f)); break;
             }
         }
     }
@@ -422,16 +456,17 @@ public class VoidDevourerBoss : MonoBehaviour
             if (_state != State.Attacking) yield break;
             SetAnimationPose(NazorPose.Roar);
             _isChargingLaser = true;
-            float warning = volley == 0 ? .95f : .70f;
-            Vector3 origin = transform.position + Vector3.up * .8f;
+            float warning = Telegraph(volley == 0 ? .95f : .70f);
+            NazorVfx.Mark("sonica", false);
+            Vector3 origin = VfxPoint(NazorSheets.Form(_phase).Mouth);
+            TrackVfx(NazorVfx.Play("sonic_carga_magenta_32x32_6f", origin, loop: true, duration: warning));
             Vector2 direction = (_target != null ? (Vector2)(_target.position + Vector3.up * .4f - origin) : Vector2.left).normalized;
             var aims = new GameObject[3];
             for (int i = 0; i < 3; i++)
             {
                 Vector2 fan = Quaternion.Euler(0, 0, (i - 1) * 14f) * direction;
-                aims[i] = BossLaser.SpawnAimLine(null, origin, fan, 24f, warning);
-                foreach (var renderer in aims[i].GetComponentsInChildren<SpriteRenderer>())
-                    renderer.color = new Color(.8f, .4f, 1f, .7f);
+                aims[i] = BossLaser.SpawnAimLine(null, origin, fan, 24f, warning, "magenta");
+
                 _activeAims.Add(aims[i]);
             }
             GameAudio.Emit(GameAudio.Cue.BossSonicCharge, transform.position);
@@ -452,10 +487,12 @@ public class VoidDevourerBoss : MonoBehaviour
             _isChargingLaser = false;
             SetAnimationPose(NazorPose.Release);
             SonicVolleys++;
+            NazorVfx.Mark("sonica", true);
+            NazorVfx.Juice("sonica");
             for (int i = -1; i <= 1; i++)
                 NazorHazard.Sonic(this, origin, (Vector2)(Quaternion.Euler(0, 0, i * 14f) * direction), 20f * AttackDamageMultiplier);
             GameAudio.Emit(GameAudio.Cue.BossSonicWave, origin);
-            CameraFollow.Shake(.09f, .06f);
+
             yield return new WaitForSeconds(.55f);
         }
         FinishAttack(.7f);
@@ -464,7 +501,7 @@ public class VoidDevourerBoss : MonoBehaviour
     IEnumerator AttackEclipseRain()
     {
         _isChargingLaser = true;
-        for (int volley = 0; volley < 3; volley++)
+        for (int volley = 0; volley < (_isEnraged ? 4 : 3); volley++)
         {
             if (_state != State.Attacking) yield break;
             SetAnimationPose(NazorPose.Conjure);
@@ -477,15 +514,15 @@ public class VoidDevourerBoss : MonoBehaviour
             EclipseVolleys++;
             for (int lane = -2; lane <= 2; lane++)
             {
-                float x = Mathf.Clamp(target + lane * 2.3f, 37f, 59f);
+                float x = Mathf.Clamp(target + lane * (_isEnraged ? 2.1f : 2.3f), 37f, 59f);
                 float surface = ground;
                 foreach (var platform in T3RuinsFrontLevel.Platforms)
                     if (x >= platform.Left && x <= platform.Right && platform.Top <= feet + .6f)
                         surface = Mathf.Max(surface, platform.Top);
-                NazorHazard.Eclipse(this, new Vector3(x, surface, 0f), 24f * AttackDamageMultiplier, ground, sky);
+                NazorHazard.Eclipse(this, new Vector3(x, surface, 0f), 24f * AttackDamageMultiplier, ground, sky, Telegraph(NazorHazard.WarningSeconds));
             }
             GameAudio.Emit(GameAudio.Cue.BossVoidMark, transform.position);
-            yield return new WaitForSeconds(NazorHazard.WarningSeconds);
+            yield return new WaitForSeconds(Telegraph(NazorHazard.WarningSeconds));
             SetAnimationPose(NazorPose.Release);
             yield return new WaitForSeconds(.70f);
         }
@@ -493,22 +530,30 @@ public class VoidDevourerBoss : MonoBehaviour
         FinishAttack(.8f);
     }
 
-    IEnumerator AttackDive()
+    IEnumerator AttackDive() { return AttackDiveCore(true); }
+
+    int _biteHitstop = 60;
+    IEnumerator AttackDiveCore(bool finish)
     {
+        _biteHitstop = finish ? 60 : 50;
         if (_state != State.Attacking) yield break;
         SetAnimationPose(NazorPose.Windup);
         _isChargingLaser = true;
         float ground = _stage != null ? _stage.GroundTop : -2f;
         Vector3 start = transform.position;
         Vector3 target = new Vector3(Mathf.Clamp(_target != null ? _target.position.x : 48f, 39.5f, 56.5f), ground + 1.6f, 0);
+        LastDiveTarget = target;
         Vector2 direction = (target - start).normalized;
-        var warning = BossLaser.SpawnAimLine(null, start, direction, Vector3.Distance(start, target) + 2f, .85f);
+        float diveWarning = Telegraph(.85f);
+        NazorVfx.Mark("mergulho", false);
+        var warning = BossLaser.SpawnAimLine(null, start, direction, Vector3.Distance(start, target) + 2f, diveWarning);
+        TrackVfx(NazorVfx.Play("marcador_chao_vermelho_48x12_4f", new Vector3(target.x, ground, 0), loop: true, duration: diveWarning, sortingOrder: 17));
         _activeAims.Add(warning);
         GameAudio.Emit(GameAudio.Cue.BossWarning, transform.position, .9f);
         // The marked dive is locked from the start; it never homes after launch.
-        for (float t = 0; t < .85f; t += Time.deltaTime)
+        for (float t = 0; t < diveWarning; t += Time.deltaTime)
         {
-            transform.position = start + new Vector3(0f, Mathf.Sin(t / .85f * Mathf.PI) * .45f, 0f);
+            transform.position = start + new Vector3(0f, Mathf.Sin(t / diveWarning * Mathf.PI) * .45f, 0f);
             yield return null;
         }
         _activeAims.Remove(warning);
@@ -516,6 +561,8 @@ public class VoidDevourerBoss : MonoBehaviour
         _isChargingLaser = false;
         SetAnimationPose(NazorPose.Dive);
         DiveLaunches++;
+        NazorVfx.Mark("mergulho", true);
+        var trail = TrackVfx(NazorVfx.Play("mergulho_rastro_vermelho_64x64_4f", transform.position, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, loop: true, parent: transform));
         GameAudio.Emit(GameAudio.Cue.BossRoar, transform.position, .8f);
         float side = Mathf.Sign(target.x - start.x);
         Vector3 end = new Vector3(Mathf.Clamp(target.x + side * 3f, 38.5f, 57.5f), ground + 1.9f, 0);
@@ -527,6 +574,11 @@ public class VoidDevourerBoss : MonoBehaviour
             yield return null;
         }
         transform.position = end;
+        if (trail != null) Destroy(trail);
+        NazorVfx.Play("mergulho_poeira_64x32_8f", new Vector3(end.x, ground, 0));
+        NazorVfx.Play("mergulho_onda_choque_128x24_6f", new Vector3(end.x, ground, 0));
+        NazorVfx.Juice(finish ? "mergulho" : "combo");
+        GameAudio.Emit(GameAudio.Cue.Slam, end);
         SetAnimationPose(NazorPose.Recover);
         // A melee-reachable punish window follows every successful/evaded dive.
         _nucleus?.SetActive(true);
@@ -538,7 +590,7 @@ public class VoidDevourerBoss : MonoBehaviour
             transform.position = Vector3.Lerp(end, flight, Mathf.SmoothStep(0f, 1f, t / .65f));
             yield return null;
         }
-        FinishAttack(.45f);
+        if (finish) FinishAttack(.45f);
     }
 
     bool CanSummon()
@@ -553,22 +605,28 @@ public class VoidDevourerBoss : MonoBehaviour
         return alive < 3;
     }
 
-    IEnumerator AttackDoubleGlare(int volleys, float warningTime)
+    IEnumerator AttackDoubleGlare(int volleys, float warningTime) { return AttackDoubleGlareCore(volleys, warningTime, true); }
+
+    IEnumerator AttackDoubleGlareCore(int volleys, float warningTime, bool finish)
     {
+        warningTime = Telegraph(warningTime);
         for (int v = 0; v < volleys; v++)
         {
             if (_state != State.Attacking) yield break;
 
-            Vector3 eyeL = transform.position + new Vector3(-0.03125f - 0.45f, 0.34375f, 0f);
-            Vector3 eyeR = transform.position + new Vector3(-0.03125f + 0.45f, 0.34375f, 0f);
+            var eyes = NazorSheets.Form(_phase).Eyes;
+            Vector3 eyeL = VfxPoint(eyes[0]);
+            Vector3 eyeR = VfxPoint(eyes[eyes.Length - 1]);
+            NazorVfx.Mark("olhar", false);
+            TrackVfx(NazorVfx.Play(_phase == 3 ? "olho_carga_ciano_32x32_6f" : "olho_carga_vermelho_32x32_6f", eyeL, loop: true, duration: warningTime));
             Vector3 targetPos = _target != null ? _target.position + Vector3.up * 0.4f : transform.position + Vector3.down * 4f;
 
             Vector2 dirL = (targetPos - eyeL).normalized;
             Vector2 dirR = (targetPos - eyeR).normalized;
 
             SetAnimationPose(NazorPose.Focus);
-            var aimL = BossLaser.SpawnAimLine(transform.parent, eyeL, dirL, 25f, warningTime);
-            var aimR = BossLaser.SpawnAimLine(transform.parent, eyeR, dirR, 25f, warningTime);
+            var aimL = BossLaser.SpawnAimLine(transform.parent, eyeL, dirL, 25f, warningTime, _phase == 3 ? "ciano" : "vermelho");
+            var aimR = BossLaser.SpawnAimLine(transform.parent, eyeR, dirR, 25f, warningTime, _phase == 3 ? "ciano" : "vermelho");
             _activeAims.Add(aimL);
             _activeAims.Add(aimR);
 
@@ -602,9 +660,10 @@ public class VoidDevourerBoss : MonoBehaviour
             _isFiringLaser = true;
             SetAnimationPose(NazorPose.Release);
             FiredVolleys++;
+            NazorVfx.Mark("olhar", true);
             GameAudio.Emit(GameAudio.Cue.BossBeam, transform.position);
-            var beamL = BossLaser.FireDoubleGlareBeam(eyeL, dirL, 16f * AttackDamageMultiplier, 0.5f);
-            var beamR = BossLaser.FireDoubleGlareBeam(eyeR, dirR, 16f * AttackDamageMultiplier, 0.5f);
+            var beamL = BossLaser.FireDoubleGlareBeam(eyeL, dirL, 16f * AttackDamageMultiplier, .55f, finish ? 45 : 50, true, finish ? "olhar" : "combo");
+            var beamR = BossLaser.FireDoubleGlareBeam(eyeR, dirR, 16f * AttackDamageMultiplier, .55f, finish ? 45 : 50, false);
             _activeLasers.Add(beamL);
             _activeLasers.Add(beamR);
 
@@ -619,11 +678,13 @@ public class VoidDevourerBoss : MonoBehaviour
 
         _isChargingLaser = false;
         _isFiringLaser = false;
-        FinishAttack(pause: _phase == 3 ? 0.6f : _phase == 2 ? 0.8f : 1.0f);
+        if (finish) FinishAttack(pause: _phase == 3 ? 0.6f : _phase == 2 ? 0.8f : 1.0f);
     }
 
     IEnumerator AttackRedSweep(bool sweepBack, float warningTime, float dmg)
     {
+        warningTime = Telegraph(warningTime);
+        NazorVfx.Mark("varredura", false);
         if (_state != State.Attacking) yield break;
 
         float groundY = _stage != null ? _stage.GroundTop : -2.0f;
@@ -631,6 +692,8 @@ public class VoidDevourerBoss : MonoBehaviour
         float endX = startX > 48f ? 37.5f : 58.5f;
 
         GameAudio.Emit(GameAudio.Cue.BossWarning, transform.position, 0.8f);
+        TrackVfx(NazorVfx.Play("marcador_chao_vermelho_48x12_4f", new Vector3(startX, groundY, 0), loop: true, duration: warningTime, sortingOrder: 17));
+        TrackVfx(NazorVfx.Column("varredura_coluna_aviso_vermelho_24x144_6f", new Vector3(startX, groundY, 0), 6f, duration: warningTime));
         // Warning spark on ground
         SetAnimationPose(NazorPose.Focus);
         _isChargingLaser = true;
@@ -655,6 +718,7 @@ public class VoidDevourerBoss : MonoBehaviour
         // Forward sweep
         SetAnimationPose(NazorPose.Release);
         GameAudio.Emit(GameAudio.Cue.BossBeam, transform.position);
+        NazorVfx.Mark("varredura", true);
         var sweepBeam = BossLaser.FireRedSweepBeam(transform, new Vector3(startX, groundY, 0f), dmg * AttackDamageMultiplier);
         _activeLasers.Add(sweepBeam);
 
@@ -668,7 +732,7 @@ public class VoidDevourerBoss : MonoBehaviour
                 yield break;
             }
             float curX = Mathf.Lerp(startX, endX, t / sweepDuration);
-            sweepBeam.UpdateSweep(transform.position + new Vector3(-0.03125f, 0.34375f, 0f), new Vector3(curX, groundY, 0f));
+            sweepBeam.UpdateSweep(VfxPoint(NazorSheets.Form(_phase).Eyes[0]), new Vector3(curX, groundY, 0f));
             yield return null;
         }
 
@@ -684,7 +748,7 @@ public class VoidDevourerBoss : MonoBehaviour
                     yield break;
                 }
                 float curX = Mathf.Lerp(endX, startX, t / sweepDuration);
-                sweepBeam.UpdateSweep(transform.position + new Vector3(-0.03125f, 0.34375f, 0f), new Vector3(curX, groundY, 0f));
+                sweepBeam.UpdateSweep(VfxPoint(NazorSheets.Form(_phase).Eyes[0]), new Vector3(curX, groundY, 0f));
                 yield return null;
             }
         }
@@ -701,6 +765,7 @@ public class VoidDevourerBoss : MonoBehaviour
 
     IEnumerator AttackTentacleEruption(int count, float warningTime, float waveDelay = 0f)
     {
+        warningTime = Telegraph(warningTime);
         SetAnimationPose(NazorPose.Conjure);
         GameAudio.Emit(GameAudio.Cue.BossWarning, transform.position, 0.8f);
         if (_state != State.Attacking) yield break;
@@ -781,10 +846,15 @@ public class VoidDevourerBoss : MonoBehaviour
 
     IEnumerator AttackDescentExposed(float duration)
     {
+        _biteHitstop = 60;
         if (_state != State.Attacking) yield break;
 
         _state = State.Descending;
         SetAnimationPose(NazorPose.Recover);
+        NazorVfx.Mark("nucleo", false);
+        _nucleus?.ShowWindow(true);
+        NazorVfx.Juice("nucleo");
+        GameAudio.Emit(GameAudio.Cue.BossRoar, transform.position, .6f);
 
         // Descend until nucleus is ~2 u above ground (reachable by melee and runic zone)
         float groundY = _stage != null ? _stage.GroundTop : -2.0f;
@@ -802,6 +872,7 @@ public class VoidDevourerBoss : MonoBehaviour
 
         // Enable exposed nucleus hurtbox!
         if (_nucleus != null) _nucleus.SetActive(true);
+        NazorVfx.Mark("nucleo", true);
 
         // Golden pulsing nucleus window
         for (float t = 0f; t < duration; t += Time.deltaTime)
@@ -812,7 +883,8 @@ public class VoidDevourerBoss : MonoBehaviour
                 yield break;
             }
             if (Random.value < 0.2f)
-                PixelBurst.Spawn(_nucleus.transform.position, new Color(1f, 0.88f, 0.35f), 2);
+                NazorVfx.Play("impacto_dourado_48x48_6f", _nucleus.transform.position);
+            PixelBurst.Spawn(_nucleus.transform.position, new Color(1f, 0.88f, 0.35f), 2);
             yield return null;
         }
 
@@ -867,7 +939,7 @@ public class VoidDevourerBoss : MonoBehaviour
             if (player != null)
             {
                 _nextContactDamageTime = Time.time + BossData.ContactCooldown;
-                EnemyController.DamagePlayer(player.transform, transform.position, 20f * AttackDamageMultiplier);
+                NazorVfx.DamagePlayer(player.transform, transform.position, 20f * AttackDamageMultiplier, _biteHitstop);
                 PixelBurst.Spawn(player.transform.position + Vector3.up * 0.5f, new Color(1f, 0.2f, 0.3f), 8);
                 break;
             }
@@ -880,7 +952,8 @@ public class VoidDevourerBoss : MonoBehaviour
         _isChargingLaser = false;
         _isFiringLaser = false;
         _state = State.Flying;
-        _stateTimer = pause;
+        _stateTimer = pause * (_isEnraged ? .8f : 1f);
+        ClearTransientVfx();
     }
 
     public void ForceStateFlying()
@@ -914,6 +987,7 @@ public class VoidDevourerBoss : MonoBehaviour
         {
             _health.Died -= OnBossDied;
             _health.Changed -= OnHealthChanged;
+            _health.Damaged -= ReactToDamage;
         }
     }
 
@@ -921,7 +995,7 @@ public class VoidDevourerBoss : MonoBehaviour
     {
         if (_health != null && !_health.IsDead && _state != State.Transition && _state != State.Defeated)
         {
-            _flashTimer = 0.06f;
+            // The Damaged event owns the two-frame response.
             DamageSystem.Apply(_health, amount);
             _healthBar?.SetHealth(_health.Current, _health.Max);
             CheckPhaseThresholds();
@@ -933,7 +1007,7 @@ public class VoidDevourerBoss : MonoBehaviour
         if (_state == State.Intro || _state == State.Transition || _state == State.Defeated)
             return 0f;
 
-        _flashTimer = 0.06f;
+        // The Damaged event owns the two-frame response.
 
         // Flying body takes 60% damage
         float mult = BossData.FlyingDamageMultiplier;
@@ -959,7 +1033,7 @@ public class VoidDevourerBoss : MonoBehaviour
         if (_state == State.Intro || _state == State.Transition || _state == State.Defeated)
             return;
 
-        _flashTimer = 0.06f;
+        // The Damaged event owns the two-frame response.
 
         // Exposed nucleus takes 150% damage!
         float mult = BossData.ExposedNucleusMultiplier;
@@ -976,6 +1050,7 @@ public class VoidDevourerBoss : MonoBehaviour
         {
             DamageSystem.Apply(_health, applied);
             _healthBar?.SetHealth(_health.Current, _health.Max);
+            NazorVfx.Play("impacto_dourado_48x48_6f", _nucleus.transform.position);
             PixelBurst.Spawn(_nucleus.transform.position, new Color(1f, 0.92f, 0.45f), 6);
             CheckPhaseThresholds();
         }
@@ -999,16 +1074,21 @@ public class VoidDevourerBoss : MonoBehaviour
 
     void CheckPlayerContact()
     {
+        // During a dive the bite owns damage/cooldown; the taller F3 body must
+        // not consume that window with its weaker generic contact first.
+        if (AnimationPose == NazorPose.Dive) return;
         if (_state == State.Intro || _state == State.Transition || _state == State.Defeated || Time.time < _nextContactDamageTime)
             return;
 
-        foreach (var col in Physics2D.OverlapBoxAll(transform.position, new Vector2(3.2f, 3.2f), 0f))
+        if (_target != null && Vector2.Distance(_target.position, transform.position) > 3.2f) return;
+        var contact = NazorSheets.Form(_phase);
+        foreach (var col in Physics2D.OverlapBoxAll(VfxPoint(contact.ContactCenter), contact.ContactSize, 0f))
         {
             var player = col.GetComponentInParent<PlayerController>();
             if (player != null)
             {
                 _nextContactDamageTime = Time.time + BossData.ContactCooldown;
-                EnemyController.DamagePlayer(player.transform, transform.position, BossData.ContactDamage * AttackDamageMultiplier);
+                NazorVfx.DamagePlayer(player.transform, transform.position, BossData.ContactDamage * AttackDamageMultiplier, 30);
                 break;
             }
         }
@@ -1026,6 +1106,8 @@ public class VoidDevourerBoss : MonoBehaviour
     public void CancelActiveAttacks()
     {
         StopAllCoroutines();
+        ClearTransientVfx();
+        RiftActive = false;
         foreach (var hazard in FindObjectsByType<NazorHazard>(FindObjectsSortMode.None))
             if (hazard.Owner == this) Destroy(hazard.gameObject);
         _isChargingLaser = false;
@@ -1045,6 +1127,7 @@ public class VoidDevourerBoss : MonoBehaviour
         // A huge attack therefore advances exactly one form and never skips it.
         SpecialController.AbortActive();
         _phase = targetPhase;
+        _flashTimer = 0f; // Transformation owns the visual, even after a recent core hit.
         _state = State.Transition;
         SetAnimationPose(NazorPose.Transform);
         CancelActiveAttacks();
@@ -1086,6 +1169,7 @@ public class VoidDevourerBoss : MonoBehaviour
     void UpdateAnimation()
     {
         if (_sr == null) return;
+        if (BossFormVisual.UseFinalSheets) { _flashTimer = Mathf.Max(0f, _flashTimer - Time.deltaTime); return; }
         // Forms two/three have their own complete articulated body, including hits.
         if (_phase > 1) { _flashTimer = Mathf.Max(0f, _flashTimer - Time.deltaTime); return; }
 
@@ -1141,6 +1225,7 @@ public class VoidDevourerBoss : MonoBehaviour
     {
         if (_state == State.Defeated || _phase < 3 || !_health.IsDead) return;
         _state = State.Defeated;
+        if (_enrageAura != null) Destroy(_enrageAura);
         SetAnimationPose(NazorPose.Dying);
         CancelActiveAttacks();
 
@@ -1153,21 +1238,47 @@ public class VoidDevourerBoss : MonoBehaviour
 public class BossNucleus : MonoBehaviour
 {
     VoidDevourerBoss _boss;
-    CircleCollider2D _collider;
+    PolygonCollider2D _collider;
+    public Collider2D Hurtbox => _collider;
 
     public void Setup(VoidDevourerBoss boss)
     {
         _boss = boss;
-        _collider = gameObject.AddComponent<CircleCollider2D>();
+        _collider = gameObject.AddComponent<PolygonCollider2D>();
         _collider.isTrigger = true;
-        _collider.radius = 0.3125f; // 10 px / 32
         _collider.offset = Vector2.zero;
         _collider.enabled = false; // Initially inactive
     }
 
+    GameObject _glow, _ring;
+    public bool IsExposed => _collider != null && _collider.enabled;
+    public void SetForm(int form, float radius)
+    {
+        Vector2 size = NazorSheets.Form(form).NucleusSize;
+        // An inscribed ellipse keeps the actual physics bounds equal to the JSON,
+        // including the tall F3 core, without scaling its glow or parent transform.
+        var points = new Vector2[24];
+        for (int i = 0; i < points.Length; i++)
+        { float angle = i * Mathf.PI * 2f / points.Length; points[i] = new Vector2(Mathf.Cos(angle)*size.x*.5f, Mathf.Sin(angle)*size.y*.5f); }
+        _collider.points = points;
+        transform.localScale = Vector3.one;
+        if (_glow != null) Destroy(_glow);
+        if (_ring != null) Destroy(_ring);
+        _glow = NazorVfx.Play($"forma{form}_nucleo_brilho_6f", transform.position, loop: true, sortingOrder: 16, parent: transform);
+        if (_glow != null) _glow.GetComponent<NazorVfxInstance>().Setup(NazorSheets.Get($"forma{form}_nucleo_brilho_6f"),8f,true,0f);
+        _ring = NazorVfx.Play("anel_nucleo_dourado_48x48_6f", transform.position, loop: true, sortingOrder: 19, parent: transform);
+        foreach (var go in new[] { _glow, _ring }) if (go != null) go.transform.localScale = Vector3.one;
+        ShowWindow(IsExposed);
+    }
+    public void ShowWindow(bool visible)
+    {
+        if (_glow != null) _glow.SetActive(visible);
+        if (_ring != null) _ring.SetActive(visible);
+    }
     public void SetActive(bool active)
     {
         if (_collider != null) _collider.enabled = active;
+        ShowWindow(active);
     }
 
     void OnTriggerEnter2D(Collider2D other)

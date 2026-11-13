@@ -1,0 +1,857 @@
+{
+ "aviso_mira_vermelho_16x8_4f": {
+  "arquivo": "aviso_mira_vermelho_16x8_4f.png",
+  "celula_px": [
+   16,
+   8
+  ],
+  "quadros": 4,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   0,
+   4
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Telegrafo de linha de mira (vermelho). SpriteRenderer drawMode=Tiled, size=(comprimento u, 0.25 u), pivot na origem do raio. Substitui as linhas de 1 px.",
+  "tiled": true
+ },
+ "aviso_mira_travada_vermelho_16x8_2f": {
+  "arquivo": "aviso_mira_travada_vermelho_16x8_2f.png",
+  "celula_px": [
+   16,
+   8
+  ],
+  "quadros": 2,
+  "fps": 16,
+  "loop": true,
+  "pivot_px": [
+   0,
+   4
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Linha de mira TRAVADA (vermelho) para os ultimos 0.32 s: preenchida, branca piscando. Tiled como a anterior.",
+  "tiled": true
+ },
+ "aviso_mira_magenta_16x8_4f": {
+  "arquivo": "aviso_mira_magenta_16x8_4f.png",
+  "celula_px": [
+   16,
+   8
+  ],
+  "quadros": 4,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   0,
+   4
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Telegrafo de linha de mira (magenta). SpriteRenderer drawMode=Tiled, size=(comprimento u, 0.25 u), pivot na origem do raio. Substitui as linhas de 1 px.",
+  "tiled": true
+ },
+ "aviso_mira_travada_magenta_16x8_2f": {
+  "arquivo": "aviso_mira_travada_magenta_16x8_2f.png",
+  "celula_px": [
+   16,
+   8
+  ],
+  "quadros": 2,
+  "fps": 16,
+  "loop": true,
+  "pivot_px": [
+   0,
+   4
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Linha de mira TRAVADA (magenta) para os ultimos 0.32 s: preenchida, branca piscando. Tiled como a anterior.",
+  "tiled": true
+ },
+ "aviso_mira_ciano_16x8_4f": {
+  "arquivo": "aviso_mira_ciano_16x8_4f.png",
+  "celula_px": [
+   16,
+   8
+  ],
+  "quadros": 4,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   0,
+   4
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Telegrafo de linha de mira (ciano). SpriteRenderer drawMode=Tiled, size=(comprimento u, 0.25 u), pivot na origem do raio. Substitui as linhas de 1 px.",
+  "tiled": true
+ },
+ "aviso_mira_travada_ciano_16x8_2f": {
+  "arquivo": "aviso_mira_travada_ciano_16x8_2f.png",
+  "celula_px": [
+   16,
+   8
+  ],
+  "quadros": 2,
+  "fps": 16,
+  "loop": true,
+  "pivot_px": [
+   0,
+   4
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Linha de mira TRAVADA (ciano) para os ultimos 0.32 s: preenchida, branca piscando. Tiled como a anterior.",
+  "tiled": true
+ },
+ "aviso_mira_dourado_16x8_4f": {
+  "arquivo": "aviso_mira_dourado_16x8_4f.png",
+  "celula_px": [
+   16,
+   8
+  ],
+  "quadros": 4,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   0,
+   4
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Telegrafo de linha de mira (dourado). SpriteRenderer drawMode=Tiled, size=(comprimento u, 0.25 u), pivot na origem do raio. Substitui as linhas de 1 px.",
+  "tiled": true
+ },
+ "aviso_mira_travada_dourado_16x8_2f": {
+  "arquivo": "aviso_mira_travada_dourado_16x8_2f.png",
+  "celula_px": [
+   16,
+   8
+  ],
+  "quadros": 2,
+  "fps": 16,
+  "loop": true,
+  "pivot_px": [
+   0,
+   4
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Linha de mira TRAVADA (dourado) para os ultimos 0.32 s: preenchida, branca piscando. Tiled como a anterior.",
+  "tiled": true
+ },
+ "olho_carga_vermelho_32x32_6f": {
+  "arquivo": "olho_carga_vermelho_32x32_6f.png",
+  "celula_px": [
+   32,
+   32
+  ],
+  "quadros": 6,
+  "fps": 12,
+  "loop": false,
+  "pivot_px": [
+   16,
+   16
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Brilho no olho durante o windup do Olhar Duplo (2 instancias, uma em cada olho; offset -0.45/+0.45 u, +0.34 u). 6 quadros crescendo; segurar o ultimo ate o disparo.",
+  "tiled": false
+ },
+ "olho_carga_ciano_32x32_6f": {
+  "arquivo": "olho_carga_ciano_32x32_6f.png",
+  "celula_px": [
+   32,
+   32
+  ],
+  "quadros": 6,
+  "fps": 12,
+  "loop": false,
+  "pivot_px": [
+   16,
+   16
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Brilho de olho da forma 3 (ciano) - mesmo uso, para Olhar Duplo da F3 e Fenda Estelar.",
+  "tiled": false
+ },
+ "laser_olhar_vermelho_16x14_4f": {
+  "arquivo": "laser_olhar_vermelho_16x14_4f.png",
+  "celula_px": [
+   16,
+   14
+  ],
+  "quadros": 4,
+  "fps": 20,
+  "loop": true,
+  "pivot_px": [
+   0,
+   7
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Corpo do raio do Olhar Duplo: nucleo 4 px branco, brilho 2 px, contorno 1 px. Tiled no comprimento do raio (era retangulo liso de 8 px).",
+  "tiled": true
+ },
+ "laser_varredura_vermelho_16x18_4f": {
+  "arquivo": "laser_varredura_vermelho_16x18_4f.png",
+  "celula_px": [
+   16,
+   18
+  ],
+  "quadros": 4,
+  "fps": 20,
+  "loop": true,
+  "pivot_px": [
+   0,
+   9
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Corpo do raio da Varredura Rubra: nucleo 6 px, brilho 3 px. Tiled; UpdateSweep reorienta.",
+  "tiled": true
+ },
+ "laser_boca_vermelho_32x32_4f": {
+  "arquivo": "laser_boca_vermelho_32x32_4f.png",
+  "celula_px": [
+   32,
+   32
+  ],
+  "quadros": 4,
+  "fps": 20,
+  "loop": true,
+  "pivot_px": [
+   16,
+   16
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Flash de origem do raio (em cada olho/ponto de disparo), enquanto o raio dura.",
+  "tiled": false
+ },
+ "laser_impacto_vermelho_48x48_6f": {
+  "arquivo": "laser_impacto_vermelho_48x48_6f.png",
+  "celula_px": [
+   48,
+   48
+  ],
+  "quadros": 6,
+  "fps": 18,
+  "loop": false,
+  "pivot_px": [
+   24,
+   24
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Explosao no ponto onde o raio atinge heroi/chao/plataforma. Tocar a cada 0.1 s enquanto o raio dura (em loop curto) ou 1x.",
+  "tiled": false
+ },
+ "sonic_onda_magenta_48x64_6f": {
+  "arquivo": "sonic_onda_magenta_48x64_6f.png",
+  "celula_px": [
+   48,
+   64
+  ],
+  "quadros": 6,
+  "fps": 14,
+  "loop": true,
+  "pivot_px": [
+   36,
+   32
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Projetil Rajada Sonica (aneis em crescente, MAGENTA). Aponta para +x; rotacionar pelo angulo do tiro. Hitbox atual 0.55x1.1 u - o sprite e maior que a hitbox de proposito (leitura).",
+  "tiled": false
+ },
+ "sonic_carga_magenta_32x32_6f": {
+  "arquivo": "sonic_carga_magenta_32x32_6f.png",
+  "celula_px": [
+   32,
+   32
+  ],
+  "quadros": 6,
+  "fps": 12,
+  "loop": false,
+  "pivot_px": [
+   16,
+   16
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Carga da Rajada Sonica na boca/peito do boss (pose Roar), 3 vezes.",
+  "tiled": false
+ },
+ "sonic_impacto_magenta_48x48_6f": {
+  "arquivo": "sonic_impacto_magenta_48x48_6f.png",
+  "celula_px": [
+   48,
+   48
+  ],
+  "quadros": 6,
+  "fps": 18,
+  "loop": false,
+  "pivot_px": [
+   24,
+   24
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Impacto da onda sonica no heroi/chao.",
+  "tiled": false
+ },
+ "marcador_chao_vermelho_48x12_4f": {
+  "arquivo": "marcador_chao_vermelho_48x12_4f.png",
+  "celula_px": [
+   48,
+   12
+  ],
+  "quadros": 4,
+  "fps": 10,
+  "loop": true,
+  "pivot_px": [
+   24,
+   6
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Marcador de chao grosso (borda 2 px + contorno 1 px, pulsa): Erupcao de Tentaculos (X marcado do tentaculo) e Mergulho (alvo). Para largura maior usar localScale.x inteiro (2,3). Pivot no centro; a base fica sobre GroundTop/plataforma.",
+  "tiled": false
+ },
+ "marcador_chao_dourado_48x12_4f": {
+  "arquivo": "marcador_chao_dourado_48x12_4f.png",
+  "celula_px": [
+   48,
+   12
+  ],
+  "quadros": 4,
+  "fps": 10,
+  "loop": true,
+  "pivot_px": [
+   24,
+   6
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Marcador de chao grosso (borda 2 px + contorno 1 px, pulsa): Chuva de Eclipse (base de cada coluna). Para largura maior usar localScale.x inteiro (2,3). Pivot no centro; a base fica sobre GroundTop/plataforma.",
+  "tiled": false
+ },
+ "marcador_chao_magenta_48x12_4f": {
+  "arquivo": "marcador_chao_magenta_48x12_4f.png",
+  "celula_px": [
+   48,
+   12
+  ],
+  "quadros": 4,
+  "fps": 10,
+  "loop": true,
+  "pivot_px": [
+   24,
+   6
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Marcador de chao grosso (borda 2 px + contorno 1 px, pulsa): Desabamento do Palacio (sombra da coluna/caco). Para largura maior usar localScale.x inteiro (2,3). Pivot no centro; a base fica sobre GroundTop/plataforma.",
+  "tiled": false
+ },
+ "marcador_chao_ciano_48x12_4f": {
+  "arquivo": "marcador_chao_ciano_48x12_4f.png",
+  "celula_px": [
+   48,
+   12
+  ],
+  "quadros": 4,
+  "fps": 10,
+  "loop": true,
+  "pivot_px": [
+   24,
+   6
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Marcador de chao grosso (borda 2 px + contorno 1 px, pulsa): Garras do Vazio (ponto de golpe) e Fenda Estelar. Para largura maior usar localScale.x inteiro (2,3). Pivot no centro; a base fica sobre GroundTop/plataforma.",
+  "tiled": false
+ },
+ "mergulho_poeira_64x32_8f": {
+  "arquivo": "mergulho_poeira_64x32_8f.png",
+  "celula_px": [
+   64,
+   32
+  ],
+  "quadros": 8,
+  "fps": 16,
+  "loop": false,
+  "pivot_px": [
+   32,
+   30
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Poeira do pouso do Mergulho (nuvens p/ os dois lados). Base no chao; tocar 1x no ponto onde o boss encosta (end.x, GroundTop). Espelha-se sozinho (ja e simetrico).",
+  "tiled": false
+ },
+ "mergulho_onda_choque_128x24_6f": {
+  "arquivo": "mergulho_onda_choque_128x24_6f.png",
+  "celula_px": [
+   128,
+   24
+  ],
+  "quadros": 6,
+  "fps": 18,
+  "loop": false,
+  "pivot_px": [
+   64,
+   22
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Onda de choque rente ao chao no pouso do Mergulho (anel achatado expandindo p/ os lados). Pode ferir (zona 0.5 u de altura) - ver JSON.",
+  "tiled": false
+ },
+ "mergulho_rastro_vermelho_64x64_4f": {
+  "arquivo": "mergulho_rastro_vermelho_64x64_4f.png",
+  "celula_px": [
+   64,
+   64
+  ],
+  "quadros": 4,
+  "fps": 20,
+  "loop": true,
+  "pivot_px": [
+   63,
+   32
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Rastro de velocidade vermelho atras do boss durante o Mergulho (0.70 s). Pivot na ponta direita; rotacionar para a direcao do mergulho; seguir o boss.",
+  "tiled": false
+ },
+ "eclipse_coluna_aviso_40x144_6f": {
+  "arquivo": "eclipse_coluna_aviso_40x144_6f.png",
+  "celula_px": [
+   40,
+   144
+  ],
+  "quadros": 6,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   20,
+   143
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Coluna de luz dourada de aviso sobre o X marcado da Chuva de Eclipse (a mesma coluna do impacto). Pivot na base; drawMode Tiled vertical ate sky. Pulsa a 10 Hz (era piscar ON/OFF).",
+  "tiled": false
+ },
+ "varredura_coluna_aviso_vermelho_24x144_6f": {
+  "arquivo": "varredura_coluna_aviso_vermelho_24x144_6f.png",
+  "celula_px": [
+   24,
+   144
+  ],
+  "quadros": 6,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   12,
+   143
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Coluna de luz VERMELHA sobre o ponto de partida da Varredura Rubra durante o aviso (0.85 s).",
+  "tiled": false
+ },
+ "fenda_coluna_luz_ciano_24x144_6f": {
+  "arquivo": "fenda_coluna_luz_ciano_24x144_6f.png",
+  "celula_px": [
+   24,
+   144
+  ],
+  "quadros": 6,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   12,
+   143
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Coluna de luz CIANA (variacao) - usada em Garras do Vazio / avisos da F3.",
+  "tiled": false
+ },
+ "eclipse_projetil_24x56_4f": {
+  "arquivo": "eclipse_projetil_24x56_4f.png",
+  "celula_px": [
+   24,
+   56
+  ],
+  "quadros": 4,
+  "fps": 16,
+  "loop": true,
+  "pivot_px": [
+   12,
+   44
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Projetil da Chuva de Eclipse: orbe escuro com corona dourada e cauda; cai a 14 u/s. Pivot no centro do orbe. Hitbox 0.6x0.95 u (menor que o sprite).",
+  "tiled": false
+ },
+ "eclipse_cratera_80x64_7f": {
+  "arquivo": "eclipse_cratera_80x64_7f.png",
+  "celula_px": [
+   80,
+   64
+  ],
+  "quadros": 7,
+  "fps": 14,
+  "loop": false,
+  "pivot_px": [
+   40,
+   59
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Impacto da Chuva de Eclipse: coluna de luz subindo + cratera que fica (7 quadros; o ultimo permanece 0.4 s e dissolve). Base no chao/plataforma.",
+  "tiled": false
+ },
+ "tentaculo_terra_explosao_64x48_7f": {
+  "arquivo": "tentaculo_terra_explosao_64x48_7f.png",
+  "celula_px": [
+   64,
+   48
+  ],
+  "quadros": 7,
+  "fps": 16,
+  "loop": false,
+  "pivot_px": [
+   32,
+   44
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Terra e nevoa roxa estourando quando o tentaculo sai do chao (sobrepor ao GroundTentacle). Base no chao; tocar 1x no instante da erupcao; sobrepor tambem na recolhida (menor, escala 0.75).",
+  "tiled": false
+ },
+ "tentaculo_rachadura_aviso_48x8_4f": {
+  "arquivo": "tentaculo_rachadura_aviso_48x8_4f.png",
+  "celula_px": [
+   48,
+   8
+  ],
+  "quadros": 4,
+  "fps": 10,
+  "loop": true,
+  "pivot_px": [
+   24,
+   4
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Rachadura no chao com brilho vermelho pulsando, junto do marcador vermelho, na Erupcao de Tentaculos (1.0 s antes). Opcional: por cima do marcador.",
+  "tiled": false
+ },
+ "desabamento_coluna_40x120_4f": {
+  "arquivo": "desabamento_coluna_40x120_4f.png",
+  "celula_px": [
+   40,
+   120
+  ],
+  "quadros": 4,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   20,
+   118
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Coluna de pedra caindo (Desabamento do Palacio), 1.25 x 3.75 u. Pivot na ponta de baixo = ponto de impacto; hitbox 1.2 x 2.2 u na ponta de baixo.",
+  "tiled": false
+ },
+ "desabamento_caco_vitral_16x16_8f": {
+  "arquivo": "desabamento_caco_vitral_16x16_8f.png",
+  "celula_px": [
+   16,
+   16
+  ],
+  "quadros": 8,
+  "fps": 16,
+  "loop": true,
+  "pivot_px": [
+   8,
+   8
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Caco de vitral girando enquanto cai (magenta/rosa/dourado). 8 quadros = giro completo. Hitbox 0.5x0.5 u.",
+  "tiled": false
+ },
+ "desabamento_impacto_64x40_7f": {
+  "arquivo": "desabamento_impacto_64x40_7f.png",
+  "celula_px": [
+   64,
+   40
+  ],
+  "quadros": 7,
+  "fps": 16,
+  "loop": false,
+  "pivot_px": [
+   32,
+   36
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Impacto de coluna/caco no chao: poeira de pedra + lascas + brilho de vitral. Base no chao/plataforma.",
+  "tiled": false
+ },
+ "fenda_abertura_96x96_8f": {
+  "arquivo": "fenda_abertura_96x96_8f.png",
+  "celula_px": [
+   96,
+   96
+  ],
+  "quadros": 8,
+  "fps": 12,
+  "loop": false,
+  "pivot_px": [
+   48,
+   48
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Fenda Estelar abrindo ao lado do boss (6 quadros abrindo, 2 de pulso). Segurar o ultimo quadro (loop 6-7) ate o fim do aviso. Centro: sobre o boss ou +2 u acima.",
+  "tiled": false
+ },
+ "fenda_varredura_48x224_6f": {
+  "arquivo": "fenda_varredura_48x224_6f.png",
+  "celula_px": [
+   48,
+   224
+  ],
+  "quadros": 6,
+  "fps": 16,
+  "loop": true,
+  "pivot_px": [
+   44,
+   223
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Parede de estrelas varrendo a arena (aponta para +x; espelhar scale.x=-1 p/ varrer para a esquerda). Altura 7 u cobre da base ate o topo da tela. Pivot na ponta da frente, no chao. Dano: ver JSON (frente da parede = linha de dano de 1.2 u).",
+  "tiled": false
+ },
+ "fenda_ponto_seguro_64x144_6f": {
+  "arquivo": "fenda_ponto_seguro_64x144_6f.png",
+  "celula_px": [
+   64,
+   144
+  ],
+  "quadros": 6,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   32,
+   140
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "PONTO SEGURO da Fenda Estelar: coluna de luz dourada larga + marcador no chao + setas descendo. Largura util 3.0 u (zona onde a varredura NAO fere). 1-2 instancias; aparecem junto da abertura da fenda e ficam ate o fim das varreduras.",
+  "tiled": false
+ },
+ "garra_vazio_64x112_9f": {
+  "arquivo": "garra_vazio_64x112_9f.png",
+  "celula_px": [
+   64,
+   112
+  ],
+  "quadros": 9,
+  "fps": 14,
+  "loop": false,
+  "pivot_px": [
+   32,
+   106
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Garra do Vazio saindo do chao: 0-1 brota, 2-4 sobe, 5-6 golpe (arco ciano; QUADROS DE DANO), 7-8 recolhe. Pivot na base. Hitbox 1.6x3.0 u ativa so nos quadros 5-6 (0.25 s).",
+  "tiled": false
+ },
+ "garra_aviso_marcas_64x16_4f": {
+  "arquivo": "garra_aviso_marcas_64x16_4f.png",
+  "celula_px": [
+   64,
+   16
+  ],
+  "quadros": 4,
+  "fps": 10,
+  "loop": true,
+  "pivot_px": [
+   32,
+   8
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Marcador de golpe da Garra do Vazio: elipse ciano + 3 riscos de garra pulsando. 0.9 s antes de cada garra; posicao TRAVADA no spawn.",
+  "tiled": false
+ },
+ "impacto_ciano_48x48_6f": {
+  "arquivo": "impacto_ciano_48x48_6f.png",
+  "celula_px": [
+   48,
+   48
+  ],
+  "quadros": 6,
+  "fps": 18,
+  "loop": false,
+  "pivot_px": [
+   24,
+   24
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Impacto ciano (Garras, Fenda, hit generico da F3).",
+  "tiled": false
+ },
+ "impacto_dourado_48x48_6f": {
+  "arquivo": "impacto_dourado_48x48_6f.png",
+  "celula_px": [
+   48,
+   48
+  ],
+  "quadros": 6,
+  "fps": 18,
+  "loop": false,
+  "pivot_px": [
+   24,
+   24
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Impacto dourado: acerto no NUCLEO exposto (Descida do Nucleo) e Chuva de Eclipse.",
+  "tiled": false
+ },
+ "anel_nucleo_dourado_48x48_6f": {
+  "arquivo": "anel_nucleo_dourado_48x48_6f.png",
+  "celula_px": [
+   48,
+   48
+  ],
+  "quadros": 6,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   24,
+   24
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Anel pulsante dourado ao redor do NUCLEO exposto (Descida do Nucleo): indica a janela de dano x1.5. Centrar em core_local da forma.",
+  "tiled": false
+ },
+ "aura_enrage_192x224_8f": {
+  "arquivo": "aura_enrage_192x224_8f.png",
+  "celula_px": [
+   192,
+   224
+  ],
+  "quadros": 8,
+  "fps": 12,
+  "loop": true,
+  "pivot_px": [
+   96,
+   114
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Aura vermelho/ciano da F3 abaixo de 30% de vida (ENRAGE). Celula 192x224 (maior que a 160x192 da forma 3, mesmo centro); sortingOrder = boss - 1 (atras); pode ficar semitransparente (alpha .85). Alterna vermelho<->ciano.",
+  "tiled": false
+ },
+ "faisca_acerto_32x32_4f": {
+  "arquivo": "faisca_acerto_32x32_4f.png",
+  "celula_px": [
+   32,
+   32
+  ],
+  "quadros": 4,
+  "fps": 20,
+  "loop": false,
+  "pivot_px": [
+   16,
+   16
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "Faisca branca/rosa no ponto onde o HEROI e atingido (qualquer ataque do boss). Usar junto do hitstop.",
+  "tiled": false
+ },
+ "tentaculo_chao_64x112_8f": {
+  "arquivo": "tentaculo_chao_64x112_8f.png",
+  "celula_px": [
+   64,
+   112
+  ],
+  "quadros": 8,
+  "fps": 12,
+  "loop": false,
+  "pivot_px": [
+   32,
+   106
+  ],
+  "ppu": 32,
+  "filtro": "Point",
+  "compressao": "None",
+  "uso": "OPCIONAL / so preview: tentaculo de chao (0-1 sai, 2-3 sobe, 4-5 balanca, 6-7 recolhe) na paleta roxa do boss. O jogo ja tem GroundTentacle com arte propria; troque so se quiser alinhar com a nova direcao.",
+  "tiled": false
+ }
+}

@@ -17,12 +17,18 @@ public sealed class NazorArticulation : MonoBehaviour
     int _form;
     float _clock, _nextFrame;
     Vector2 _size;
-    public int VertexCount => _vertices != null ? _vertices.Length : 0;
+    public bool Enabled = false;
+    public int VertexCount => Enabled && _vertices != null ? _vertices.Length : 0;
     public MeshRenderer Renderer => _renderer;
     public float Clock => _clock;
 
     public void Setup()
     {
+        if (!Enabled)
+        {
+            _vertices = null;
+            return;
+        }
         var child = new GameObject("NazorArticulado");
         child.transform.SetParent(transform, false);
         _renderer = child.AddComponent<MeshRenderer>();
@@ -51,6 +57,7 @@ public sealed class NazorArticulation : MonoBehaviour
 
     public void Animate(Sprite source, int form, NazorPose pose, float poseTime, Color color, bool frozen)
     {
+        if (!Enabled) return;
         if (source == null || _mesh == null) return;
         if (frozen && _sprite != null) { _material.color = color; return; }
         bool changed = _sprite != source || _form != form;

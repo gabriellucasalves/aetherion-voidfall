@@ -1,0 +1,956 @@
+{
+ "versao": "v1",
+ "unidades": "u = unidade do Unity; sprites a PPU 32 (1 u = 32 px)",
+ "heroi": {
+  "hp": 160,
+  "escudo": 110,
+  "hp_efetivo_total": 270,
+  "velocidade_u_s": 5.4,
+  "salto_v_u_s": 13.2,
+  "hitbox_u": [
+   0.55,
+   1.1
+  ]
+ },
+ "boss": {
+  "hp": {
+   "1": 1000,
+   "2": 1500,
+   "3": 2200
+  },
+  "FormDamage": {
+   "1": 1.0,
+   "2": 1.15,
+   "3": 1.3
+  },
+  "FormCadence": {
+   "1": 1.08,
+   "2": 1.2,
+   "3": 1.32
+  }
+ },
+ "ciclos": {
+  "forma1": {
+   "atual": [
+    "Olhar Duplo x2",
+    "Erupcao x3",
+    "Mergulho",
+    "Varredura Rubra",
+    "Descida do Nucleo"
+   ],
+   "proposto": "igual (nao muda)"
+  },
+  "forma2": {
+   "atual": [
+    "Rajada Sonica",
+    "Erupcao x4",
+    "Mergulho",
+    "Descida do Nucleo"
+   ],
+   "proposto": [
+    "Rajada Sonica",
+    "Desabamento do Palacio",
+    "Erupcao x4",
+    "Combo Olhar+Mergulho",
+    "Descida do Nucleo"
+   ],
+   "switch": "_cycleIndex++ % 5"
+  },
+  "forma3": {
+   "atual": [
+    "Chuva de Eclipse",
+    "Olhar Duplo x3",
+    "Mergulho",
+    "Erupcao x5",
+    "Descida do Nucleo"
+   ],
+   "proposto": [
+    "Chuva de Eclipse",
+    "Olhar Duplo x3",
+    "Garras do Vazio",
+    "Erupcao x5 (+.35 s)",
+    "Mergulho",
+    "Fenda Estelar",
+    "Descida do Nucleo"
+   ],
+   "switch": "_cycleIndex++ % 7"
+  }
+ },
+ "ataques": [
+  {
+   "id": "olhar_duplo",
+   "nome": "Olhar Duplo",
+   "existente": true,
+   "coroutine": "AttackDoubleGlare(int volleys, float warningTime)",
+   "formas": [
+    1,
+    3
+   ],
+   "uso_por_forma": {
+    "1": "2 salvas, aviso 0.75 s",
+    "3": "3 salvas, aviso 0.70 s"
+   },
+   "vfx": [
+    "olho_carga_vermelho_32x32_6f",
+    "aviso_mira_vermelho_16x8_4f",
+    "aviso_mira_travada_vermelho_16x8_2f",
+    "laser_boca_vermelho_32x32_4f",
+    "laser_olhar_vermelho_16x14_4f",
+    "laser_impacto_vermelho_48x48_6f",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "telegrafo_s": {
+     "1": 0.75,
+     "3": 0.7
+    },
+    "trava_da_mira_s": 0.32,
+    "ativo_s": 0.55,
+    "intervalo_entre_salvas_s": 0.18,
+    "pausa_final_s": "manter FinishAttack atual",
+    "recarga_s": null
+   },
+   "dano_base": 16,
+   "dano_por": "feixe (2 feixes por salva, um de cada olho)",
+   "hitbox": "linha do feixe, espessura 0.3 u (10 px do sprite)",
+   "padrao_seguro": "A mira acompanha o heroi e TRAVA 0.32 s antes do tiro: o feixe fica parado em linha reta. Sair da linha (andar/pular/dash) apos a trava. Os dois feixes convergem no heroi - deslocar-se 1 u ja sai de ambos.",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.1,
+     "magnitude_u": 0.04,
+     "chamada": "CameraFollow.Shake(0.1f, 0.04f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 45,
+    "flash_de_tela": {
+     "cor_rgb": [
+      255,
+      60,
+      70
+     ],
+     "alpha_max": 0.14,
+     "duracao_s": 0.09
+    },
+    "sons": [
+     "BossWarning (vol 0.8) no inicio do aviso",
+     "BossBeam no disparo"
+    ],
+    "particulas": [
+     "laser_boca no olho",
+     "laser_impacto a cada 0.1 s no ponto de impacto",
+     "faisca_acerto no heroi"
+    ]
+   },
+   "notas": "Aviso agora 4 px de nucleo + 1 px de borda (antes 1 px), pontilhado correndo; ao travar vira linha cheia branca piscando.",
+   "dano_efetivo_por_forma": {
+    "f1": 16.0,
+    "f3": 20.8
+   }
+  },
+  {
+   "id": "varredura_rubra",
+   "nome": "Varredura Rubra",
+   "existente": true,
+   "coroutine": "AttackRedSweep(bool sweepBack, float warningTime, float dmg)",
+   "formas": [
+    1
+   ],
+   "uso_por_forma": {
+    "1": "ida e volta, aviso 0.85 s, dano 22"
+   },
+   "vfx": [
+    "marcador_chao_vermelho_48x12_4f",
+    "varredura_coluna_aviso_vermelho_24x144_6f",
+    "laser_varredura_vermelho_16x18_4f",
+    "laser_impacto_vermelho_48x48_6f",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "telegrafo_s": 0.85,
+    "ativo_s": "1.6 ida + 0.40 pausa + 1.6 volta (3.6 s)",
+    "velocidade_do_ponto_u_s": 13.1,
+    "pausa_final_s": "F1 1.0"
+   },
+   "dano_base": 22,
+   "dano_por": "contato com o feixe (cooldown de contato 0.85 s)",
+   "hitbox": "linha olho->ponto no chao, espessura 0.45 u",
+   "padrao_seguro": "O ponto de partida (borda oposta ao heroi) brilha 0.85 s antes. O feixe varre o chao a 13 u/s: pular/dash por cima do ponto quando passa, ou ficar em plataforma fora da linha. Na pausa de 0.40 s no fim da ida o feixe fica parado: janela para trocar de lado.",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 1.6,
+     "magnitude_u": 0.035,
+     "chamada": "CameraFollow.Shake(1.6f, 0.035f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 50,
+    "flash_de_tela": {
+     "cor_rgb": [
+      255,
+      40,
+      60
+     ],
+     "alpha_max": 0.12,
+     "duracao_s": 0.1
+    },
+    "sons": [
+     "BossWarning (vol 0.8) no aviso",
+     "BossBeam ao disparar"
+    ],
+    "particulas": [
+     "PixelBurst vermelho no ponto de partida durante o aviso (ja existe)",
+     "laser_impacto em loop curto sobre o ponto no chao"
+    ]
+   },
+   "notas": "O tremor e continuo e baixo durante a varredura; ver preview.",
+   "dano_efetivo_por_forma": {
+    "f1": 22.0
+   }
+  },
+  {
+   "id": "erupcao_tentaculos",
+   "nome": "Erupcao de Tentaculos",
+   "existente": true,
+   "coroutine": "AttackTentacleEruption(int count, float warningTime, float waveDelay)",
+   "formas": [
+    1,
+    2,
+    3
+   ],
+   "uso_por_forma": {
+    "1": "3 tentaculos, aviso 1.0 s",
+    "2": "4 tentaculos, aviso 0.95 s",
+    "3": "5 tentaculos, aviso 0.85 s, 0.35 s entre cada"
+   },
+   "vfx": [
+    "marcador_chao_vermelho_48x12_4f",
+    "tentaculo_rachadura_aviso_48x8_4f",
+    "tentaculo_terra_explosao_64x48_7f",
+    "tentaculo_chao_64x112_8f (opcional, so preview)",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "telegrafo_s": {
+     "1": 1.0,
+     "2": 0.95,
+     "3": 0.85
+    },
+    "ativo_s": "1.2 (subida/em pe) + 0.4 (recolhe)",
+    "pausa_final_s": {
+     "1": 1.0,
+     "2": 0.8,
+     "3": 0.6
+    }
+   },
+   "dano_base": 18,
+   "dano_por": "contato com o tentaculo",
+   "hitbox": "0.75 x 2.5 u (ja existente); zona de aviso 2.0 u de largura",
+   "padrao_seguro": "O 1o tentaculo sai exatamente sob o heroi (obriga a mexer); os outros ficam a >= 2.0 u um do outro. Sair da faixa marcada. Tentaculos tem 45 HP e podem ser destruidos (40% do dano vai ao boss).",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.14,
+     "magnitude_u": 0.06,
+     "chamada": "CameraFollow.Shake(0.14f, 0.06f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 40,
+    "flash_de_tela": null,
+    "sons": [
+     "BossWarning (vol 0.8) ao marcar",
+     "Tentacle na erupcao"
+    ],
+    "particulas": [
+     "tentaculo_terra_explosao no instante da subida (e 0.75x ao recolher)",
+     "rachadura + marcador durante o aviso"
+    ]
+   },
+   "notas": "Aviso de rachadura brilhando + marcador grosso no chao; terra e nevoa roxa explodem do chao.",
+   "dano_efetivo_por_forma": {
+    "f1": 18.0,
+    "f2": 20.7,
+    "f3": 23.4
+   }
+  },
+  {
+   "id": "mergulho",
+   "nome": "Mergulho",
+   "existente": true,
+   "coroutine": "AttackDive()",
+   "formas": [
+    1,
+    2,
+    3
+   ],
+   "uso_por_forma": {
+    "1": "1x por ciclo",
+    "2": "1x por ciclo (dentro do Combo)",
+    "3": "1x por ciclo"
+   },
+   "vfx": [
+    "marcador_chao_vermelho_48x12_4f",
+    "aviso_mira_vermelho_16x8_4f",
+    "aviso_mira_travada_vermelho_16x8_2f",
+    "mergulho_rastro_vermelho_64x64_4f",
+    "mergulho_poeira_64x32_8f",
+    "mergulho_onda_choque_128x24_6f",
+    "anel_nucleo_dourado_48x48_6f",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "telegrafo_s": 0.85,
+    "ativo_s": 0.7,
+    "janela_de_punicao_s": 0.75,
+    "retorno_s": 0.65,
+    "pausa_final_s": 0.45
+   },
+   "dano_base": 20,
+   "dano_por": "mordida durante o mergulho (cooldown de contato 0.85 s)",
+   "hitbox": "2.5 x 2.0 u no corpo (existente)",
+   "padrao_seguro": "A linha de mira e o marcador no chao ficam TRAVADOS desde o inicio (0.85 s); o boss passa pelo alvo e termina 3 u alem. Sair da linha ou pular no instante do lancamento. Apos o pouso o nucleo fica exposto 0.75 s (anel dourado): janela de ataque.",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.22,
+     "magnitude_u": 0.12,
+     "chamada": "CameraFollow.Shake(0.22f, 0.12f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 60,
+    "flash_de_tela": {
+     "cor_rgb": [
+      255,
+      255,
+      255
+     ],
+     "alpha_max": 0.22,
+     "duracao_s": 0.1
+    },
+    "sons": [
+     "BossWarning (vol 0.9) no aviso",
+     "BossRoar (vol 0.8) no lancamento",
+     "Slam no pouso"
+    ],
+    "particulas": [
+     "rastro durante o mergulho",
+     "poeira + onda de choque no pouso (a onda NAO causa dano)",
+     "anel dourado no nucleo na punicao"
+    ]
+   },
+   "notas": "O flash branco e curto e so ocorre no pouso (nao no aviso).",
+   "dano_efetivo_por_forma": {
+    "f1": 20.0,
+    "f2": 23.0,
+    "f3": 26.0
+   }
+  },
+  {
+   "id": "descida_nucleo",
+   "nome": "Descida do Nucleo",
+   "existente": true,
+   "coroutine": "AttackDescentExposed(float duration)",
+   "formas": [
+    1,
+    2,
+    3
+   ],
+   "uso_por_forma": {
+    "1": "2.6 s",
+    "2": "2.6 s",
+    "3": "2.2 s"
+   },
+   "vfx": [
+    "anel_nucleo_dourado_48x48_6f",
+    "impacto_dourado_48x48_6f",
+    "mergulho_poeira_64x32_8f",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "telegrafo_s": 0.6,
+    "ativo_s": {
+     "1": 2.6,
+     "2": 2.6,
+     "3": 2.2
+    },
+    "observacao": "0.6 s de descida ate groundY+2.8 u ja funciona como aviso; o anel dourado aparece no inicio da descida"
+   },
+   "dano_base": 0,
+   "dano_por": "nao causa dano - e a janela de punicao (nucleo x1.5)",
+   "hitbox": "hurtbox do nucleo conforme JSON da forma",
+   "padrao_seguro": "Atacar o nucleo (anel dourado). Recuo seguro: a descida nao tem dano de contato extra alem do contato normal 12.",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.12,
+     "magnitude_u": 0.06,
+     "chamada": "CameraFollow.Shake(0.12f, 0.06f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 0,
+    "flash_de_tela": {
+     "cor_rgb": [
+      255,
+      214,
+      120
+     ],
+     "alpha_max": 0.1,
+     "duracao_s": 0.08
+    },
+    "sons": [
+     "BossRoar (vol 0.6) ao comecar a descer",
+     "BossHit ao ser acertado (ja existe)"
+    ],
+    "particulas": [
+     "anel_nucleo em loop",
+     "impacto_dourado a cada acerto no nucleo"
+    ]
+   },
+   "notas": "Recompensa visual: o anel dourado deixa claro que agora vale atacar.",
+   "dano_efetivo_por_forma": null
+  },
+  {
+   "id": "rajada_sonica",
+   "nome": "Rajada Sonica",
+   "existente": true,
+   "coroutine": "AttackSonicBurst()",
+   "formas": [
+    2
+   ],
+   "uso_por_forma": {
+    "2": "3 salvas em leque (3 ondas, -14/0/+14 graus)"
+   },
+   "vfx": [
+    "sonic_carga_magenta_32x32_6f",
+    "aviso_mira_magenta_16x8_4f",
+    "aviso_mira_travada_magenta_16x8_2f",
+    "sonic_onda_magenta_48x64_6f",
+    "sonic_impacto_magenta_48x48_6f",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "telegrafo_s": "0.95 (1a) / 0.70 (2a, 3a)",
+    "trava_da_mira_s": 0.32,
+    "intervalo_entre_salvas_s": 0.55,
+    "velocidade_onda_u_s": 9.5,
+    "vida_onda_s": 3.2,
+    "pausa_final_s": 0.7
+   },
+   "dano_base": 20,
+   "dano_por": "onda (3 por salva)",
+   "hitbox": "0.55 x 1.1 u (o sprite 1.5 x 2.0 u e maior de proposito)",
+   "padrao_seguro": "O leque (3 linhas magenta) trava 0.32 s antes. As ondas cruzam chao e plataformas baixas; pular por cima ou sair do leque. Velocidade 9.5 u/s deixa tempo de reagir apos o disparo.",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.09,
+     "magnitude_u": 0.06,
+     "chamada": "CameraFollow.Shake(0.09f, 0.06f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 45,
+    "flash_de_tela": {
+     "cor_rgb": [
+      225,
+      70,
+      185
+     ],
+     "alpha_max": 0.12,
+     "duracao_s": 0.08
+    },
+    "sons": [
+     "BossSonicCharge no aviso",
+     "BossSonicWave no disparo"
+    ],
+    "particulas": [
+     "sonic_carga na boca durante o aviso",
+     "sonic_impacto ao bater"
+    ]
+   },
+   "notas": "Aneis magenta com 3 ondas concentricas (antes 1 sprite 32x32 procedural).",
+   "dano_efetivo_por_forma": {
+    "f2": 23.0
+   }
+  },
+  {
+   "id": "chuva_eclipse",
+   "nome": "Chuva de Eclipse",
+   "existente": true,
+   "coroutine": "AttackEclipseRain() + NazorHazard.Eclipse",
+   "formas": [
+    3
+   ],
+   "uso_por_forma": {
+    "3": "3 ondas (4 em ENRAGE), 5 colunas por onda"
+   },
+   "vfx": [
+    "marcador_chao_dourado_48x12_4f",
+    "eclipse_coluna_aviso_40x144_6f",
+    "eclipse_projetil_24x56_4f",
+    "eclipse_cratera_80x64_7f",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "telegrafo_s": 1.05,
+    "ativo_s": "queda 14 u/s (~0.7 s do ceu)",
+    "pausa_entre_ondas_s": 0.7,
+    "pausa_final_s": 0.8
+   },
+   "dano_base": 24,
+   "dano_por": "projetil (5 por onda)",
+   "hitbox": "0.6 x 0.95 u (existente)",
+   "padrao_seguro": "5 colunas espacadas 2.3 u centradas no heroi (vao livre de 1.7 u entre colunas). Cada coluna fica fixa; so a proxima onda re-mira. Ficar no vao ou sair das colunas.",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.12,
+     "magnitude_u": 0.08,
+     "chamada": "CameraFollow.Shake(0.12f, 0.08f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 55,
+    "flash_de_tela": {
+     "cor_rgb": [
+      255,
+      214,
+      120
+     ],
+     "alpha_max": 0.12,
+     "duracao_s": 0.1
+    },
+    "sons": [
+     "BossVoidMark no aviso",
+     "BossVoidImpact (vol 0.65) em cada impacto"
+    ],
+    "particulas": [
+     "coluna de luz dourada (aviso) -> projetil -> cratera que fica ~0.4 s"
+    ]
+   },
+   "notas": "ENRAGE: 4a onda extra e espacamento 2.1 u.",
+   "dano_efetivo_por_forma": {
+    "f3": 31.2
+   }
+  },
+  {
+   "id": "desabamento_palacio",
+   "nome": "Desabamento do Palacio",
+   "existente": false,
+   "coroutine": "NOVA: AttackPalaceCollapse()",
+   "formas": [
+    2
+   ],
+   "uso_por_forma": {
+    "2": "3 ondas; substitui 1 slot do ciclo da F2"
+   },
+   "vfx": [
+    "marcador_chao_magenta_48x12_4f",
+    "desabamento_coluna_40x120_4f",
+    "desabamento_caco_vitral_16x16_8f",
+    "desabamento_impacto_64x40_7f",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "telegrafo_s": {
+     "onda1": 1.1,
+     "onda2": 1.0,
+     "onda3": 0.9
+    },
+    "queda_s": 0.45,
+    "descanso_entre_ondas_s": 0.35,
+    "duracao_total_s": 5.1,
+    "pausa_final_s": 0.8
+   },
+   "dano_base": 22,
+   "dano_por": "coluna que acerta (zona 1.2 x 2.2 u na ponta); caco de vitral 14 (0.5 x 0.5 u)",
+   "hitbox": "coluna 1.2 x 2.2 u; caco 0.5 x 0.5 u",
+   "padrao_seguro": "Arena dividida em 10 faixas de 2.1 u; colunas de 1.4 u no centro de cada faixa marcada. Mascaras (1 = coluna): onda 1 [1,0,0,0,1,1,0,0,1,1], onda 2 [1,1,0,0,0,1,1,1,0,0], onda 3 [1,0,0,1,1,1,0,0,0,1]: sempre 2 vaos de 2-3 faixas (>= 4.2 u). Cacos de vitral (ondas 2 e 3) caem em UMA faixa por vao: onda 2 faixas 4 e 8, onda 3 faixas 2 e 6 (a outra faixa do vao fica livre). Verificacao automatica (JSON verificacao_justica): de qualquer ponto da arena, o vao esta a <= 4.2 u e a transicao entre ondas exige <= 3.0 u de deslocamento (heroi 5.4 u/s + 0.25 s de reacao).",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.2,
+     "magnitude_u": 0.1,
+     "chamada": "CameraFollow.Shake(0.2f, 0.1f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 55,
+    "flash_de_tela": {
+     "cor_rgb": [
+      225,
+      70,
+      185
+     ],
+     "alpha_max": 0.1,
+     "duracao_s": 0.08
+    },
+    "sons": [
+     "BossVoidMark ao marcar cada onda",
+     "KnightSlam (vol 0.9) ao cair as colunas (1x por onda)",
+     "BossVoidImpact (vol 0.5) nos cacos"
+    ],
+    "particulas": [
+     "sombra magenta no chao -> coluna -> poeira de pedra + brilho de vitral"
+    ]
+   },
+   "notas": "Boss em pose Conjure; colunas caem do alto da tela. Poeira fica 0.4 s (nao bloqueia leitura da proxima sombra).",
+   "dano_efetivo_por_forma": {
+    "f2": 25.3
+   }
+  },
+  {
+   "id": "combo_olhar_mergulho",
+   "nome": "Combo: Olhar + Mergulho",
+   "existente": false,
+   "coroutine": "NOVA: AttackGlareDiveCombo()",
+   "formas": [
+    2
+   ],
+   "uso_por_forma": {
+    "2": "1 salva de Olhar (aviso 0.75) + 0.35 s + Mergulho"
+   },
+   "vfx": [
+    "olho_carga_vermelho_32x32_6f",
+    "aviso_mira_vermelho_16x8_4f",
+    "laser_olhar_vermelho_16x14_4f",
+    "marcador_chao_vermelho_48x12_4f",
+    "mergulho_rastro_vermelho_64x64_4f",
+    "mergulho_poeira_64x32_8f",
+    "mergulho_onda_choque_128x24_6f"
+   ],
+   "tempos": {
+    "telegrafo_olhar_s": 0.75,
+    "ativo_olhar_s": 0.55,
+    "intervalo_s": 0.35,
+    "telegrafo_mergulho_s": 0.85,
+    "ativo_mergulho_s": 0.7,
+    "janela_de_punicao_s": 0.75,
+    "pausa_final_s": 0.8
+   },
+   "dano_base": "16 por feixe + 20 mordida",
+   "dano_por": "igual aos ataques-base",
+   "hitbox": "igual aos ataques-base",
+   "padrao_seguro": "O alvo do mergulho e amostrado so DEPOIS do disparo do olhar (a posicao de esquiva vira o alvo) e trava por 0.85 s: o combo e leitura em duas etapas, sem frame impossivel (intervalo de 0.35 s + aviso de 0.85 s).",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.1,
+     "magnitude_u": 0.04,
+     "chamada": "CameraFollow.Shake(0.1f, 0.04f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 50,
+    "flash_de_tela": {
+     "cor_rgb": [
+      225,
+      70,
+      185
+     ],
+     "alpha_max": 0.14,
+     "duracao_s": 0.09
+    },
+    "sons": [
+     "igual a Olhar Duplo e Mergulho"
+    ],
+    "particulas": [
+     "iguais, com 0.35 s entre eles"
+    ]
+   },
+   "notas": "Fecha com a janela de punicao (anel dourado) igual ao Mergulho.",
+   "dano_efetivo_por_forma": {
+    "f2": "feixe 18.4 / mordida 23.0"
+   }
+  },
+  {
+   "id": "fenda_estelar",
+   "nome": "Fenda Estelar",
+   "existente": false,
+   "coroutine": "NOVA: AttackStellarRift()",
+   "formas": [
+    3
+   ],
+   "uso_por_forma": {
+    "3": "ataque de arena toda; 1 por ciclo (a cada 7 ataques)"
+   },
+   "vfx": [
+    "fenda_abertura_96x96_8f",
+    "olho_carga_ciano_32x32_6f",
+    "fenda_ponto_seguro_64x144_6f",
+    "fenda_varredura_48x224_6f",
+    "impacto_ciano_48x48_6f",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "abertura_s": 1.0,
+    "telegrafo_total_s": 1.6,
+    "varredura_s": 0.9,
+    "pausa_entre_varreduras_s": 0.5,
+    "numero_de_varreduras": 2,
+    "fechamento_s": 0.6,
+    "duracao_total_s": 4.9,
+    "pausa_final_s": 1.2
+   },
+   "dano_base": 30,
+   "dano_por": "cada varredura (parede de estrelas) se o heroi estiver fora do ponto seguro",
+   "hitbox": "frente da parede 1.2 u de largura x altura total da arena; ponto seguro 3.0 u de largura (3.4 u em ENRAGE)",
+   "padrao_seguro": "2 pontos seguros (1 em ENRAGE): A <= 6 u do heroi (alcancavel a 5.4 u/s em ~1.1 s), B >= 8 u de distancia como alternativa, separados >= 6 u. Os pontos aparecem 0.2 s apos a abertura e ficam fixos nas duas varreduras. A tela escurece (tinta ciano) e os pontos sao a unica luz dourada.",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.45,
+     "magnitude_u": 0.07,
+     "chamada": "CameraFollow.Shake(0.45f, 0.07f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 70,
+    "flash_de_tela": {
+     "cor_rgb": [
+      130,
+      225,
+      255
+     ],
+     "alpha_max": 0.3,
+     "duracao_s": 0.12
+    },
+    "sons": [
+     "BossRoar (vol 0.9) ao abrir",
+     "BossSonicCharge durante o aviso",
+     "BossVoidMark ao surgir os pontos",
+     "BossSonicWave a cada varredura",
+     "BossVoidImpact (vol 0.7) ao fechar"
+    ],
+    "particulas": [
+     "fenda -> pontos seguros -> parede de estrelas ida e volta"
+    ]
+   },
+   "notas": "Tremor continuo baixo na varredura (0.9 s, 0.07 u). Hitstop so se o heroi for atingido. ENRAGE: 1 ponto seguro de 3.4 u, a menos de 5 u do heroi.",
+   "dano_efetivo_por_forma": {
+    "f3": 39.0
+   }
+  },
+  {
+   "id": "garras_do_vazio",
+   "nome": "Garras do Vazio",
+   "existente": false,
+   "coroutine": "NOVA: AttackVoidClaws()",
+   "formas": [
+    3
+   ],
+   "uso_por_forma": {
+    "3": "4 garras em sequencia"
+   },
+   "vfx": [
+    "garra_aviso_marcas_64x16_4f",
+    "garra_vazio_64x112_9f",
+    "impacto_ciano_48x48_6f",
+    "mergulho_poeira_64x32_8f",
+    "faisca_acerto_32x32_4f"
+   ],
+   "tempos": {
+    "telegrafo_s": 0.9,
+    "intervalo_entre_garras_s": 0.55,
+    "intervalo_enrage_s": 0.44,
+    "golpe_ativo_s": 0.25,
+    "recolhe_s": 0.4,
+    "duracao_total_s": 3.2,
+    "pausa_final_s": 0.6
+   },
+   "dano_base": 28,
+   "dano_por": "garra",
+   "hitbox": "1.6 x 3.0 u saindo do chao, ativa so nos quadros de golpe (0.25 s)",
+   "padrao_seguro": "Marcador de cada garra aparece 0.9 s antes do golpe e fica TRAVADO. Posicoes: G1 no heroi, G2/G3 a +-3.8 u de G1 (dentro da arena), G4 re-mira o heroi. Vao minimo entre garras 2.2 u. Mexer-se apos cada marcador novo.",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.16,
+     "magnitude_u": 0.09,
+     "chamada": "CameraFollow.Shake(0.16f, 0.09f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 60,
+    "flash_de_tela": {
+     "cor_rgb": [
+      130,
+      225,
+      255
+     ],
+     "alpha_max": 0.1,
+     "duracao_s": 0.08
+    },
+    "sons": [
+     "BossWarning (vol 0.9) a cada marcador",
+     "Claws no golpe",
+     "BossVoidImpact (vol 0.6) no impacto"
+    ],
+    "particulas": [
+     "marcas ciano -> garra sobe, golpeia -> impacto + poeira"
+    ]
+   },
+   "notas": "ENRAGE: intervalo entre garras 0.44 s; o aviso individual continua 0.9 s (>= 0.6).",
+   "dano_efetivo_por_forma": {
+    "f3": 36.4
+   }
+  },
+  {
+   "id": "enrage_f3",
+   "nome": "ENRAGE da Fenda Coroada (< 30% da vida)",
+   "existente": false,
+   "coroutine": "NOVA: EnterEnrage() chamada 1x quando HP < 30% na forma 3",
+   "formas": [
+    3
+   ],
+   "uso_por_forma": {
+    "3": "gatilho unico em 660 HP (30% de 2200)"
+   },
+   "vfx": [
+    "aura_enrage_192x224_8f",
+    "impacto_ciano_48x48_6f",
+    "impacto_dourado_48x48_6f"
+   ],
+   "tempos": {
+    "transicao_s": 0.9,
+    "cadencia": "FormCadence 1.32 x 1.25 = 1.65",
+    "onda_extra_eclipse": 1,
+    "telegrafo_minimo_s": 0.6
+   },
+   "dano_base": 0,
+   "dano_por": "nao muda o dano; a dificuldade vem da cadencia e das ondas",
+   "hitbox": "-",
+   "padrao_seguro": "Telegrafos nunca caem abaixo de 0.6 s: usar Mathf.Max(0.6f, telegrafo / 1.25) apenas nos que sao > 0.75 s; pausas de FinishAttack x0.8. Fenda Estelar com 1 ponto seguro (largo), Chuva de Eclipse 4 ondas.",
+   "juice": {
+    "tremor_camera": {
+     "duracao_s": 0.45,
+     "magnitude_u": 0.2,
+     "chamada": "CameraFollow.Shake(0.45f, 0.2f)"
+    },
+    "hitstop_ao_acertar_heroi_ms": 120,
+    "flash_de_tela": {
+     "cor_rgb": [
+      235,
+      50,
+      70
+     ],
+     "alpha_max": 0.35,
+     "duracao_s": 0.12
+    },
+    "sons": [
+     "BossRoar (vol 1.0)",
+     "BossSonicWave (vol 0.8) 0.15 s depois"
+    ],
+    "particulas": [
+     "aura vermelho/ciano permanente",
+     "2o flash ciano alpha 0.30 / 0.12 s logo apos o vermelho"
+    ]
+   },
+   "notas": "2 flashes seguidos (vermelho -> ciano) mostram as duas cores da aura. A aura fica ate a morte.",
+   "dano_efetivo_por_forma": null
+  }
+ ],
+ "verificacao_justica": {
+  "desabamento_palacio": {
+   "ondas": [
+    {
+     "onda": 1,
+     "intervalos_seguros": [
+      [
+       39.52,
+       45.97
+      ],
+      [
+       50.02,
+       54.37
+      ]
+     ],
+     "maior_vao_u": 6.45,
+     "distancia_maxima_ate_vao_u": 4.03,
+     "telegrafo_s": 1.1,
+     "tempo_necessario_s": 1.0,
+     "ok": true
+    },
+    {
+     "onda": 2,
+     "intervalos_seguros": [
+      [
+       41.62,
+       48.07
+      ],
+      [
+       54.23,
+       58.5
+      ]
+     ],
+     "maior_vao_u": 6.45,
+     "distancia_maxima_ate_vao_u": 4.12,
+     "telegrafo_s": 1.0,
+     "pior_transicao_u": 3.03,
+     "tempo_necessario_s": 0.81,
+     "janela_disponivel_s": 1.35,
+     "ok": true
+    },
+    {
+     "onda": 3,
+     "intervalos_seguros": [
+      [
+       39.52,
+       43.87
+      ],
+      [
+       50.02,
+       56.48
+      ]
+     ],
+     "maior_vao_u": 6.46,
+     "distancia_maxima_ate_vao_u": 3.03,
+     "telegrafo_s": 0.9,
+     "pior_transicao_u": 3.03,
+     "tempo_necessario_s": 0.81,
+     "janela_disponivel_s": 1.25,
+     "ok": true
+    }
+   ],
+   "cacos": "1 por vao, nunca nas duas faixas do mesmo vao (por construcao)",
+   "ok": true
+  },
+  "chuva_eclipse": {
+   "vao_entre_colunas_u": 1.7,
+   "hitbox_heroi_u": 0.55,
+   "folga_u": 1.15,
+   "enrage_vao_u": 1.5,
+   "enrage_folga_u": 0.95,
+   "telegrafo_s": 1.05,
+   "ok": true
+  },
+  "garras_do_vazio": {
+   "vao_entre_garras_u": {
+    "G1-G2": 2.2,
+    "G1-G3": 2.2
+   },
+   "folga_heroi_u": 1.65,
+   "telegrafo_s": 0.9,
+   "intervalo_s": 0.55,
+   "intervalo_enrage_s": 0.44,
+   "tempo_para_reposicionar_s": 0.55,
+   "nota": "G2/G3 = G1 +- 3.8 u; vao 2.2 u; heroi percorre 1.9 u ate o centro do vao em 0.35 s (5.4 u/s)",
+   "ok": true
+  },
+  "fenda_estelar": {
+   "ponto_A_dist_u": 4.2,
+   "tempo_A_s": 1.03,
+   "ponto_B_dist_u": 10.5,
+   "tempo_B_s": 2.19,
+   "telegrafo_total_s": 1.6,
+   "ponto_seguro_largura_u": 3.0,
+   "largura_enrage_u": 3.4,
+   "ok": true
+  },
+  "telegrafos": {
+   "valores_s": {
+    "olhar_duplo F1": 0.75,
+    "olhar_duplo F3": 0.7,
+    "varredura_rubra": 0.85,
+    "erupcao F1": 1.0,
+    "erupcao F2": 0.95,
+    "erupcao F3": 0.85,
+    "mergulho": 0.85,
+    "descida_nucleo": 0.6,
+    "rajada_sonica(2a/3a)": 0.7,
+    "chuva_eclipse": 1.05,
+    "desabamento(3a onda)": 0.9,
+    "combo(olhar)": 0.75,
+    "combo(mergulho)": 0.85,
+    "fenda_estelar": 1.6,
+    "garras(cada)": 0.9,
+    "enrage: telegrafo minimo": 0.6
+   },
+   "minimo_s": 0.6,
+   "ok": true
+  },
+  "dano_teorico_se_tudo_acertasse": {
+   "olhar_duplo F1 (2 salvas x 2 feixes)": 64.0,
+   "olhar_duplo F3 (3 salvas x 2 feixes)": 124.8,
+   "varredura_rubra (ida+volta, 1 acerto cada)": 44.0,
+   "rajada_sonica (3 salvas x 3 ondas)": 207.0,
+   "chuva_eclipse (3 ondas x 5)": 468.0,
+   "desabamento (3 colunas)": 75.9,
+   "fenda_estelar (2 varreduras)": 78.0,
+   "garras (4)": 145.6
+  },
+  "nota_dano": "Valores teoricos antes da defesa do heroi e fora da hitbox real: a mira trava, nenhuma execucao acerta tudo. Referencia: heroi 160 HP + 110 escudo = 270."
+ }
+}

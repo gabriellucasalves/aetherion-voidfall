@@ -32,7 +32,7 @@ public class GroundTentacle : MonoBehaviour
     {
         EnsureSprites();
         var go = new GameObject("GroundTentacle");
-        go.transform.SetParent(parent, false);
+        if (parent != null) go.transform.SetParent(parent, false);
         go.transform.position = groundPos;
 
         var tentacle = go.AddComponent<GroundTentacle>();
@@ -55,6 +55,9 @@ public class GroundTentacle : MonoBehaviour
     EnemyController _enemyController;
     bool _hasHitPlayer;
 
+    GameObject _warningMarker;
+    GameObject _warningCrack;
+
     void Build()
     {
         _sr = gameObject.AddComponent<SpriteRenderer>();
@@ -75,7 +78,7 @@ public class GroundTentacle : MonoBehaviour
         _hurtbox.isTrigger = true;
         _hurtbox.size = new Vector2(0.75f, 2.5f);
         _hurtbox.offset = new Vector2(0f, 1.25f);
-        _hurtbox.enabled = false; // Only active when risen
+        _hurtbox.enabled = false;
 
         _enemyController = gameObject.AddComponent<EnemyController>();
         _enemyController.ExternalBrain = true;
@@ -90,12 +93,15 @@ public class GroundTentacle : MonoBehaviour
         _enemyController.Setup(dummyData, null, null);
 
         _stateTimer = _warningTime;
+        NazorVfx.Mark("tentaculo", false);
+
+        _warningMarker = NazorVfx.Play("marcador_chao_vermelho_48x12_4f", transform.position, 0f, 1f, true, _warningTime, 17);
+        _warningCrack = NazorVfx.Play("tentaculo_rachadura_aviso_48x8_4f", transform.position, 0f, 1f, true, _warningTime, 17);
     }
 
     float OnFilterDamage(float incoming)
     {
         VoidImpactFx.Spawn(transform.position + Vector3.up * 1.0f);
-        // 40% of damage dealt to tentacle is forwarded to the boss!
         if (_boss != null)
         {
             _boss.ForwardTentacleDamage(incoming * BossData.TentacleDamageTransfer);
@@ -128,7 +134,6 @@ public class GroundTentacle : MonoBehaviour
     {
         if (_frames != null && _frames.Length > 0)
         {
-            // Frame 0 blinking at 8 Hz during warning time
             bool blinkOn = (Mathf.FloorToInt(Time.time * 16f) % 2) == 0;
             _sr.enabled = blinkOn;
             _sr.sprite = _frames[0];
@@ -137,9 +142,14 @@ public class GroundTentacle : MonoBehaviour
         if (_stateTimer <= 0f)
         {
             _sr.enabled = true;
+            CleanupWarningVfx();
+
+            NazorVfx.Play("tentaculo_terra_explosao_64x48_7f", transform.position, 0f, 1f, false, 0.5f, 18);
+            NazorVfx.Mark("tentaculo", true);
+            NazorVfx.Juice("tentaculo");
             GameAudio.Emit(GameAudio.Cue.Tentacle, transform.position, 0.85f);
             _state = State.Rising;
-            _stateTimer = 0.25f; // 3 frames @ 12 fps
+            _stateTimer = 0.25f;
             _hurtbox.enabled = true;
             CheckEruptionHit();
         }
@@ -157,13 +167,12 @@ public class GroundTentacle : MonoBehaviour
         if (_stateTimer <= 0f)
         {
             _state = State.Standing;
-            _stateTimer = 1.2f;
+            _stateTimer = .95f;
         }
     }
 
     void UpdateStanding()
     {
-        // Swaying animation (frames 3..5 @ 6 fps loop)
         if (_frames != null && _frames.Length >= 6)
         {
             int sway = 3 + (Mathf.FloorToInt(Time.time * 6f) % 3);
@@ -173,14 +182,15 @@ public class GroundTentacle : MonoBehaviour
         if (_stateTimer <= 0f)
         {
             _state = State.Retracting;
-            _stateTimer = 0.25f;
+            _stateTimer = .4f;
             _hurtbox.enabled = false;
+            NazorVfx.Play("tentaculo_terra_explosao_64x48_7f", transform.position, 0f, 0.75f, false, 0.4f, 18);
         }
     }
 
     void UpdateRetracting()
     {
-        float p = 1f - Mathf.Clamp01(_stateTimer / 0.25f);
+        float p = 1f - Mathf.Clamp01(_stateTimer / .4f);
         if (_frames != null && _frames.Length >= 3)
         {
             int f = 2 - Mathf.Clamp(Mathf.FloorToInt(p * 3f), 0, 2);
@@ -196,14 +206,15 @@ public class GroundTentacle : MonoBehaviour
     void CheckEruptionHit()
     {
         if (_hasHitPlayer) return;
-        var center = transform.position + Vector3.up * 1.1f;
-        foreach (var col in Physics2D.OverlapBoxAll(center, new Vector2(1.2f, 2.2f), 0f))
+        var center = transform.position + Vector3.up * 1.25f;
+        foreach (var col in Physics2D.OverlapBoxAll(center, new Vector2(.75f, 2.5f), 0f))
         {
             var player = col.GetComponentInParent<PlayerController>();
             if (player != null)
             {
                 _hasHitPlayer = true;
-                EnemyController.DamagePlayer(player.transform, transform.position, 18f * (_boss != null ? _boss.AttackDamageMultiplier : 1f));
+                NazorVfx.DamagePlayer(player.transform, transform.position, 18f * (_boss != null ? _boss.AttackDamageMultiplier : 1f), 40);
+
                 var rb = player.GetComponent<Rigidbody2D>();
                 if (rb != null)
                 {
@@ -215,11 +226,22 @@ public class GroundTentacle : MonoBehaviour
         }
     }
 
+    void CleanupWarningVfx()
+    {
+        if (_warningMarker != null) { Destroy(_warningMarker); _warningMarker = null; }
+        if (_warningCrack != null) { Destroy(_warningCrack); _warningCrack = null; }
+    }
+
     void OnDied(HealthSystem _)
     {
         _state = State.Dead;
+        CleanupWarningVfx();
         VoidImpactFx.Spawn(transform.position + Vector3.up * 1.0f);
         Destroy(gameObject);
     }
-}
 
+    void OnDestroy()
+    {
+        CleanupWarningVfx();
+    }
+}

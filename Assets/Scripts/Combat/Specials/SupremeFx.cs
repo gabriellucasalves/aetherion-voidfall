@@ -15,13 +15,19 @@ public static class SupremeFx
 
     public static void PlayFlash()
     {
+        PlayFlash(Color.white, 1f, 0.16f);
+    }
+
+    public static void PlayFlash(Color c, float alphaMax, float seconds)
+    {
         if (_flash != null)
             Object.Destroy(_flash.gameObject);
 
         var cam = Camera.main;
-        _flash = SpawnQuad("FlashSupremo", cam != null ? cam.transform : null, Color.white, 40);
+        Color col = new Color(c.r, c.g, c.b, alphaMax);
+        _flash = SpawnQuad("FlashSupremo", cam != null ? cam.transform : null, col, 40);
         if (_flash != null)
-            _flash.PlayFade(0.16f);
+            _flash.PlayFade(seconds, alphaMax);
     }
 
     public static void BeginTint(Color color)
@@ -150,7 +156,7 @@ public static class SupremeFx
         }
     }
 
-    static void ClearTint()
+    public static void ClearTint()
     {
         if (_tint != null)
         {
