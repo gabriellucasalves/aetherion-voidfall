@@ -1,0 +1,27 @@
+[
+  {
+    "file": "index.html",
+    "bytes": 8884,
+    "sha256": "3c14ff9c68346fb329a7ae1b5a0b7ddc8e885999bbd734526cb04bfeb0b3c36c"
+  },
+  {
+    "file": "Build/webgl.data.unityweb",
+    "bytes": 53412679,
+    "sha256": "4bfd9618a3ab736685212914f580e0bfc057b6c7a5a3b901ca7bfd941a81d451"
+  },
+  {
+    "file": "Build/webgl.framework.js.unityweb",
+    "bytes": 86796,
+    "sha256": "1db9d3043d17d712b32b81deca6d98f8ff38a896b1f986115ecdd7b54b992714"
+  },
+  {
+    "file": "Build/webgl.loader.js",
+    "bytes": 47867,
+    "sha256": "afcd2e170ef1b3c3c58dad531de801f4cf55b84aba80446e4b9853ced58a950a"
+  },
+  {
+    "file": "Build/webgl.wasm.unityweb",
+    "bytes": 8219742,
+    "sha256": "d65574d6fabccb589d4adaca973f54063d416fa0e7ade7d14b277db9bb5735ae"
+  }
+]

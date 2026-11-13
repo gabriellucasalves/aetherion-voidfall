@@ -62,6 +62,8 @@ public sealed class GameAudio : MonoBehaviour
     bool _paused;
     bool _ended;
     bool _duck;
+    bool _bossCombatMusicStarted;
+    public const string BossTrack = "Audio/Music/boss_combat";
     float _duckGain = 1f;
     float _musicVolume;
     float _effectsVolume;
@@ -258,12 +260,21 @@ public sealed class GameAudio : MonoBehaviour
         _ended = false;
         _duck = true; // Intro dialogue remains clear; released at combat start.
         SetPaused(false);
-        // A retry restarts the encounter cue even if the same track was fading out.
-        PlayMusic("Audio/Music/boss_placeholder", true);
+        _bossCombatMusicStarted = false;
+        // The stage ambience stays quiet under the entrance. Combat music begins
+        // only when the dialogue releases control, including on a retry.
+        PlayMusic(StageTrack(3));
         Play(Cue.BossRoar, transform.position, 0.85f, true);
     }
 
-    public void BossCombatStarted() { _duck = false; StopBossVoice(); }
+    public void BossCombatStarted()
+    {
+        _duck = false;
+        StopBossVoice();
+        if (_bossCombatMusicStarted) return; // Transformations resume, never rewind the song.
+        _bossCombatMusicStarted = true;
+        PlayMusic(BossTrack, true);
+    }
 
     void PlayMusic(string path, bool restart = false)
     {

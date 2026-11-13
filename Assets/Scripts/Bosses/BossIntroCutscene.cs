@@ -164,6 +164,10 @@ public class BossIntroCutscene : MonoBehaviour
         _placaNome.color = new Color(.14f, .04f, .20f, .98f);
         var name = UiKit.Label(_placaNome.transform, BossData.DisplayName, 30, Vector2.zero, new Color(1f, .78f, .46f), new Vector2(450f, 48f));
         name.font = MenuKit.BodyFont;
+        name.fontSize = 28;
+        name.resizeTextForBestFit = true;
+        name.resizeTextMinSize = 24;
+        name.resizeTextMaxSize = 28;
         var placaGroup = _placaNome.gameObject.AddComponent<CanvasGroup>();
 
         // 8. FalaBoss (1216x136)

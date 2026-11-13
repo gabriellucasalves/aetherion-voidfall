@@ -339,8 +339,10 @@ public sealed class GameAudioSmoke : MonoBehaviour
             {
                 Call(stage, "EnterBossArena");
                 yield return new WaitForSecondsRealtime(.1f);
-                Check(audio.CurrentTrack.name == "boss_placeholder", "Arena troca trilha da fase pela trilha exclusiva do boss");
+                Check(audio.CurrentTrack.name == "stage_3", "Arena mantém trilha da fase durante fala de entrada");
                 Check(Effects(audio).Any(s => s.isPlaying && s.clip.name == "BossRoar"), "Entrada do boss dispara rugido");
+                FindFirstObjectByType<VoidDevourerBoss>().ForceStateFlying();
+                Check(audio.CurrentTrack == Resources.Load<AudioClip>(GameAudio.BossTrack), "Liberar combate inicia a música fornecida");
                 yield return new WaitForSecondsRealtime(1.8f);
                 Check(audio.GetComponentsInChildren<AudioSource>().Count(s => s.loop && s.isPlaying) == 1, "Transição encerra a faixa anterior sem sobreposição permanente");
                 Call(stage, "OnPlayerDied", health);
@@ -349,7 +351,9 @@ public sealed class GameAudioSmoke : MonoBehaviour
                 Check(!audio.GetComponentsInChildren<AudioSource>().Any(s => s.loop && s.isPlaying), "Derrota encerra trilha de combate");
                 Call(stage, "RetryBoss");
                 yield return new WaitForSecondsRealtime(.1f);
-                Check(!audio.IsPaused && audio.CurrentTrack.name == "boss_placeholder" && audio.GetComponentsInChildren<AudioSource>().Any(s => s.loop && s.isPlaying), "Tentar novamente reinicia a música do boss");
+                Check(audio.CurrentTrack.name == "stage_3", "Retry mantém música nova para depois da fala");
+                FindFirstObjectByType<VoidDevourerBoss>().ForceStateFlying();
+                Check(!audio.IsPaused && audio.CurrentTrack == Resources.Load<AudioClip>(GameAudio.BossTrack) && audio.GetComponentsInChildren<AudioSource>().Any(s => s.loop && s.isPlaying), "Tentar novamente reinicia a música do boss");
                 var boss = FindFirstObjectByType<VoidDevourerBoss>();
                 Call(boss, "OnBossDied", health);
                 Check(!Effects(audio).Any(s => s.isPlaying && s.clip.name == "Victory"), "Primeira forma viva não dispara vitória antecipada");

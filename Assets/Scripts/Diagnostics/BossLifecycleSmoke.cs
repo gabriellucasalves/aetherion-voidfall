@@ -110,6 +110,8 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
             var clip = Resources.Load<AudioClip>("Audio/Voices/" + key);
             Check(clip != null && clip.length > 2f, key + " gravação original carregada");
         }
+        var combatTrack = Resources.Load<AudioClip>(GameAudio.BossTrack);
+        Check(combatTrack != null && combatTrack.length > 149f && combatTrack.channels == 2, "Nova gravação de combate carregada integralmente em estéreo");
         string japanese = BossDialogue.Intro + BossDialogue.Retry + BossDialogue.Form2 + BossDialogue.Form3 + BossDialogue.Defeat;
         Check(japanese.Where(c => c != '\n').All(c => JapaneseText.Font.HasCharacter(c)), "Fonte inclui todos os caracteres japoneses do boss");
         GameManager.EnsureExists().SelectHero(CharacterCatalog.ById("guerreiro"));
@@ -123,6 +125,7 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
         var boss = FindFirstObjectByType<VoidDevourerBoss>();
         Check(boss != null && boss.CurrentState == VoidDevourerBoss.State.Intro, "Entrar na arena inicia primeiro encontro");
         Check(Voice.isPlaying && Voice.clip.name == "BossIntro" && Voice.pitch == 1f, "Entrada toca a gravação longa sem mudar tom");
+        Check(GameAudio.Instance.CurrentTrack.name == "stage_3", "Trilha de combate ainda não começa durante primeira fala");
         boss.Cutscene.RequestSkip();
         Check(boss.CurrentSpeechText == BossDialogue.IntroPt && !boss.Cutscene.SkipToEnd, "Primeiro toque revela legenda portuguesa completa sem cortar a voz");
         yield return new WaitForSecondsRealtime(.6f);
@@ -139,11 +142,13 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
         yield return Capture("intro-portuguese");
         yield return new WaitForSecondsRealtime(Voice.clip.length + .9f);
         Check(boss.CurrentState != VoidDevourerBoss.State.Intro && !Voice.isPlaying, "Combate aguarda entrada completa");
+        Check(GameAudio.Instance.CurrentTrack == combatTrack, "Fim da fala inicia a nova música de combate");
+        yield return new WaitForSecondsRealtime(1.7f);
         Check(Mathf.Abs(GameAudio.Instance.GetComponentsInChildren<AudioSource>().First(v => v.clip == GameAudio.Instance.CurrentTrack).volume - GameAudio.Instance.MusicVolume) < .01f,
             "Trilha retorna ao volume configurado no combate");
         boss.CancelActiveAttacks(); boss.ForceStateFlying();
         Check(boss.Phase == 1 && boss.Health.Max == 1000f, "Primeira forma tem barra própria de 1000");
-        Check(boss.HealthBar.VisibleBars == 3 && BossData.DisplayName == "NAZOR, O DEVORADOR", "Primeira forma exibe nome Nazor e três barras");
+        Check(boss.HealthBar.VisibleBars == 3 && BossData.DisplayName == "NAZOR, O DESTRUIDOR DE MUNDOS", "Primeira forma exibe nome Nazor e três barras");
         yield return Capture("form-1");
         yield return CheckArticulation(boss, 1);
         int fired = boss.FiredVolleys;
@@ -174,6 +179,7 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
         Check(boss.Phase == 1 && boss.Health.Current == 500f, "Forma não troca apenas ao cruzar antigas porcentagens");
         for (int form = 2; form <= 3; form++)
         {
+            float musicTimeBefore = GameAudio.Instance.GetComponentsInChildren<AudioSource>().First(v => v.clip == combatTrack).time;
             boss.EnemyCtrl.ReceiveDamage(100000f);
             Check(boss.Phase == form && boss.CurrentState == VoidDevourerBoss.State.Transition && !boss.Health.IsDead,
                 "Golpe letal avança somente para forma " + form);
@@ -199,16 +205,28 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
             boss.CancelActiveAttacks(); boss.ForceStateFlying();
             Check(boss.AttackDamageMultiplier > BossData.FormDamage(form - 1) && BossData.FormCadence(form) > BossData.FormCadence(form - 1),
                 "Forma " + form + " tem ataques mais fortes e rápidos");
-            Check(boss.HealthBar.GetComponentInChildren<Text>().text.Contains("FORMA " + form + "/3"), "HUD identifica a forma " + form);
+            Check(boss.HealthBar.GetComponentInChildren<Text>().text == BossData.DisplayName, "HUD usa somente o nome solicitado na forma " + form);
+            Check(GameAudio.Instance.CurrentTrack == combatTrack && GameAudio.Instance.GetComponentsInChildren<AudioSource>().First(v => v.clip == combatTrack).time > musicTimeBefore, "Transformação " + form + " preserva andamento da música sem reiniciar");
             yield return Capture("form-" + form);
             yield return CheckArticulation(boss, form);
+            var platform = T3RuinsFrontLevel.Platforms.Where(p => p.Left < 42.5f && p.Right > 42.5f).OrderByDescending(p => p.Top).First();
+            player.transform.position = new Vector3(42.5f, platform.Top + .6f, 0f);
+            player.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+            var platformHealth = player.GetComponent<HealthSystem>();
+            platformHealth.Configure(platformHealth.Max);
+            platformHealth.IsInvulnerable = false;
+            yield return new WaitForSecondsRealtime(.15f);
+            float platformHp = platformHealth.Current;
+            int sonicBefore = boss.SonicVolleys, eclipseBefore = boss.EclipseVolleys;
             Call(boss, "ChooseNextAttack");
             if (form == 2)
             {
                 yield return new WaitForSecondsRealtime(.2f);
                 Check(boss.IsChargingAttack && FindObjectsByType<NazorHazard>(FindObjectsSortMode.None).Length == 0, "Segunda forma avisa antes da onda sônica");
                 yield return new WaitForSecondsRealtime(.85f);
-                var wave = FindFirstObjectByType<NazorHazard>();
+                var waves = FindObjectsByType<NazorHazard>(FindObjectsSortMode.None);
+                var wave = waves.FirstOrDefault();
+                Check(waves.Length == 3 && waves.Any(w => Mathf.Abs(w.TravelDirection.y) > .05f), "Salva sônica tem três trajetórias mirando altura da plataforma");
                 Check(wave != null && !wave.IsEclipse, "Segunda forma dispara onda sônica em vez de laser");
                 if (wave != null)
                 {
@@ -217,18 +235,28 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
                     Check(wave != null && Vector3.Distance(position, wave.transform.position) > .4f, "Onda sônica se desloca pela arena");
                 }
                 yield return Capture("sonic-wave");
+                yield return new WaitForSecondsRealtime(1.0f);
+                Check(platformHealth.Current < platformHp && player.transform.position.y > stage.Stage.GroundTop + 2f, "Onda sônica atinge herói parado numa plataforma real");
+                yield return new WaitForSecondsRealtime(1.6f);
+                Check(boss.SonicVolleys == sonicBefore + 3, "Segunda forma dispara três salvas sônicas");
             }
             else
             {
                 yield return new WaitForSecondsRealtime(.2f);
                 var runes = FindObjectsByType<NazorHazard>(FindObjectsSortMode.None);
-                Check(runes.Length == 3 && runes.All(h => h.IsEclipse && h.IsWarning), "Terceira forma marca três posições antes de atacar");
+                Check(runes.Length == 5 && runes.All(h => h.IsEclipse && h.IsWarning), "Terceira forma marca cinco posições antes de atacar");
+                Check(runes.Any(r => Mathf.Abs(r.WarningPosition.x - 42.5f) < .2f && Mathf.Abs(r.WarningPosition.y - platform.Top) < .1f), "Aviso central do eclipse aparece em cima da plataforma");
+                Check(runes.All(r => r.SpawnHeight > platform.Top + 5f), "Eclipse nasce acima das plataformas e atravessa alturas da arena");
                 float before = player.GetComponent<HealthSystem>().Current;
                 yield return new WaitForSecondsRealtime(.25f);
                 Check(player.GetComponent<HealthSystem>().Current == before, "Marcações do eclipse não causam dano antes do disparo");
                 yield return Capture("eclipse-warning");
                 yield return new WaitForSecondsRealtime(.65f);
                 Check(FindObjectsByType<NazorHazard>(FindObjectsSortMode.None).Any(h => h.IsEclipse && !h.IsWarning), "Após aviso, eclipse dispara projéteis descendentes");
+                yield return new WaitForSecondsRealtime(.65f);
+                Check(platformHealth.Current < platformHp && player.transform.position.y > stage.Stage.GroundTop + 2f, "Chuva do Eclipse atinge herói parado numa plataforma real");
+                yield return new WaitForSecondsRealtime(2.3f);
+                Check(boss.EclipseVolleys == eclipseBefore + 3, "Terceira forma renova cinco colunas em três rajadas");
             }
             boss.CancelActiveAttacks(); boss.ForceStateFlying();
             yield return null;
@@ -330,12 +358,14 @@ public sealed class BossLifecycleSmoke : MonoBehaviour
         Call(stage, "RetryBoss");
         yield return new WaitForSecondsRealtime(.15f);
         boss = FindFirstObjectByType<VoidDevourerBoss>();
+        Check(GameAudio.Instance.CurrentTrack.name == "stage_3", "Retry também aguarda a fala antes da música nova");
         Check(boss.Phase == 1 && boss.Health.Max == 1000 && Voice.isPlaying && Voice.clip.name == "BossRetry", "Tentar de novo reinicia primeira forma e fala curta");
         boss.Cutscene.RequestSkip();
         Check(boss.CurrentSpeechText == BossDialogue.RetryPt, "Nova tentativa exibe legenda curta em português");
         boss.Cutscene.RequestSkip();
         yield return new WaitForSecondsRealtime(.6f);
         Check(boss.CurrentState == VoidDevourerBoss.State.Flying && !Voice.isPlaying, "Pular entrada encerra voz sem deixá-la no combate");
+        Check(GameAudio.Instance.CurrentTrack == combatTrack, "Retry inicia nova música ao liberar combate");
     }
 }
 #endif

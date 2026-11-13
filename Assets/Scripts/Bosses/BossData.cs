@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class BossData
 {
-    public const string DisplayName = "NAZOR, O DEVORADOR";
+    public const string DisplayName = "NAZOR, O DESTRUIDOR DE MUNDOS";
     public const string Subtitle = "Aquele que devorou Aetherion";
     public const float MaxHealth = 1000f;
     // A complete health pool per form: no lethal hit can skip a transformation.

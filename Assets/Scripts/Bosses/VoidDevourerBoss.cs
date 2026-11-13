@@ -369,6 +369,8 @@ public class VoidDevourerBoss : MonoBehaviour
     public float PoseElapsed => Mathf.Max(0f, Time.time - _poseStarted);
     public int FiredVolleys { get; private set; }
     public int DiveLaunches { get; private set; }
+    public int SonicVolleys { get; private set; }
+    public int EclipseVolleys { get; private set; }
     public void SetAnimationPose(NazorPose pose) { AnimationPose = pose; _poseStarted = Time.time; }
 
     void ChooseNextAttack()
@@ -390,7 +392,7 @@ public class VoidDevourerBoss : MonoBehaviour
         }
         else if (_phase == 2)
         {
-            // The winged beast replaces eye lasers with jumpable sonic volleys.
+            // Aimed sonic fans threaten both the floor and elevated platforms.
             switch (_cycleIndex++ % 4)
             {
                 case 0: StartCoroutine(AttackSonicBurst()); break;
@@ -402,62 +404,90 @@ public class VoidDevourerBoss : MonoBehaviour
         else
         {
             // The crowned final form calls down telegraphed eclipse projectiles.
-            switch (_cycleIndex++ % 4)
+            switch (_cycleIndex++ % 5)
             {
                 case 0: StartCoroutine(AttackEclipseRain()); break;
-                case 1: StartCoroutine(AttackTentacleEruption(5, .85f, .35f)); break;
+                case 1: StartCoroutine(AttackDoubleGlare(3, .70f)); break;
                 case 2: StartCoroutine(AttackDive()); break;
-                case 3: StartCoroutine(AttackDescentExposed(2.2f)); break;
+                case 3: StartCoroutine(AttackTentacleEruption(5, .85f, .35f)); break;
+                case 4: StartCoroutine(AttackDescentExposed(2.2f)); break;
             }
         }
     }
 
     IEnumerator AttackSonicBurst()
     {
-        SetAnimationPose(NazorPose.Roar);
-        _isChargingLaser = true;
-        GameAudio.Emit(GameAudio.Cue.BossSonicCharge, transform.position);
-        for (float t = 0f; t < .95f; t += Time.deltaTime)
-        {
-            if (Mathf.FloorToInt(t * 10f) != Mathf.FloorToInt((t - Time.deltaTime) * 10f))
-                PixelBurst.Spawn(transform.position + Vector3.up * .8f, new Color(.85f, .40f, 1f), 2);
-            yield return null;
-        }
-        _isChargingLaser = false;
-        for (int i = 0; i < 2; i++)
+        for (int volley = 0; volley < 3; volley++)
         {
             if (_state != State.Attacking) yield break;
-            float ground = _stage != null ? _stage.GroundTop : -2f;
-            float direction = _target != null && _target.position.x < transform.position.x ? -1f : 1f;
-            Vector3 origin = new Vector3(transform.position.x + direction * 1.4f, ground + .85f, 0f);
+            SetAnimationPose(NazorPose.Roar);
+            _isChargingLaser = true;
+            float warning = volley == 0 ? .95f : .70f;
+            Vector3 origin = transform.position + Vector3.up * .8f;
+            Vector2 direction = (_target != null ? (Vector2)(_target.position + Vector3.up * .4f - origin) : Vector2.left).normalized;
+            var aims = new GameObject[3];
+            for (int i = 0; i < 3; i++)
+            {
+                Vector2 fan = Quaternion.Euler(0, 0, (i - 1) * 14f) * direction;
+                aims[i] = BossLaser.SpawnAimLine(null, origin, fan, 24f, warning);
+                foreach (var renderer in aims[i].GetComponentsInChildren<SpriteRenderer>())
+                    renderer.color = new Color(.8f, .4f, 1f, .7f);
+                _activeAims.Add(aims[i]);
+            }
+            GameAudio.Emit(GameAudio.Cue.BossSonicCharge, transform.position);
+            for (float t = 0f; t < warning; t += Time.deltaTime)
+            {
+                // Track early, lock for the last .32 seconds; shots never home.
+                if (t < warning - .32f && _target != null)
+                {
+                    direction = (_target.position + Vector3.up * .4f - origin).normalized;
+                    for (int i = 0; i < 3; i++)
+                        if (aims[i] != null) aims[i].transform.rotation = Quaternion.Euler(0, 0,
+                            Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + (i - 1) * 14f);
+                }
+                yield return null;
+            }
+            foreach (var aim in aims) { _activeAims.Remove(aim); if (aim != null) Destroy(aim); }
+            if (_state != State.Attacking) yield break;
+            _isChargingLaser = false;
             SetAnimationPose(NazorPose.Release);
-            NazorHazard.Sonic(this, origin, direction, 20f * AttackDamageMultiplier);
+            SonicVolleys++;
+            for (int i = -1; i <= 1; i++)
+                NazorHazard.Sonic(this, origin, (Vector2)(Quaternion.Euler(0, 0, i * 14f) * direction), 20f * AttackDamageMultiplier);
             GameAudio.Emit(GameAudio.Cue.BossSonicWave, origin);
             CameraFollow.Shake(.09f, .06f);
-            yield return new WaitForSeconds(.65f);
-            SetAnimationPose(NazorPose.Roar);
-            yield return new WaitForSeconds(.30f);
+            yield return new WaitForSeconds(.55f);
         }
-        FinishAttack(.55f);
+        FinishAttack(.7f);
     }
 
     IEnumerator AttackEclipseRain()
     {
-        SetAnimationPose(NazorPose.Conjure);
         _isChargingLaser = true;
-        for (int volley = 0; volley < 2; volley++)
+        for (int volley = 0; volley < 3; volley++)
         {
             if (_state != State.Attacking) yield break;
-            float ground = _stage != null ? _stage.GroundTop : -2f;
-            // Mark positions once: moving out of the rune always avoids that bolt.
-            float target = Mathf.Clamp(_target != null ? _target.position.x : 48f, 40f, 56f);
-            foreach (float offset in new[] { -4f, 0f, 4f })
-                NazorHazard.Eclipse(this, new Vector3(Mathf.Clamp(target + offset, 38f, 58f), ground, 0f), 24f * AttackDamageMultiplier);
-            GameAudio.Emit(GameAudio.Cue.BossVoidMark, transform.position);
-            yield return new WaitForSeconds(1.05f);
-            SetAnimationPose(NazorPose.Release);
-            yield return new WaitForSeconds(.60f);
             SetAnimationPose(NazorPose.Conjure);
+            float ground = _stage != null ? _stage.GroundTop : -2f;
+            float target = Mathf.Clamp(_target != null ? _target.position.x : 48f, 39f, 57f);
+            float feet = _target != null ? _target.position.y - .6f : ground;
+            // Each wave re-targets, but individual marked columns stay fixed.
+            // Runes sit on the player's platform; bolts cross all heights to the floor.
+            float sky = Mathf.Max(ground + 10f, feet + 6f);
+            EclipseVolleys++;
+            for (int lane = -2; lane <= 2; lane++)
+            {
+                float x = Mathf.Clamp(target + lane * 2.3f, 37f, 59f);
+                float surface = ground;
+                foreach (var platform in T3RuinsFrontLevel.Platforms)
+                    if (x >= platform.Left && x <= platform.Right && platform.Top <= feet + .6f)
+                        surface = Mathf.Max(surface, platform.Top);
+                NazorHazard.Eclipse(this, new Vector3(x, surface, 0f), 24f * AttackDamageMultiplier, ground, sky);
+            }
+            GameAudio.Emit(GameAudio.Cue.BossVoidMark, transform.position);
+            yield return new WaitForSeconds(NazorHazard.WarningSeconds);
+            SetAnimationPose(NazorPose.Release);
+            yield return new WaitForSeconds(.70f);
         }
         _isChargingLaser = false;
         FinishAttack(.8f);

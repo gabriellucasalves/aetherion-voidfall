@@ -58,7 +58,7 @@ public class BossHealthBar : MonoBehaviour
     public void SetForm(int form)
     {
         _form = Mathf.Clamp(form, 1, 3);
-        if (_nameText != null) _nameText.text = BossData.DisplayName + " — FORMA " + _form + "/3 — " + RemainingBars + (RemainingBars == 1 ? " BARRA" : " BARRAS");
+        if (_nameText != null) _nameText.text = BossData.DisplayName;
         for (int i = 0; i < _frames.Length; i++)
         {
             if (_frames[i] == null) continue;
